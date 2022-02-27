@@ -8,7 +8,7 @@ sqlproto parses standard SQL query into protocol buffer, and vice versa.
 <br /><br />
 ## 1. Introdution
 
-This project defines a protocol buffer message for query statement in the [ANSI/ISO SQL standard](https://en.wikipedia.org/wiki/ISO/IEC_9075).
+This project defines a protocol buffer message for SQL query statement in the [ANSI/ISO SQL standard](https://en.wikipedia.org/wiki/ISO/IEC_9075).
 It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported of [sqlparser-rs](https://github.com/andygrove/sqlparser-rs) in Go, to translate SQL query into protobuf, and protobuf into SQL query.
 
 Why is the project? Protocol buffer provides an easier, cleaner and better graph to represent parsed SQL structure than native GO or RUST objects. There are three usages:
