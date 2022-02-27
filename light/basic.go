@@ -2,9 +2,9 @@ package light
 
 import (
 	"fmt"
-	"github.com/genelet/protodb/xast"
+	"github.com/genelet/sqlproto/xast"
 
-	"github.com/genelet/protodb/xlight"
+	"github.com/genelet/sqlproto/xlight"
 )
 
 func xposTo(x ...interface{}) *xast.Pos {

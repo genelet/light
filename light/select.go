@@ -1,8 +1,8 @@
 package light
 
 import (
-	"github.com/genelet/protodb/xast"
-	"github.com/genelet/protodb/xlight"
+	"github.com/genelet/sqlproto/xast"
+	"github.com/genelet/sqlproto/xlight"
 )
 
 func xselectTo(body *xlight.QueryStmt_SQLSelect) *xast.QueryStmt_SQLSelect {

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/genelet/protodb/ast"
-	"github.com/genelet/protodb/xast"
-	"github.com/genelet/protodb/xlight"
+	"github.com/genelet/sqlproto/ast"
+	"github.com/genelet/sqlproto/xast"
+	"github.com/genelet/sqlproto/xlight"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"

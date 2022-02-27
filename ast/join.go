@@ -2,7 +2,7 @@ package ast
 
 import (
 	"fmt"
-	"github.com/genelet/protodb/xast"
+	"github.com/genelet/sqlproto/xast"
 	"github.com/akito0107/xsqlparser/sqlast"
 )
 

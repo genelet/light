@@ -2,8 +2,8 @@ package light
 
 import (
 //	"fmt"
-	"github.com/genelet/protodb/xast"
-	"github.com/genelet/protodb/xlight"
+	"github.com/genelet/sqlproto/xast"
+	"github.com/genelet/sqlproto/xlight"
 )
 
 func xtableTo(t *xlight.QueryStmt_SQLSelect_QualifiedJoin) *xast.QueryStmt_SQLSelect_QualifiedJoin {

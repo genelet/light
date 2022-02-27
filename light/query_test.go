@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/genelet/protodb/ast"
+	"github.com/genelet/sqlproto/ast"
 
 //	"github.com/k0kubun/pp"
 
