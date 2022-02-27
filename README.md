@@ -3,23 +3,22 @@
 sqlproto parses standard SQL query into protocol buffer, and vice versa.
 
 <br /><br />
-
 ## Introdution
 
-This project defines a protobuf message for query statement in the [ANSI/ISO SQL standard](https://en.wikipedia.org/wiki/ISO/IEC_9075).
-It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported of [sqlparser-rs](https://github.com/andygrove/sqlparser-rs) in Go, to translate SQL query into protocol buffer, and/or protocol buffer into SQL query.
+This project defines a protocol buffer message for query statement in the [ANSI/ISO SQL standard](https://en.wikipedia.org/wiki/ISO/IEC_9075).
+It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported of [sqlparser-rs](https://github.com/andygrove/sqlparser-rs) in Go, to translate SQL query into protobuf, and/or protobuf into SQL query.
 
-Why the project? Protobuf provides a simple, clean and better graph to represent parsed SQL structure than native GO or RUST objects. There are three usages:
+Why is the project? Protocol buffer provides a simpler, cleaner and better graph to represent parsed SQL structure than native GO or RUST objects. There are three usages:
 
-- build SQL parser and so new SQL engine
-- contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems.
-- provide a machine learning framework on database schema, or meta. For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard, so neutral language questions can be learned by machine, expressed as SQLs, and searched on knowledge bases.
+- build SQL parser and new SQL engine
+- contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems, as if they were relational DBs.
+- provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let us to treat neutral language questions as SQL queries, and to answer questions as SQL searches on knowledge base.
 
 <br /><br />
 
 ## Protocol Buffer
 
-The definition of [the SQL-meta protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
+The definition of [the SQL meta protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
 
 ```protobuf
 syntax = "proto3";
@@ -163,12 +162,19 @@ message QueryStmt {
 
 which covers most, if not all, SQL query cases. For example
 
-- simple query: *SELECT a from test_table*
-- join and aggregate: _SELECT orders.product as prod, SUM(orders.quantity) AS product_units, accounts.* FROM orders LEFT JOIN accounts ON orders.account_id = accounts.id INNER JOIN accounts_type ON accounts_type.type_id = accounts.type_id WHERE orders.region IN (SELECT region FROM top_regions) ORDER BY product_units ASC LIMIT 100_
-- union set: *SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c*
-- sub queries: *WITH regional_sales AS (SELECT region, SUM(amount) AS total_sales FROM orders GROUP BY region) SELECT product, SUM(quantity) AS product_units FROM orders WHERE region IN (SELECT region FROM top_regions) GROUP BY region, product*
+- simple query: ```sql
+*SELECT a from test_table*
+```
+- join and aggregate: ```sql
+SELECT orders.product as prod, SUM(orders.quantity) AS product_units, accounts.* FROM orders LEFT JOIN accounts ON orders.account_id = accounts.id INNER JOIN accounts_type ON accounts_type.type_id = accounts.type_id WHERE orders.region IN (SELECT region FROM top_regions) ORDER BY product_units ASC LIMIT 100
+```
+- union set: ```sql
+SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c*
+```
+- sub queries: ```sql
+WITH regional_sales AS (SELECT region, SUM(amount) AS total_sales FROM orders GROUP BY region) SELECT product, SUM(quantity) AS product_units FROM orders WHERE region IN (SELECT region FROM top_regions) GROUP BY region, product
+```
 
 <br /><br />
-
 ## Usage
 
