@@ -12,7 +12,7 @@ Why is the project? Protocol buffer provides a simpler, cleaner and better graph
 
 - build SQL parser and new SQL engine
 - contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems, as if they were relational DBs.
-- provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let us to treat neutral language questions as SQL queries, and to answer questions as SQL searches on knowledge base.
+- provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let us to treat neutral language questions as SQL queries, and to answer them as SQL searches on knowledge base.
 
 <br /><br />
 
