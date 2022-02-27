@@ -1,2 +1,7 @@
-# light
-light parses standard SQL query into protobuf, and vice versa
+# sqlproto
+
+sqlproto parses standard SQL query into protobuf, and vice versa.
+
+
+
+

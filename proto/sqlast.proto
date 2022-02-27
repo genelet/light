@@ -1,0 +1,199 @@
+syntax = "proto3";
+package sqlast;
+
+option go_package = "./xast";
+
+enum OperatorType {
+	Plus = 0;
+	Minus = 1;
+	Multiply = 2;
+	Divide = 3;
+	Modulus = 4;
+	Gt = 5;
+	Lt = 6;
+	GtEq = 7;
+	LtEq = 8;
+	Eq = 9;
+	NotEq = 10;
+	And = 11;
+	Or = 12;
+	Not = 13;
+	Like = 14;
+	NotLike = 15;
+	None = 16;
+}
+
+message Pos {
+	int32 Line = 1;
+	int32 Col = 2;
+}
+
+message Ident {
+	string Value = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message CompoundIdent {
+	repeated Ident Idents = 1;
+}
+
+message Operator {
+	OperatorType Type = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+enum AggType {
+	UnknownAgg = 0;
+	MAX    = 1;
+	MIN    = 2;
+	COUNT  = 3;
+	SUM    = 4;
+	AVG    = 5;
+}
+
+enum SetOperatorType {
+	Union = 0;
+	Intersect = 1;
+	Except = 2;
+}
+
+message SetOperator {
+	SetOperatorType Type = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message AggFunction {
+	AggType TypeName = 1;
+	// starting from the second args. The first one is in FunctionField below
+	repeated CompoundIdent RestArgs = 2;
+	Pos From = 3;
+	Pos To = 4;
+}
+
+enum JoinTypeCondition {
+	INNER = 0;
+	LEFT = 1;
+	RIGHT = 2;
+	FULL = 3;
+	LEFTOUTER = 4;
+	RIGHTOUTER = 5;
+	FULLOUTER = 6;
+	IMPLICIT = 7;
+}
+
+message JoinType {
+	JoinTypeCondition Condition = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message StringUnit {
+	string Value = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message DoubleUnit {
+	double Value = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message LongUnit {
+	int64 Value = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message QueryStmt {
+	Pos With = 1;
+
+	message CTE {
+		Ident AliasName = 1;
+		QueryStmt Query = 2;
+		Pos RParen = 3;
+	}
+	repeated CTE CTEs = 2;
+
+	message InSubQuery {
+		CompoundIdent Expr = 1;
+		QueryStmt SubQuery = 2;
+		bool Negated = 3;
+		Pos RParen = 4;
+	}
+
+	message BinaryExpr {
+		oneof LeftOneOf {
+			CompoundIdent LeftIdents = 1;
+			BinaryExpr LeftBinary = 2;
+		}
+		Operator Op = 3;
+		oneof RightOneOf {
+			CompoundIdent RightIdents = 4;
+			BinaryExpr RightBinary = 5;
+			InSubQuery QueryValue = 6;
+			StringUnit SingleQuotedString = 7;
+			DoubleUnit DoubleValue = 8;
+			LongUnit LongValue = 9;
+		}
+	}
+
+	message SQLSelect {
+		bool DistinctBool = 1;
+
+		message SQLSelectItem {
+			AggFunction FieldFunction = 1;
+			CompoundIdent FieldIdents = 2;
+			Ident AliasName = 3;
+		}
+		repeated SQLSelectItem Projection = 2;
+
+		message QualifiedJoin {
+			CompoundIdent Name = 1;
+			Ident AliasName = 2;
+			QualifiedJoin LeftElement = 3;
+			JoinType TypeCondition = 4;
+			message JoinCondition {
+				BinaryExpr SearchCondition = 1;
+				Pos On = 2;
+			}
+			JoinCondition Spec = 5;
+		}
+		repeated QualifiedJoin FromClause = 3;
+
+		oneof WhereClause {
+			InSubQuery InQuery = 4;
+			BinaryExpr BinExpr = 5;
+		}
+
+		repeated CompoundIdent GroupByClause = 8;
+		BinaryExpr HavingClause = 9;
+		Pos Select = 10;
+	}
+	message SetOperationExpr {
+		SQLSelect LeftSide = 1;
+		bool AllBool = 2;
+		SetOperator Op = 3;
+		SetOperationExpr RightSide = 4;
+	}
+	SetOperationExpr Body = 4;
+
+	message OrderByExpr {
+		CompoundIdent Expr = 1;
+		Pos OrderingPos = 2;
+		bool ASCBool = 3;
+	}
+	repeated OrderByExpr OrderBy = 5;
+
+	message LimitExpr {
+		bool AllBool = 1;
+		Pos AllPos = 2;
+		Pos Limit = 3;
+		LongUnit LimitValue = 4;
+		LongUnit OffsetValue = 5;
+	}
+	LimitExpr LimitExpression = 6;
+}
