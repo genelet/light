@@ -2,8 +2,11 @@
 
 sqlproto parses standard SQL query into protocol buffer, and vice versa.
 
+[![GoDoc](https://godoc.org/github.com/genelet/sqlproto?status.svg)](https://godoc.org/github.com/genelet/sqlproto)
+
+
 <br /><br />
-## Introdution
+## 1. Introdution
 
 This project defines a protocol buffer message for query statement in the [ANSI/ISO SQL standard](https://en.wikipedia.org/wiki/ISO/IEC_9075).
 It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported of [sqlparser-rs](https://github.com/andygrove/sqlparser-rs) in Go, to translate SQL query into protobuf, and protobuf into SQL query.
@@ -15,12 +18,13 @@ Why is the project? Protocol buffer provides an easier, cleaner and better graph
 - provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let one to treat neutral language questions as SQL queries, and to answer them as SQL searches on knowledge base.
 
 <br /><br />
-## Protocol Buffer
+## 2. Protocol Buffer
 
 The definition of [the SQL meta protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
 
 <details>
-	<summary>Click me</summary>
+	<summary>Click to read the proto</summary>
+	
 ```protobuf
 syntax = "proto3";
 package sqlight;
@@ -185,5 +189,71 @@ WITH regional_sales AS (SELECT region, SUM(amount) AS total_sales FROM orders GR
 ```
 
 <br /><br />
-## Usage
+## 3. Usage
 
+Two main functions are implmented:
+- _SQL2Proto_, to parse SQL query into protobuf
+- _Proto2SQL_, to construct SQL query from protobuf
+
+#### 3.1) Example, to parse SQL query
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/genelet/sqlproto/light"
+)
+
+func main() {
+    pb, err := light.SQL2Proto(`SELECT * FROM test_table`)
+    if err != nil { panic(err) }
+    fmt.Printf("%s\n", pb.String())
+}
+```
+
+The output:
+
+```bash
+body:{leftSide:{projection:{fieldIdents:{idents:"*"}} fromClause:{name:{idents:"test_table"}}}}.
+```
+
+
+
+#### 3.2) Example, to construct SQL query
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/genelet/sqlproto/light"
+    "github.com/genelet/sqlproto/xlight"
+)
+
+func main() {
+    project := &xlight.QueryStmt_SQLSelect_SQLSelectItem{
+        FieldIdents: &xlight.CompoundIdent{Idents: []string{`*`}},
+    }
+    fromClause:= &xlight.QueryStmt_SQLSelect_QualifiedJoin{
+        Name: &xlight.CompoundIdent{Idents: []string{`test_table`}},
+    }
+    left := &xlight.QueryStmt_SQLSelect{
+        Projection: []*xlight.QueryStmt_SQLSelect_SQLSelectItem{project},
+        FromClause: []*xlight.QueryStmt_SQLSelect_QualifiedJoin{fromClause},
+    }
+    pb := &xlight.QueryStmt{
+        Body: &xlight.QueryStmt_SetOperationExpr{LeftSide: left},
+    }
+    str := light.Proto2SQL(pb)
+    fmt.Printf("%s\n", str)
+}
+```
+
+The output:
+
+```bash
+SELECT * FROM test_table
+```
+
+Please check [the document](https://godoc.org/github.com/genelet/sqlproto) for details.
