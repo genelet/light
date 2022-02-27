@@ -256,4 +256,4 @@ The output:
 SELECT * FROM test_table
 ```
 
-Please check [the document](https://godoc.org/github.com/genelet/sqlproto) for details.
+Please check [https://godoc.org/github.com/genelet/sqlproto](https://godoc.org/github.com/genelet/sqlproto) for detailed document.
