@@ -13,13 +13,13 @@ Why the project? Protobuf provides a simple, clean and better graph to represent
 
 - build SQL parser and so new SQL engine
 - contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems.
-- provide a machine learning framework on database schema, or meta. For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard, so neutral language questions can be machine-learned, expressed as SQLs, and searched from knowledge bases.
+- provide a machine learning framework on database schema, or meta. For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard, so neutral language questions can be learned by machine, expressed as SQLs, and searched on knowledge bases.
 
 <br /><br />
 
 ## Protocol Buffer
 
-The definition of [the SQL protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
+The definition of [the SQL-meta protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
 
 ```protobuf
 syntax = "proto3";
