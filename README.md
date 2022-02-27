@@ -163,13 +163,13 @@ message QueryStmt {
 which covers most, if not all, SQL query cases. For example
 
 - simple query: ```sql
-*SELECT a from test_table*
+SELECT a from test_table
 ```
 - join and aggregate: ```sql
 SELECT orders.product as prod, SUM(orders.quantity) AS product_units, accounts.* FROM orders LEFT JOIN accounts ON orders.account_id = accounts.id INNER JOIN accounts_type ON accounts_type.type_id = accounts.type_id WHERE orders.region IN (SELECT region FROM top_regions) ORDER BY product_units ASC LIMIT 100
 ```
 - union set: ```sql
-SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c*
+SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c
 ```
 - sub queries: ```sql
 WITH regional_sales AS (SELECT region, SUM(amount) AS total_sales FROM orders GROUP BY region) SELECT product, SUM(quantity) AS product_units FROM orders WHERE region IN (SELECT region FROM top_regions) GROUP BY region, product
