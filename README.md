@@ -19,6 +19,8 @@ Why is the project? Protocol buffer provides an easier, cleaner and better graph
 
 The definition of [the SQL meta protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
 
+<details>
+	<summary>Click me</summary>
 ```protobuf
 syntax = "proto3";
 package sqlight;
@@ -158,6 +160,7 @@ message QueryStmt {
 	LimitExpr limitExpression = 6;
 }
 ```
+</details>
 
 which covers most, if not all, SQL query cases. For example
 
