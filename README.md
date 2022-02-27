@@ -6,16 +6,15 @@ sqlproto parses standard SQL query into protocol buffer, and vice versa.
 ## Introdution
 
 This project defines a protocol buffer message for query statement in the [ANSI/ISO SQL standard](https://en.wikipedia.org/wiki/ISO/IEC_9075).
-It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported of [sqlparser-rs](https://github.com/andygrove/sqlparser-rs) in Go, to translate SQL query into protobuf, and/or protobuf into SQL query.
+It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported of [sqlparser-rs](https://github.com/andygrove/sqlparser-rs) in Go, to translate SQL query into protobuf, and protobuf into SQL query.
 
-Why is the project? Protocol buffer provides a simpler, cleaner and better graph to represent parsed SQL structure than native GO or RUST objects. There are three usages:
+Why is the project? Protocol buffer provides an easier, cleaner and better graph to represent parsed SQL structure than native GO or RUST objects. There are three usages:
 
 - build SQL parser and new SQL engine
 - contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems, as if they were relational DBs.
-- provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let us to treat neutral language questions as SQL queries, and to answer them as SQL searches on knowledge base.
+- provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let one to treat neutral language questions as SQL queries, and to answer them as SQL searches on knowledge base.
 
 <br /><br />
-
 ## Protocol Buffer
 
 The definition of [the SQL meta protocol buffer](https://github.com/genelet/sqlproto/blob/main/proto/sqlight.proto) is
