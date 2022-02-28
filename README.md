@@ -14,7 +14,7 @@ It uses [xsqlparser](https://github.com/akito0107/xsqlparser), which is ported o
 Why is the project? Protocol buffer provides an easier, cleaner and better graph to represent parsed SQL structure than native GO or RUST objects. There are three usages:
 
 - build SQL parser and new SQL engine
-- contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems, as if they were relational DBs.
+- contruct complex SQL query on-the-fly, to search noSQL database, time-series database and other loosely-structured data systems, as if they were RDBs.
 - provide a machine learning framework on database schema (or meta). For example, the [text-to-SQL](https://yale-lily.github.io/spider) semantic parsing requires a meta standard. Solving text-to-SQL graph problems will let one to treat neutral language questions as SQL queries, and to answer them as SQL searches on knowledge base.
 
 <br /><br />
