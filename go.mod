@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	github.com/akito0107/xsqlparser v1.0.0-alpha.6
-	github.com/genelet/protodb v0.0.0-20220131024951-c9500bd00e28
 	google.golang.org/protobuf v1.27.1
 )
 
