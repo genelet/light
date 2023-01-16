@@ -13,7 +13,6 @@ import (
 func XQueryTo(stmt *sqlast.QueryStmt) (*xast.QueryStmt, error) {
 	output := &xast.QueryStmt{
 		With: xposTo(stmt.With)}
-
 	for _, item := range stmt.CTEs {
 		v, err := xcteTo(item)
 		if err != nil { return nil, err }
@@ -127,6 +126,12 @@ func xbinaryexprTo(binary *sqlast.BinaryExpr) (*xast.QueryStmt_BinaryExpr, error
 		middle, err := xbinaryexprTo(left)
 		if err != nil { return nil, err }
 		item.LeftOneOf = &xast.QueryStmt_BinaryExpr_LeftBinary{LeftBinary:middle}
+	case *sqlast.LongValue:
+		item.LeftOneOf = &xast.QueryStmt_BinaryExpr_LeftLong{LeftLong:xlongTo(left)}
+	case *sqlast.SingleQuotedString:
+		item.LeftOneOf = &xast.QueryStmt_BinaryExpr_LeftSingleQuoted{LeftSingleQuoted:xstringTo(left)}
+	case *sqlast.DoubleValue:
+		item.LeftOneOf = &xast.QueryStmt_BinaryExpr_LeftDouble{LeftDouble:xdoubleTo(left)}
 	default:
 		return nil, fmt.Errorf("left type %#v", left)
 	}
@@ -166,6 +171,12 @@ func binaryexprTo(binary *xast.QueryStmt_BinaryExpr) *sqlast.BinaryExpr {
 		item.Left = compoundTo(v)
 	} else if v := binary.GetLeftBinary(); v != nil {
 		item.Left = binaryexprTo(v)
+	} else if v := binary.GetLeftSingleQuoted(); v != nil {
+		item.Left = stringTo(v)
+	} else if v := binary.GetLeftDouble(); v != nil {
+		item.Left = doubleTo(v)
+	} else if v := binary.GetLeftLong(); v != nil {
+		item.Left = longTo(v)
 	}
 
 	if v := binary.GetRightIdents(); v != nil {

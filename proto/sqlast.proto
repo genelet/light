@@ -129,6 +129,9 @@ message QueryStmt {
 		oneof LeftOneOf {
 			CompoundIdent LeftIdents = 1;
 			BinaryExpr LeftBinary = 2;
+			StringUnit LeftSingleQuoted = 10;
+			DoubleUnit LeftDouble = 11;
+			LongUnit LeftLong = 12;
 		}
 		Operator Op = 3;
 		oneof RightOneOf {
@@ -141,13 +144,55 @@ message QueryStmt {
 		}
 	}
 
+	message UnaryExpr {
+		Pos From = 1;
+		Operator Op = 2;
+		BinaryExpr Expr = 3;
+	}
+	
 	message SQLSelect {
 		bool DistinctBool = 1;
+
+		//CASE [Operand] WHEN Conditions... THEN Results... [ELSE ElseResult] END
+		message ResultMessage {
+			oneof ResultClause {
+				Ident ResultIdent = 1;
+				UnaryExpr ResultUnary = 2;
+			}
+		}
+
+		message CaseExpr {
+		    Pos Case = 1;
+		    Pos CaseEnd = 2;
+		    Operator Operand = 3;
+		    repeated BinaryExpr Conditions = 4;
+		    repeated ResultMessage Results = 5;
+			Ident ElseResult = 6;
+		}
+
+//		message AggFunction {
+//			AggType TypeName = 1;
+			// starting from the second args. The first one is in FunctionField below
+			// repeated CompoundIdent RestArgs = 2;
+//			repeated SQLSelectItem RestArgs = 2;
+//			Pos From = 3;
+//			Pos To = 4;
+//		}
+
+		message Nested {
+			SQLSelectItem AST = 1;
+			Pos LParen = 2;
+			Pos RParen = 3;
+		}
 
 		message SQLSelectItem {
 			AggFunction FieldFunction = 1;
 			CompoundIdent FieldIdents = 2;
-			Ident AliasName = 3;
+			CaseExpr FieldCase = 3;
+			Nested FieldNested = 4;
+			UnaryExpr FieldUnary = 5;
+			BinaryExpr FieldBinary = 6;
+			Ident AliasName = 10;
 		}
 		repeated SQLSelectItem Projection = 2;
 

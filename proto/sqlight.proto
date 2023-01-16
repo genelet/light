@@ -90,10 +90,19 @@ message QueryStmt {
 	message SQLSelect {
 		bool distinctBool = 1;
 
+		//CASE [Operand] WHEN Conditions... THEN Results... [ELSE ElseResult] END
+		message CaseExpr {
+			OperatorType Operand = 1;
+			repeated BinaryExpr Conditions = 2;
+			repeated string Results = 3;
+			string ElseResult = 4;
+		}
+
 		message SQLSelectItem {
 			AggFunction fieldFunction = 1;
 			CompoundIdent fieldIdents = 2;
-			string aliasName = 3;
+			CaseExpr fieldCase = 3;
+			string aliasName = 10;
 		}
 		repeated SQLSelectItem projection = 2;
 

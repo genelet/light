@@ -1,6 +1,7 @@
 package ast
 
 import (
+//"github.com/k0kubun/pp/v3"
 	"fmt"
 	"github.com/genelet/sqlproto/xast"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -103,8 +104,24 @@ func xitemToXsql(selectItem *xast.QueryStmt_SQLSelect_SQLSelectItem, t sqlast.No
 		selectItem.FieldFunction, selectItem.FieldIdents = xfunctionTo(s)
 	case *sqlast.Wildcard:
 		selectItem.FieldIdents = xwildcardsTo(s)
+	case *sqlast.CaseExpr:
+		fieldCase, err := xcaseExpr(s)
+		if err != nil { return err }
+		selectItem.FieldCase = fieldCase
+	case *sqlast.Nested:
+		fieldNested, err := xnestedTo(s)
+		if err != nil { return err }
+		selectItem.FieldNested = fieldNested
+	case *sqlast.UnaryExpr:
+		fieldUnary, err := xunaryTo(s)
+		if err != nil { return err }
+		selectItem.FieldUnary = fieldUnary
+	case *sqlast.BinaryExpr:
+		fieldBinary, err := xbinaryexprTo(s)
+		if err != nil { return err }
+		selectItem.FieldBinary = fieldBinary
 	default:
-		return fmt.Errorf("unknown select item %#v", t)
+		return fmt.Errorf("unknown select item %T: %#v", t, t)
 	}
 	return nil
 }
@@ -135,8 +152,18 @@ func selectitemTo(item *xast.QueryStmt_SQLSelect_SQLSelectItem) sqlast.SQLSelect
 	var node sqlast.Node
 	if item.FieldFunction != nil {
 		node = functionTo(item.FieldFunction, item.FieldIdents)
+	} else if item.FieldCase != nil {
+		node = caseExpr(item.FieldCase)
 	} else if item.FieldIdents != nil {
 		node = compoundTo(item.FieldIdents)
+	} else if item.FieldNested != nil {
+		node = nestedTo(item.FieldNested)
+	} else if item.FieldNested != nil {
+		node = nestedTo(item.FieldNested)
+	} else if item.FieldUnary != nil {
+		node = unaryTo(item.FieldUnary)
+	} else if item.FieldBinary != nil {
+		node = binaryexprTo(item.FieldBinary)
 	} else {
 		return nil
 	}
@@ -155,6 +182,61 @@ func sqlastplusRights(right1 sqlast.SQLSetExpr, all bool, op sqlast.SQLSetOperat
 		All: all,
 		Left: right1,
 		Right: right2}
+}
+
+func xcaseExpr(body *sqlast.CaseExpr) (*xast.QueryStmt_SQLSelect_CaseExpr, error) {
+//pp.Println(body)
+	output := &xast.QueryStmt_SQLSelect_CaseExpr{
+		Case: xposTo(body.Case),
+		CaseEnd: xposTo(body.CaseEnd)}
+	if body.Operand != nil {
+		output.Operand = xoperatorTo(body.Operand.(*sqlast.Operator))
+	}
+	if body.ElseResult != nil {
+		output.ElseResult = xidentTo(body.ElseResult.(*sqlast.Ident))
+	}
+	for i, condition := range body.Conditions {
+		item, err := xbinaryexprTo(condition.(*sqlast.BinaryExpr))
+		if err != nil { return nil, err }
+
+		resultMessage := new(xast.QueryStmt_SQLSelect_ResultMessage)
+		switch t := body.Results[i].(type) {
+        case *sqlast.Ident:
+			resultMessage.ResultClause = &xast.QueryStmt_SQLSelect_ResultMessage_ResultIdent{ResultIdent: xidentTo(t)}
+		case *sqlast.UnaryExpr:
+			result, err := xunaryTo(t)
+			if err != nil { return nil, err }
+			resultMessage.ResultClause = &xast.QueryStmt_SQLSelect_ResultMessage_ResultUnary{ResultUnary: result}
+		default:	
+            return nil, fmt.Errorf("missing result type in CaseExpr %T", t)
+        }
+
+		output.Conditions = append(output.Conditions, item)
+		output.Results = append(output.Results, resultMessage)
+	}
+	return output, nil
+}
+
+func caseExpr(body *xast.QueryStmt_SQLSelect_CaseExpr) *sqlast.CaseExpr {
+	output := &sqlast.CaseExpr{
+		Case: posTo(body.Case),
+		CaseEnd: posTo(body.CaseEnd)}
+	if body.Operand != nil {
+		output.Operand = operatorTo(body.Operand)
+	}
+	if body.ElseResult != nil {
+		output.ElseResult = identTo(body.ElseResult)
+	}
+	for i, condition := range body.Conditions {
+		output.Conditions = append(output.Conditions, binaryexprTo(condition))
+		result := body.Results[i]
+		if ident := result.GetResultIdent(); ident != nil {
+			output.Results = append(output.Results, identTo(ident))
+		} else {
+			output.Results = append(output.Results, unaryTo(result.GetResultUnary()))
+		}
+	}
+	return output
 }
 
 func xsetoperationTo(body *sqlast.SetOperationExpr) (*xast.QueryStmt_SetOperationExpr, error) {

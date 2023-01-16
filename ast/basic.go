@@ -305,3 +305,34 @@ func setoperatorTo(op *xast.SetOperator) sqlast.SQLSetOperator {
     }
 	return nil
 }
+
+func xunaryTo(body *sqlast.UnaryExpr) (*xast.QueryStmt_UnaryExpr, error) {
+	expr, err := xbinaryexprTo(body.Expr.(*sqlast.BinaryExpr))
+	return &xast.QueryStmt_UnaryExpr{
+		From: xposTo(body.From),
+		Op: xoperatorTo(body.Op),
+		Expr: expr}, err
+}
+
+func unaryTo(body *xast.QueryStmt_UnaryExpr) *sqlast.UnaryExpr {
+	return &sqlast.UnaryExpr{
+		From: posTo(body.From),
+		Op: operatorTo(body.Op),
+		Expr: binaryexprTo(body.Expr)}
+}
+
+func xnestedTo(body *sqlast.Nested) (*xast.QueryStmt_SQLSelect_Nested, error) {
+	output := &xast.QueryStmt_SQLSelect_SQLSelectItem{}
+	err := xitemToXsql(output, body.AST)
+	return &xast.QueryStmt_SQLSelect_Nested{
+		AST: output,
+		LParen: xposTo(body.LParen),
+		RParen: xposTo(body.RParen)}, err
+}
+
+func nestedTo(body *xast.QueryStmt_SQLSelect_Nested) *sqlast.Nested {
+	return &sqlast.Nested{
+		AST: selectitemTo(body.AST),
+		LParen: posTo(body.LParen),
+		RParen: posTo(body.RParen)}
+}
