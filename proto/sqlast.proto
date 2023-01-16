@@ -160,7 +160,6 @@ message QueryStmt {
 				UnaryExpr ResultUnary = 2;
 			}
 		}
-
 		message CaseExpr {
 		    Pos Case = 1;
 		    Pos CaseEnd = 2;
@@ -186,12 +185,14 @@ message QueryStmt {
 		}
 
 		message SQLSelectItem {
-			AggFunction FieldFunction = 1;
-			CompoundIdent FieldIdents = 2;
-			CaseExpr FieldCase = 3;
-			Nested FieldNested = 4;
-			UnaryExpr FieldUnary = 5;
-			BinaryExpr FieldBinary = 6;
+			oneof SelectItemClause {
+				AggFunction FieldFunction = 1;
+				CompoundIdent FieldIdents = 2;
+				CaseExpr FieldCase = 3;
+				Nested FieldNested = 4;
+				UnaryExpr FieldUnary = 5;
+				BinaryExpr FieldBinary = 6;
+			}
 			Ident AliasName = 10;
 		}
 		repeated SQLSelectItem Projection = 2;
