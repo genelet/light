@@ -161,15 +161,6 @@ message QueryStmt {
 			Ident ElseResult = 6;
 		}
 
-//		message AggFunction {
-//			AggType TypeName = 1;
-			// starting from the second args. The first one is in FunctionField below
-			// repeated CompoundIdent RestArgs = 2;
-//			repeated SQLSelectItem RestArgs = 2;
-//			Pos From = 3;
-//			Pos To = 4;
-//		}
-
 		message Nested {
 			SQLSelectItem AST = 1;
 			Pos LParen = 2;
@@ -178,16 +169,22 @@ message QueryStmt {
 
 		message AggFunction {
 			AggType TypeName = 1;
-			// starting from the second args. The first one is in FunctionField below
-			repeated CompoundIdent RestArgs = 2;
+			message ArgsMessage {
+				oneof ArgsClause {
+					CompoundIdent FieldIdents = 1;
+					AggFunction FieldFunction = 2;
+					CaseExpr FieldCase = 3;
+				}
+			}
+			repeated ArgsMessage RestArgs = 2;
 			Pos From = 3;
 			Pos To = 4;
 		}
 
 		message SQLSelectItem {
 			oneof SelectItemClause {
-				AggFunction FieldFunction = 1;
-				CompoundIdent FieldIdents = 2;
+				CompoundIdent FieldIdents = 1;
+				AggFunction FieldFunction = 2;
 				CaseExpr FieldCase = 3;
 				Nested FieldNested = 4;
 				UnaryExpr FieldUnary = 5;

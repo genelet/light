@@ -220,29 +220,37 @@ func longTo(t *xast.LongUnit) *sqlast.LongValue {
         To: posTo(t.To)}
 }
 
-func xfunctionTo(s *sqlast.Function) *xast.QueryStmt_SQLSelect_AggFunction {
-    if s == nil { return nil }
-
+func xfunctionTo(s *sqlast.Function) (*xast.QueryStmt_SQLSelect_AggFunction, error) {
 	name := s.Name.Idents[0]
 	aggType := xast.AggType(xast.AggType_value[strings.ToUpper(name.Value)])
-	var args []*xast.CompoundIdent
+	var args []*xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage
 	for _, item := range s.Args {
+		arg := new(xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage)
 		switch t := item.(type) {
 		case *sqlast.Ident:
-			args = append(args, xidentsTo(t))
+			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldIdents{FieldIdents: xidentsTo(t)}
 		case *sqlast.CompoundIdent:
-			args = append(args, xcompoundTo(t))
+			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldIdents{FieldIdents: xcompoundTo(t)}
 		case *sqlast.Wildcard:
-			args = append(args, xwildcardsTo(t))
+			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldIdents{FieldIdents: xwildcardsTo(t)}
+		case *sqlast.Function:
+			fieldFunction, err := xfunctionTo(t)
+			if err != nil { return nil, err }
+			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldFunction{FieldFunction: fieldFunction}
+		case *sqlast.CaseExpr:
+			fieldCase, err := xcaseExprTo(t)
+			if err != nil { return nil, err }
+			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldCase{FieldCase: fieldCase}
 		default:
-			args = append(args, nil)
+			return nil, fmt.Errorf("args type not found: %T", t)	
 		}
+		args = append(args, arg)
 	}
 	return &xast.QueryStmt_SQLSelect_AggFunction{
 		TypeName: aggType,
 		RestArgs: args,
 		From: xposTo(name.From),
-		To: xposTo(name.To)}
+		To: xposTo(name.To)}, nil
 }
 
 func functionTo(f *xast.QueryStmt_SQLSelect_AggFunction) *sqlast.Function {
@@ -254,15 +262,17 @@ func functionTo(f *xast.QueryStmt_SQLSelect_AggFunction) *sqlast.Function {
 		From: posTo(f.From),
 		To: posTo(f.To)}}}
 
-	var c *xast.CompoundIdent
-	if f.RestArgs != nil {
-		c = f.RestArgs[0]
-	}
-	if c == nil { return &sqlast.Function{Name: on} }
-
 	var args []sqlast.Node
 	for _, item := range f.RestArgs {
-		args = append(args, compoundTo(item))
+		var arg sqlast.Node
+		if item.GetFieldIdents() != nil {
+			arg = compoundTo(item.GetFieldIdents())
+		} else if item.GetFieldFunction() != nil {
+			arg = functionTo(item.GetFieldFunction())	
+		} else if item.GetFieldCase() != nil {
+			arg = caseExprTo(item.GetFieldCase())	
+		}
+		args = append(args, arg)
 	}
 	return &sqlast.Function{
 		Name: on,

@@ -41,7 +41,7 @@ func TestQuery(t *testing.T) {
 	"SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c"}
 
 	for i, str := range strs {
-		if i == 17 { continue }
+		//if i != 17 { continue }
 		parser, err := xsqlparser.NewParser(bytes.NewBufferString(str), &dialect.GenericSQLDialect{})
 		if err != nil { t.Fatal(err) }
 
