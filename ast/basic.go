@@ -220,6 +220,47 @@ func longTo(t *xast.LongUnit) *sqlast.LongValue {
         To: posTo(t.To)}
 }
 
+func xintTypeTo(t *sqlast.Int) *xast.IntType {
+    if t == nil { return nil }
+
+    return &xast.IntType{
+        From: xposTo(t.From),
+        To: xposTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.Unsigned)}
+}
+
+func intTypeTo(t *xast.IntType) *sqlast.Int {
+    if t == nil { return nil }
+
+    return &sqlast.Int{
+        From: posTo(t.From),
+        To: posTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: posTo(t.Unsigned)}
+}
+
+func xvarcharTypeTo(t *sqlast.VarcharType) *xast.VarcharType {
+    if t == nil { return nil }
+
+    return &xast.VarcharType{
+        Size: uint32(*t.Size),
+        Character: xposTo(t.Character),
+        Varying: xposTo(t.Varying),
+        RParen: xposTo(t.RParen)}
+}
+
+func varcharTypeTo(t *xast.VarcharType) *sqlast.VarcharType {
+    if t == nil { return nil }
+
+	size := uint(t.Size)
+    return &sqlast.VarcharType{
+        Size: &size,
+        Character: posTo(t.Character),
+        Varying: posTo(t.Varying),
+        RParen: posTo(t.RParen)}
+}
+
 func xfunctionTo(s *sqlast.Function) (*xast.AggFunction, error) {
 	name := s.Name.Idents[0]
 	aggType := xast.AggType(xast.AggType_value[strings.ToUpper(name.Value)])

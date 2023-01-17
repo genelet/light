@@ -2191,6 +2191,1115 @@ func (x *QueryStmt) GetLimitExpression() *LimitExpr {
 	return nil
 }
 
+type IntType struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	From       *Pos `protobuf:"bytes,1,opt,name=From,proto3" json:"From,omitempty"`
+	To         *Pos `protobuf:"bytes,2,opt,name=To,proto3" json:"To,omitempty"`
+	IsUnsigned bool `protobuf:"varint,3,opt,name=IsUnsigned,proto3" json:"IsUnsigned,omitempty"`
+	Unsigned   *Pos `protobuf:"bytes,4,opt,name=Unsigned,proto3" json:"Unsigned,omitempty"`
+}
+
+func (x *IntType) Reset() {
+	*x = IntType{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[24]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *IntType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntType) ProtoMessage() {}
+
+func (x *IntType) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[24]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntType.ProtoReflect.Descriptor instead.
+func (*IntType) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *IntType) GetFrom() *Pos {
+	if x != nil {
+		return x.From
+	}
+	return nil
+}
+
+func (x *IntType) GetTo() *Pos {
+	if x != nil {
+		return x.To
+	}
+	return nil
+}
+
+func (x *IntType) GetIsUnsigned() bool {
+	if x != nil {
+		return x.IsUnsigned
+	}
+	return false
+}
+
+func (x *IntType) GetUnsigned() *Pos {
+	if x != nil {
+		return x.Unsigned
+	}
+	return nil
+}
+
+type VarcharType struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Size      uint32 `protobuf:"varint,1,opt,name=Size,proto3" json:"Size,omitempty"`
+	Character *Pos   `protobuf:"bytes,2,opt,name=Character,proto3" json:"Character,omitempty"`
+	Varying   *Pos   `protobuf:"bytes,3,opt,name=Varying,proto3" json:"Varying,omitempty"`
+	RParen    *Pos   `protobuf:"bytes,4,opt,name=RParen,proto3" json:"RParen,omitempty"`
+}
+
+func (x *VarcharType) Reset() {
+	*x = VarcharType{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[25]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *VarcharType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VarcharType) ProtoMessage() {}
+
+func (x *VarcharType) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[25]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VarcharType.ProtoReflect.Descriptor instead.
+func (*VarcharType) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *VarcharType) GetSize() uint32 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *VarcharType) GetCharacter() *Pos {
+	if x != nil {
+		return x.Character
+	}
+	return nil
+}
+
+func (x *VarcharType) GetVarying() *Pos {
+	if x != nil {
+		return x.Varying
+	}
+	return nil
+}
+
+func (x *VarcharType) GetRParen() *Pos {
+	if x != nil {
+		return x.RParen
+	}
+	return nil
+}
+
+type UniqueColumnSpec struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	IsPrimaryKey bool `protobuf:"varint,1,opt,name=IsPrimaryKey,proto3" json:"IsPrimaryKey,omitempty"`
+	Primary      *Pos `protobuf:"bytes,2,opt,name=Primary,proto3" json:"Primary,omitempty"`
+	Key          *Pos `protobuf:"bytes,3,opt,name=Key,proto3" json:"Key,omitempty"`
+	Unique       *Pos `protobuf:"bytes,4,opt,name=Unique,proto3" json:"Unique,omitempty"`
+}
+
+func (x *UniqueColumnSpec) Reset() {
+	*x = UniqueColumnSpec{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[26]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UniqueColumnSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UniqueColumnSpec) ProtoMessage() {}
+
+func (x *UniqueColumnSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[26]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UniqueColumnSpec.ProtoReflect.Descriptor instead.
+func (*UniqueColumnSpec) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *UniqueColumnSpec) GetIsPrimaryKey() bool {
+	if x != nil {
+		return x.IsPrimaryKey
+	}
+	return false
+}
+
+func (x *UniqueColumnSpec) GetPrimary() *Pos {
+	if x != nil {
+		return x.Primary
+	}
+	return nil
+}
+
+func (x *UniqueColumnSpec) GetKey() *Pos {
+	if x != nil {
+		return x.Key
+	}
+	return nil
+}
+
+func (x *UniqueColumnSpec) GetUnique() *Pos {
+	if x != nil {
+		return x.Unique
+	}
+	return nil
+}
+
+type CheckColumnSpec struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Expr   *BinaryExpr `protobuf:"bytes,1,opt,name=Expr,proto3" json:"Expr,omitempty"`
+	Check  *Pos        `protobuf:"bytes,2,opt,name=Check,proto3" json:"Check,omitempty"`
+	RParen *Pos        `protobuf:"bytes,3,opt,name=RParen,proto3" json:"RParen,omitempty"`
+}
+
+func (x *CheckColumnSpec) Reset() {
+	*x = CheckColumnSpec{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[27]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CheckColumnSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckColumnSpec) ProtoMessage() {}
+
+func (x *CheckColumnSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[27]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckColumnSpec.ProtoReflect.Descriptor instead.
+func (*CheckColumnSpec) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *CheckColumnSpec) GetExpr() *BinaryExpr {
+	if x != nil {
+		return x.Expr
+	}
+	return nil
+}
+
+func (x *CheckColumnSpec) GetCheck() *Pos {
+	if x != nil {
+		return x.Check
+	}
+	return nil
+}
+
+func (x *CheckColumnSpec) GetRParen() *Pos {
+	if x != nil {
+		return x.RParen
+	}
+	return nil
+}
+
+type ColumnConstraint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name       *Ident `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
+	Constraint *Pos   `protobuf:"bytes,2,opt,name=Constraint,proto3" json:"Constraint,omitempty"`
+	// Types that are assignable to Spec:
+	//
+	//	*ColumnConstraint_UniqueSpec
+	//	*ColumnConstraint_CheckSpec
+	Spec isColumnConstraint_Spec `protobuf_oneof:"Spec"`
+}
+
+func (x *ColumnConstraint) Reset() {
+	*x = ColumnConstraint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[28]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ColumnConstraint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ColumnConstraint) ProtoMessage() {}
+
+func (x *ColumnConstraint) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[28]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ColumnConstraint.ProtoReflect.Descriptor instead.
+func (*ColumnConstraint) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *ColumnConstraint) GetName() *Ident {
+	if x != nil {
+		return x.Name
+	}
+	return nil
+}
+
+func (x *ColumnConstraint) GetConstraint() *Pos {
+	if x != nil {
+		return x.Constraint
+	}
+	return nil
+}
+
+func (m *ColumnConstraint) GetSpec() isColumnConstraint_Spec {
+	if m != nil {
+		return m.Spec
+	}
+	return nil
+}
+
+func (x *ColumnConstraint) GetUniqueSpec() *UniqueColumnSpec {
+	if x, ok := x.GetSpec().(*ColumnConstraint_UniqueSpec); ok {
+		return x.UniqueSpec
+	}
+	return nil
+}
+
+func (x *ColumnConstraint) GetCheckSpec() *CheckColumnSpec {
+	if x, ok := x.GetSpec().(*ColumnConstraint_CheckSpec); ok {
+		return x.CheckSpec
+	}
+	return nil
+}
+
+type isColumnConstraint_Spec interface {
+	isColumnConstraint_Spec()
+}
+
+type ColumnConstraint_UniqueSpec struct {
+	UniqueSpec *UniqueColumnSpec `protobuf:"bytes,3,opt,name=UniqueSpec,proto3,oneof"`
+}
+
+type ColumnConstraint_CheckSpec struct {
+	CheckSpec *CheckColumnSpec `protobuf:"bytes,4,opt,name=CheckSpec,proto3,oneof"`
+}
+
+func (*ColumnConstraint_UniqueSpec) isColumnConstraint_Spec() {}
+
+func (*ColumnConstraint_CheckSpec) isColumnConstraint_Spec() {}
+
+type MyDataTypeDecoration struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to MyDataTypeDecorationClause:
+	//
+	//	*MyDataTypeDecoration_MyDataTypeDecorationIdent
+	MyDataTypeDecorationClause isMyDataTypeDecoration_MyDataTypeDecorationClause `protobuf_oneof:"MyDataTypeDecorationClause"`
+}
+
+func (x *MyDataTypeDecoration) Reset() {
+	*x = MyDataTypeDecoration{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[29]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MyDataTypeDecoration) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MyDataTypeDecoration) ProtoMessage() {}
+
+func (x *MyDataTypeDecoration) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[29]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MyDataTypeDecoration.ProtoReflect.Descriptor instead.
+func (*MyDataTypeDecoration) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{29}
+}
+
+func (m *MyDataTypeDecoration) GetMyDataTypeDecorationClause() isMyDataTypeDecoration_MyDataTypeDecorationClause {
+	if m != nil {
+		return m.MyDataTypeDecorationClause
+	}
+	return nil
+}
+
+func (x *MyDataTypeDecoration) GetMyDataTypeDecorationIdent() *Ident {
+	if x, ok := x.GetMyDataTypeDecorationClause().(*MyDataTypeDecoration_MyDataTypeDecorationIdent); ok {
+		return x.MyDataTypeDecorationIdent
+	}
+	return nil
+}
+
+type isMyDataTypeDecoration_MyDataTypeDecorationClause interface {
+	isMyDataTypeDecoration_MyDataTypeDecorationClause()
+}
+
+type MyDataTypeDecoration_MyDataTypeDecorationIdent struct {
+	MyDataTypeDecorationIdent *Ident `protobuf:"bytes,1,opt,name=MyDataTypeDecorationIdent,proto3,oneof"`
+}
+
+func (*MyDataTypeDecoration_MyDataTypeDecorationIdent) isMyDataTypeDecoration_MyDataTypeDecorationClause() {
+}
+
+type ColumnDef struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Name *Ident `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
+	// Types that are assignable to DataType:
+	//
+	//	*ColumnDef_IntData
+	//	*ColumnDef_VarcharData
+	DataType isColumnDef_DataType `protobuf_oneof:"DataType"`
+	// Types that are assignable to Default:
+	//
+	//	*ColumnDef_StringDefault
+	//	*ColumnDef_LongDefault
+	Default               isColumnDef_Default     `protobuf_oneof:"Default"`
+	MyDataTypeDecorations []*MyDataTypeDecoration `protobuf:"bytes,14,rep,name=MyDataTypeDecorations,proto3" json:"MyDataTypeDecorations,omitempty"`
+	Constraints           []*ColumnConstraint     `protobuf:"bytes,15,rep,name=Constraints,proto3" json:"Constraints,omitempty"`
+}
+
+func (x *ColumnDef) Reset() {
+	*x = ColumnDef{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[30]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ColumnDef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ColumnDef) ProtoMessage() {}
+
+func (x *ColumnDef) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[30]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ColumnDef.ProtoReflect.Descriptor instead.
+func (*ColumnDef) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *ColumnDef) GetName() *Ident {
+	if x != nil {
+		return x.Name
+	}
+	return nil
+}
+
+func (m *ColumnDef) GetDataType() isColumnDef_DataType {
+	if m != nil {
+		return m.DataType
+	}
+	return nil
+}
+
+func (x *ColumnDef) GetIntData() *IntType {
+	if x, ok := x.GetDataType().(*ColumnDef_IntData); ok {
+		return x.IntData
+	}
+	return nil
+}
+
+func (x *ColumnDef) GetVarcharData() *VarcharType {
+	if x, ok := x.GetDataType().(*ColumnDef_VarcharData); ok {
+		return x.VarcharData
+	}
+	return nil
+}
+
+func (m *ColumnDef) GetDefault() isColumnDef_Default {
+	if m != nil {
+		return m.Default
+	}
+	return nil
+}
+
+func (x *ColumnDef) GetStringDefault() *StringUnit {
+	if x, ok := x.GetDefault().(*ColumnDef_StringDefault); ok {
+		return x.StringDefault
+	}
+	return nil
+}
+
+func (x *ColumnDef) GetLongDefault() *LongUnit {
+	if x, ok := x.GetDefault().(*ColumnDef_LongDefault); ok {
+		return x.LongDefault
+	}
+	return nil
+}
+
+func (x *ColumnDef) GetMyDataTypeDecorations() []*MyDataTypeDecoration {
+	if x != nil {
+		return x.MyDataTypeDecorations
+	}
+	return nil
+}
+
+func (x *ColumnDef) GetConstraints() []*ColumnConstraint {
+	if x != nil {
+		return x.Constraints
+	}
+	return nil
+}
+
+type isColumnDef_DataType interface {
+	isColumnDef_DataType()
+}
+
+type ColumnDef_IntData struct {
+	IntData *IntType `protobuf:"bytes,2,opt,name=IntData,proto3,oneof"`
+}
+
+type ColumnDef_VarcharData struct {
+	VarcharData *VarcharType `protobuf:"bytes,3,opt,name=VarcharData,proto3,oneof"`
+}
+
+func (*ColumnDef_IntData) isColumnDef_DataType() {}
+
+func (*ColumnDef_VarcharData) isColumnDef_DataType() {}
+
+type isColumnDef_Default interface {
+	isColumnDef_Default()
+}
+
+type ColumnDef_StringDefault struct {
+	StringDefault *StringUnit `protobuf:"bytes,8,opt,name=StringDefault,proto3,oneof"`
+}
+
+type ColumnDef_LongDefault struct {
+	LongDefault *LongUnit `protobuf:"bytes,9,opt,name=LongDefault,proto3,oneof"`
+}
+
+func (*ColumnDef_StringDefault) isColumnDef_Default() {}
+
+func (*ColumnDef_LongDefault) isColumnDef_Default() {}
+
+type ReferenceKeyExpr struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TableName *Ident   `protobuf:"bytes,1,opt,name=TableName,proto3" json:"TableName,omitempty"`
+	Columns   []*Ident `protobuf:"bytes,2,rep,name=Columns,proto3" json:"Columns,omitempty"`
+	RParen    *Pos     `protobuf:"bytes,3,opt,name=RParen,proto3" json:"RParen,omitempty"`
+}
+
+func (x *ReferenceKeyExpr) Reset() {
+	*x = ReferenceKeyExpr{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[31]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ReferenceKeyExpr) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReferenceKeyExpr) ProtoMessage() {}
+
+func (x *ReferenceKeyExpr) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[31]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReferenceKeyExpr.ProtoReflect.Descriptor instead.
+func (*ReferenceKeyExpr) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *ReferenceKeyExpr) GetTableName() *Ident {
+	if x != nil {
+		return x.TableName
+	}
+	return nil
+}
+
+func (x *ReferenceKeyExpr) GetColumns() []*Ident {
+	if x != nil {
+		return x.Columns
+	}
+	return nil
+}
+
+func (x *ReferenceKeyExpr) GetRParen() *Pos {
+	if x != nil {
+		return x.RParen
+	}
+	return nil
+}
+
+type ReferentialTableConstraint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Foreign *Pos              `protobuf:"bytes,1,opt,name=Foreign,proto3" json:"Foreign,omitempty"`
+	Columns []*Ident          `protobuf:"bytes,2,rep,name=Columns,proto3" json:"Columns,omitempty"`
+	KeyExpr *ReferenceKeyExpr `protobuf:"bytes,3,opt,name=KeyExpr,proto3" json:"KeyExpr,omitempty"`
+}
+
+func (x *ReferentialTableConstraint) Reset() {
+	*x = ReferentialTableConstraint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[32]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ReferentialTableConstraint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReferentialTableConstraint) ProtoMessage() {}
+
+func (x *ReferentialTableConstraint) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[32]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReferentialTableConstraint.ProtoReflect.Descriptor instead.
+func (*ReferentialTableConstraint) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *ReferentialTableConstraint) GetForeign() *Pos {
+	if x != nil {
+		return x.Foreign
+	}
+	return nil
+}
+
+func (x *ReferentialTableConstraint) GetColumns() []*Ident {
+	if x != nil {
+		return x.Columns
+	}
+	return nil
+}
+
+func (x *ReferentialTableConstraint) GetKeyExpr() *ReferenceKeyExpr {
+	if x != nil {
+		return x.KeyExpr
+	}
+	return nil
+}
+
+type CheckTableConstraint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Check  *Pos        `protobuf:"bytes,1,opt,name=Check,proto3" json:"Check,omitempty"`
+	RParen *Pos        `protobuf:"bytes,2,opt,name=RParen,proto3" json:"RParen,omitempty"`
+	Expr   *BinaryExpr `protobuf:"bytes,3,opt,name=Expr,proto3" json:"Expr,omitempty"`
+}
+
+func (x *CheckTableConstraint) Reset() {
+	*x = CheckTableConstraint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[33]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CheckTableConstraint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckTableConstraint) ProtoMessage() {}
+
+func (x *CheckTableConstraint) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[33]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckTableConstraint.ProtoReflect.Descriptor instead.
+func (*CheckTableConstraint) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *CheckTableConstraint) GetCheck() *Pos {
+	if x != nil {
+		return x.Check
+	}
+	return nil
+}
+
+func (x *CheckTableConstraint) GetRParen() *Pos {
+	if x != nil {
+		return x.RParen
+	}
+	return nil
+}
+
+func (x *CheckTableConstraint) GetExpr() *BinaryExpr {
+	if x != nil {
+		return x.Expr
+	}
+	return nil
+}
+
+type TableConstraint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Constraint *Pos   `protobuf:"bytes,1,opt,name=Constraint,proto3" json:"Constraint,omitempty"`
+	Name       *Ident `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	// Types that are assignable to Spec:
+	//
+	//	*TableConstraint_SpecReference
+	//	*TableConstraint_SpecCheck
+	Spec isTableConstraint_Spec `protobuf_oneof:"Spec"`
+}
+
+func (x *TableConstraint) Reset() {
+	*x = TableConstraint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[34]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TableConstraint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TableConstraint) ProtoMessage() {}
+
+func (x *TableConstraint) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[34]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TableConstraint.ProtoReflect.Descriptor instead.
+func (*TableConstraint) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *TableConstraint) GetConstraint() *Pos {
+	if x != nil {
+		return x.Constraint
+	}
+	return nil
+}
+
+func (x *TableConstraint) GetName() *Ident {
+	if x != nil {
+		return x.Name
+	}
+	return nil
+}
+
+func (m *TableConstraint) GetSpec() isTableConstraint_Spec {
+	if m != nil {
+		return m.Spec
+	}
+	return nil
+}
+
+func (x *TableConstraint) GetSpecReference() *ReferentialTableConstraint {
+	if x, ok := x.GetSpec().(*TableConstraint_SpecReference); ok {
+		return x.SpecReference
+	}
+	return nil
+}
+
+func (x *TableConstraint) GetSpecCheck() *CheckTableConstraint {
+	if x, ok := x.GetSpec().(*TableConstraint_SpecCheck); ok {
+		return x.SpecCheck
+	}
+	return nil
+}
+
+type isTableConstraint_Spec interface {
+	isTableConstraint_Spec()
+}
+
+type TableConstraint_SpecReference struct {
+	SpecReference *ReferentialTableConstraint `protobuf:"bytes,3,opt,name=SpecReference,proto3,oneof"`
+}
+
+type TableConstraint_SpecCheck struct {
+	SpecCheck *CheckTableConstraint `protobuf:"bytes,4,opt,name=SpecCheck,proto3,oneof"`
+}
+
+func (*TableConstraint_SpecReference) isTableConstraint_Spec() {}
+
+func (*TableConstraint_SpecCheck) isTableConstraint_Spec() {}
+
+type TableElement struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to TableElementClause:
+	//
+	//	*TableElement_ColumnDefElement
+	//	*TableElement_TableConstraintElement
+	TableElementClause isTableElement_TableElementClause `protobuf_oneof:"TableElementClause"`
+}
+
+func (x *TableElement) Reset() {
+	*x = TableElement{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[35]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TableElement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TableElement) ProtoMessage() {}
+
+func (x *TableElement) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[35]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TableElement.ProtoReflect.Descriptor instead.
+func (*TableElement) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{35}
+}
+
+func (m *TableElement) GetTableElementClause() isTableElement_TableElementClause {
+	if m != nil {
+		return m.TableElementClause
+	}
+	return nil
+}
+
+func (x *TableElement) GetColumnDefElement() *ColumnDef {
+	if x, ok := x.GetTableElementClause().(*TableElement_ColumnDefElement); ok {
+		return x.ColumnDefElement
+	}
+	return nil
+}
+
+func (x *TableElement) GetTableConstraintElement() *TableConstraint {
+	if x, ok := x.GetTableElementClause().(*TableElement_TableConstraintElement); ok {
+		return x.TableConstraintElement
+	}
+	return nil
+}
+
+type isTableElement_TableElementClause interface {
+	isTableElement_TableElementClause()
+}
+
+type TableElement_ColumnDefElement struct {
+	ColumnDefElement *ColumnDef `protobuf:"bytes,1,opt,name=ColumnDefElement,proto3,oneof"`
+}
+
+type TableElement_TableConstraintElement struct {
+	TableConstraintElement *TableConstraint `protobuf:"bytes,2,opt,name=TableConstraintElement,proto3,oneof"`
+}
+
+func (*TableElement_ColumnDefElement) isTableElement_TableElementClause() {}
+
+func (*TableElement_TableConstraintElement) isTableElement_TableElementClause() {}
+
+type TableOption struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to TableOptionClause:
+	//
+	//	*TableOption_TableOptionIdent
+	TableOptionClause isTableOption_TableOptionClause `protobuf_oneof:"TableOptionClause"`
+}
+
+func (x *TableOption) Reset() {
+	*x = TableOption{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[36]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TableOption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TableOption) ProtoMessage() {}
+
+func (x *TableOption) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[36]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TableOption.ProtoReflect.Descriptor instead.
+func (*TableOption) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{36}
+}
+
+func (m *TableOption) GetTableOptionClause() isTableOption_TableOptionClause {
+	if m != nil {
+		return m.TableOptionClause
+	}
+	return nil
+}
+
+func (x *TableOption) GetTableOptionIdent() *Ident {
+	if x, ok := x.GetTableOptionClause().(*TableOption_TableOptionIdent); ok {
+		return x.TableOptionIdent
+	}
+	return nil
+}
+
+type isTableOption_TableOptionClause interface {
+	isTableOption_TableOptionClause()
+}
+
+type TableOption_TableOptionIdent struct {
+	TableOptionIdent *Ident `protobuf:"bytes,1,opt,name=TableOptionIdent,proto3,oneof"`
+}
+
+func (*TableOption_TableOptionIdent) isTableOption_TableOptionClause() {}
+
+type CreateTableStmt struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Create    *Pos            `protobuf:"bytes,1,opt,name=Create,proto3" json:"Create,omitempty"`
+	Name      *CompoundIdent  `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	Elements  []*TableElement `protobuf:"bytes,3,rep,name=Elements,proto3" json:"Elements,omitempty"`
+	Location  string          `protobuf:"bytes,4,opt,name=Location,proto3" json:"Location,omitempty"`
+	NotExists bool            `protobuf:"varint,5,opt,name=NotExists,proto3" json:"NotExists,omitempty"`
+	Options   []*TableOption  `protobuf:"bytes,6,rep,name=Options,proto3" json:"Options,omitempty"`
+}
+
+func (x *CreateTableStmt) Reset() {
+	*x = CreateTableStmt{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_sqlast_proto_msgTypes[37]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateTableStmt) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTableStmt) ProtoMessage() {}
+
+func (x *CreateTableStmt) ProtoReflect() protoreflect.Message {
+	mi := &file_sqlast_proto_msgTypes[37]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTableStmt.ProtoReflect.Descriptor instead.
+func (*CreateTableStmt) Descriptor() ([]byte, []int) {
+	return file_sqlast_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *CreateTableStmt) GetCreate() *Pos {
+	if x != nil {
+		return x.Create
+	}
+	return nil
+}
+
+func (x *CreateTableStmt) GetName() *CompoundIdent {
+	if x != nil {
+		return x.Name
+	}
+	return nil
+}
+
+func (x *CreateTableStmt) GetElements() []*TableElement {
+	if x != nil {
+		return x.Elements
+	}
+	return nil
+}
+
+func (x *CreateTableStmt) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
+func (x *CreateTableStmt) GetNotExists() bool {
+	if x != nil {
+		return x.NotExists
+	}
+	return false
+}
+
+func (x *CreateTableStmt) GetOptions() []*TableOption {
+	if x != nil {
+		return x.Options
+	}
+	return nil
+}
+
 type AggFunction_ArgsMessage struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2207,7 +3316,7 @@ type AggFunction_ArgsMessage struct {
 func (x *AggFunction_ArgsMessage) Reset() {
 	*x = AggFunction_ArgsMessage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sqlast_proto_msgTypes[24]
+		mi := &file_sqlast_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2220,7 +3329,7 @@ func (x *AggFunction_ArgsMessage) String() string {
 func (*AggFunction_ArgsMessage) ProtoMessage() {}
 
 func (x *AggFunction_ArgsMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_sqlast_proto_msgTypes[24]
+	mi := &file_sqlast_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2299,7 +3408,7 @@ type QueryStmt_CTE struct {
 func (x *QueryStmt_CTE) Reset() {
 	*x = QueryStmt_CTE{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_sqlast_proto_msgTypes[25]
+		mi := &file_sqlast_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2312,7 +3421,7 @@ func (x *QueryStmt_CTE) String() string {
 func (*QueryStmt_CTE) ProtoMessage() {}
 
 func (x *QueryStmt_CTE) ProtoReflect() protoreflect.Message {
-	mi := &file_sqlast_proto_msgTypes[25]
+	mi := &file_sqlast_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2658,36 +3767,200 @@ var file_sqlast_proto_rawDesc = []byte{
 	0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x74, 0x6d,
 	0x74, 0x52, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x23, 0x0a, 0x06, 0x52, 0x50, 0x61, 0x72,
 	0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73,
-	0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x2a, 0xbc, 0x01,
-	0x0a, 0x0c, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65, 0x12, 0x08,
-	0x0a, 0x04, 0x50, 0x6c, 0x75, 0x73, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x69, 0x6e, 0x75,
-	0x73, 0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x70, 0x6c, 0x79, 0x10,
-	0x02, 0x12, 0x0a, 0x0a, 0x06, 0x44, 0x69, 0x76, 0x69, 0x64, 0x65, 0x10, 0x03, 0x12, 0x0b, 0x0a,
-	0x07, 0x4d, 0x6f, 0x64, 0x75, 0x6c, 0x75, 0x73, 0x10, 0x04, 0x12, 0x06, 0x0a, 0x02, 0x47, 0x74,
-	0x10, 0x05, 0x12, 0x06, 0x0a, 0x02, 0x4c, 0x74, 0x10, 0x06, 0x12, 0x08, 0x0a, 0x04, 0x47, 0x74,
-	0x45, 0x71, 0x10, 0x07, 0x12, 0x08, 0x0a, 0x04, 0x4c, 0x74, 0x45, 0x71, 0x10, 0x08, 0x12, 0x06,
-	0x0a, 0x02, 0x45, 0x71, 0x10, 0x09, 0x12, 0x09, 0x0a, 0x05, 0x4e, 0x6f, 0x74, 0x45, 0x71, 0x10,
-	0x0a, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x6e, 0x64, 0x10, 0x0b, 0x12, 0x06, 0x0a, 0x02, 0x4f, 0x72,
-	0x10, 0x0c, 0x12, 0x07, 0x0a, 0x03, 0x4e, 0x6f, 0x74, 0x10, 0x0d, 0x12, 0x08, 0x0a, 0x04, 0x4c,
-	0x69, 0x6b, 0x65, 0x10, 0x0e, 0x12, 0x0b, 0x0a, 0x07, 0x4e, 0x6f, 0x74, 0x4c, 0x69, 0x6b, 0x65,
-	0x10, 0x0f, 0x12, 0x08, 0x0a, 0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x10, 0x2a, 0x48, 0x0a, 0x07,
-	0x41, 0x67, 0x67, 0x54, 0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x0a, 0x55, 0x6e, 0x6b, 0x6e, 0x6f,
-	0x77, 0x6e, 0x41, 0x67, 0x67, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4d, 0x41, 0x58, 0x10, 0x01,
-	0x12, 0x07, 0x0a, 0x03, 0x4d, 0x49, 0x4e, 0x10, 0x02, 0x12, 0x09, 0x0a, 0x05, 0x43, 0x4f, 0x55,
-	0x4e, 0x54, 0x10, 0x03, 0x12, 0x07, 0x0a, 0x03, 0x53, 0x55, 0x4d, 0x10, 0x04, 0x12, 0x07, 0x0a,
-	0x03, 0x41, 0x56, 0x47, 0x10, 0x05, 0x2a, 0x37, 0x0a, 0x0f, 0x53, 0x65, 0x74, 0x4f, 0x70, 0x65,
-	0x72, 0x61, 0x74, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65, 0x12, 0x09, 0x0a, 0x05, 0x55, 0x6e, 0x69,
-	0x6f, 0x6e, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x73, 0x65, 0x63,
-	0x74, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x45, 0x78, 0x63, 0x65, 0x70, 0x74, 0x10, 0x02, 0x2a,
-	0x79, 0x0a, 0x11, 0x4a, 0x6f, 0x69, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x09, 0x0a, 0x05, 0x49, 0x4e, 0x4e, 0x45, 0x52, 0x10, 0x00, 0x12,
-	0x08, 0x0a, 0x04, 0x4c, 0x45, 0x46, 0x54, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x49, 0x47,
-	0x48, 0x54, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x46, 0x55, 0x4c, 0x4c, 0x10, 0x03, 0x12, 0x0d,
-	0x0a, 0x09, 0x4c, 0x45, 0x46, 0x54, 0x4f, 0x55, 0x54, 0x45, 0x52, 0x10, 0x04, 0x12, 0x0e, 0x0a,
-	0x0a, 0x52, 0x49, 0x47, 0x48, 0x54, 0x4f, 0x55, 0x54, 0x45, 0x52, 0x10, 0x05, 0x12, 0x0d, 0x0a,
-	0x09, 0x46, 0x55, 0x4c, 0x4c, 0x4f, 0x55, 0x54, 0x45, 0x52, 0x10, 0x06, 0x12, 0x0c, 0x0a, 0x08,
-	0x49, 0x4d, 0x50, 0x4c, 0x49, 0x43, 0x49, 0x54, 0x10, 0x07, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2f,
-	0x78, 0x61, 0x73, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x22, 0x90, 0x01,
+	0x0a, 0x07, 0x49, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1f, 0x0a, 0x04, 0x46, 0x72, 0x6f,
+	0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74,
+	0x2e, 0x50, 0x6f, 0x73, 0x52, 0x04, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x1b, 0x0a, 0x02, 0x54, 0x6f,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e,
+	0x50, 0x6f, 0x73, 0x52, 0x02, 0x54, 0x6f, 0x12, 0x1e, 0x0a, 0x0a, 0x49, 0x73, 0x55, 0x6e, 0x73,
+	0x69, 0x67, 0x6e, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x49, 0x73, 0x55,
+	0x6e, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x64, 0x12, 0x27, 0x0a, 0x08, 0x55, 0x6e, 0x73, 0x69, 0x67,
+	0x6e, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61,
+	0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x08, 0x55, 0x6e, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x64,
+	0x22, 0x98, 0x01, 0x0a, 0x0b, 0x56, 0x61, 0x72, 0x63, 0x68, 0x61, 0x72, 0x54, 0x79, 0x70, 0x65,
+	0x12, 0x12, 0x0a, 0x04, 0x53, 0x69, 0x7a, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04,
+	0x53, 0x69, 0x7a, 0x65, 0x12, 0x29, 0x0a, 0x09, 0x43, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65,
+	0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74,
+	0x2e, 0x50, 0x6f, 0x73, 0x52, 0x09, 0x43, 0x68, 0x61, 0x72, 0x61, 0x63, 0x74, 0x65, 0x72, 0x12,
+	0x25, 0x0a, 0x07, 0x56, 0x61, 0x72, 0x79, 0x69, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x07, 0x56,
+	0x61, 0x72, 0x79, 0x69, 0x6e, 0x67, 0x12, 0x23, 0x0a, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e,
+	0x50, 0x6f, 0x73, 0x52, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x22, 0xa1, 0x01, 0x0a, 0x10,
+	0x55, 0x6e, 0x69, 0x71, 0x75, 0x65, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x53, 0x70, 0x65, 0x63,
+	0x12, 0x22, 0x0a, 0x0c, 0x49, 0x73, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x4b, 0x65, 0x79,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x49, 0x73, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72,
+	0x79, 0x4b, 0x65, 0x79, 0x12, 0x25, 0x0a, 0x07, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50,
+	0x6f, 0x73, 0x52, 0x07, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x12, 0x1d, 0x0a, 0x03, 0x4b,
+	0x65, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73,
+	0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x03, 0x4b, 0x65, 0x79, 0x12, 0x23, 0x0a, 0x06, 0x55, 0x6e,
+	0x69, 0x71, 0x75, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c,
+	0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x06, 0x55, 0x6e, 0x69, 0x71, 0x75, 0x65, 0x22,
+	0x81, 0x01, 0x0a, 0x0f, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x53,
+	0x70, 0x65, 0x63, 0x12, 0x26, 0x0a, 0x04, 0x45, 0x78, 0x70, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x12, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x42, 0x69, 0x6e, 0x61, 0x72,
+	0x79, 0x45, 0x78, 0x70, 0x72, 0x52, 0x04, 0x45, 0x78, 0x70, 0x72, 0x12, 0x21, 0x0a, 0x05, 0x43,
+	0x68, 0x65, 0x63, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c,
+	0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x05, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x23,
+	0x0a, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b,
+	0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x06, 0x52, 0x50, 0x61,
+	0x72, 0x65, 0x6e, 0x22, 0xdf, 0x01, 0x0a, 0x10, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x12, 0x21, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e,
+	0x49, 0x64, 0x65, 0x6e, 0x74, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x2b, 0x0a, 0x0a, 0x43,
+	0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x0a, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x12, 0x3a, 0x0a, 0x0a, 0x55, 0x6e, 0x69, 0x71,
+	0x75, 0x65, 0x53, 0x70, 0x65, 0x63, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73,
+	0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x55, 0x6e, 0x69, 0x71, 0x75, 0x65, 0x43, 0x6f, 0x6c, 0x75,
+	0x6d, 0x6e, 0x53, 0x70, 0x65, 0x63, 0x48, 0x00, 0x52, 0x0a, 0x55, 0x6e, 0x69, 0x71, 0x75, 0x65,
+	0x53, 0x70, 0x65, 0x63, 0x12, 0x37, 0x0a, 0x09, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x53, 0x70, 0x65,
+	0x63, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74,
+	0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x53, 0x70, 0x65, 0x63,
+	0x48, 0x00, 0x52, 0x09, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x53, 0x70, 0x65, 0x63, 0x42, 0x06, 0x0a,
+	0x04, 0x53, 0x70, 0x65, 0x63, 0x22, 0x83, 0x01, 0x0a, 0x14, 0x4d, 0x79, 0x44, 0x61, 0x74, 0x61,
+	0x54, 0x79, 0x70, 0x65, 0x44, 0x65, 0x63, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x4d,
+	0x0a, 0x19, 0x4d, 0x79, 0x44, 0x61, 0x74, 0x61, 0x54, 0x79, 0x70, 0x65, 0x44, 0x65, 0x63, 0x6f,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x49, 0x64, 0x65, 0x6e, 0x74,
+	0x48, 0x00, 0x52, 0x19, 0x4d, 0x79, 0x44, 0x61, 0x74, 0x61, 0x54, 0x79, 0x70, 0x65, 0x44, 0x65,
+	0x63, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x42, 0x1c, 0x0a,
+	0x1a, 0x4d, 0x79, 0x44, 0x61, 0x74, 0x61, 0x54, 0x79, 0x70, 0x65, 0x44, 0x65, 0x63, 0x6f, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6c, 0x61, 0x75, 0x73, 0x65, 0x22, 0xad, 0x03, 0x0a, 0x09,
+	0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x44, 0x65, 0x66, 0x12, 0x21, 0x0a, 0x04, 0x4e, 0x61, 0x6d,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74,
+	0x2e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x2b, 0x0a, 0x07,
+	0x49, 0x6e, 0x74, 0x44, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e,
+	0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x49, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x48, 0x00,
+	0x52, 0x07, 0x49, 0x6e, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12, 0x37, 0x0a, 0x0b, 0x56, 0x61, 0x72,
+	0x63, 0x68, 0x61, 0x72, 0x44, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13,
+	0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x56, 0x61, 0x72, 0x63, 0x68, 0x61, 0x72, 0x54,
+	0x79, 0x70, 0x65, 0x48, 0x00, 0x52, 0x0b, 0x56, 0x61, 0x72, 0x63, 0x68, 0x61, 0x72, 0x44, 0x61,
+	0x74, 0x61, 0x12, 0x3a, 0x0a, 0x0d, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x44, 0x65, 0x66, 0x61,
+	0x75, 0x6c, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x71, 0x6c, 0x61,
+	0x73, 0x74, 0x2e, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x55, 0x6e, 0x69, 0x74, 0x48, 0x01, 0x52,
+	0x0d, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x12, 0x34,
+	0x0a, 0x0b, 0x4c, 0x6f, 0x6e, 0x67, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x18, 0x09, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x4c, 0x6f, 0x6e,
+	0x67, 0x55, 0x6e, 0x69, 0x74, 0x48, 0x01, 0x52, 0x0b, 0x4c, 0x6f, 0x6e, 0x67, 0x44, 0x65, 0x66,
+	0x61, 0x75, 0x6c, 0x74, 0x12, 0x52, 0x0a, 0x15, 0x4d, 0x79, 0x44, 0x61, 0x74, 0x61, 0x54, 0x79,
+	0x70, 0x65, 0x44, 0x65, 0x63, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x0e, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x4d, 0x79, 0x44,
+	0x61, 0x74, 0x61, 0x54, 0x79, 0x70, 0x65, 0x44, 0x65, 0x63, 0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x15, 0x4d, 0x79, 0x44, 0x61, 0x74, 0x61, 0x54, 0x79, 0x70, 0x65, 0x44, 0x65, 0x63,
+	0x6f, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x3a, 0x0a, 0x0b, 0x43, 0x6f, 0x6e, 0x73,
+	0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x0f, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e,
+	0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x43, 0x6f, 0x6e,
+	0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x52, 0x0b, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61,
+	0x69, 0x6e, 0x74, 0x73, 0x42, 0x0a, 0x0a, 0x08, 0x44, 0x61, 0x74, 0x61, 0x54, 0x79, 0x70, 0x65,
+	0x42, 0x09, 0x0a, 0x07, 0x44, 0x65, 0x66, 0x61, 0x75, 0x6c, 0x74, 0x22, 0x8d, 0x01, 0x0a, 0x10,
+	0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x45, 0x78, 0x70, 0x72,
+	0x12, 0x2b, 0x0a, 0x09, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x49, 0x64, 0x65,
+	0x6e, 0x74, 0x52, 0x09, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x27, 0x0a,
+	0x07, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d,
+	0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x52, 0x07, 0x43,
+	0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x73, 0x12, 0x23, 0x0a, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e,
+	0x50, 0x6f, 0x73, 0x52, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x22, 0xa0, 0x01, 0x0a, 0x1a,
+	0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x54, 0x61, 0x62, 0x6c, 0x65,
+	0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x07, 0x46, 0x6f,
+	0x72, 0x65, 0x69, 0x67, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71,
+	0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x07, 0x46, 0x6f, 0x72, 0x65, 0x69, 0x67,
+	0x6e, 0x12, 0x27, 0x0a, 0x07, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x49, 0x64, 0x65, 0x6e,
+	0x74, 0x52, 0x07, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x73, 0x12, 0x32, 0x0a, 0x07, 0x4b, 0x65,
+	0x79, 0x45, 0x78, 0x70, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x71,
+	0x6c, 0x61, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x4b, 0x65,
+	0x79, 0x45, 0x78, 0x70, 0x72, 0x52, 0x07, 0x4b, 0x65, 0x79, 0x45, 0x78, 0x70, 0x72, 0x22, 0x86,
+	0x01, 0x0a, 0x14, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x6e,
+	0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x12, 0x21, 0x0a, 0x05, 0x43, 0x68, 0x65, 0x63, 0x6b,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e,
+	0x50, 0x6f, 0x73, 0x52, 0x05, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x12, 0x23, 0x0a, 0x06, 0x52, 0x50,
+	0x61, 0x72, 0x65, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x73, 0x71, 0x6c,
+	0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x06, 0x52, 0x50, 0x61, 0x72, 0x65, 0x6e, 0x12,
+	0x26, 0x0a, 0x04, 0x45, 0x78, 0x70, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e,
+	0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x42, 0x69, 0x6e, 0x61, 0x72, 0x79, 0x45, 0x78, 0x70,
+	0x72, 0x52, 0x04, 0x45, 0x78, 0x70, 0x72, 0x22, 0xf3, 0x01, 0x0a, 0x0f, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x12, 0x2b, 0x0a, 0x0a, 0x43,
+	0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0b, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x0a, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x12, 0x21, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e,
+	0x49, 0x64, 0x65, 0x6e, 0x74, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x4a, 0x0a, 0x0d, 0x53,
+	0x70, 0x65, 0x63, 0x52, 0x65, 0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x22, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x52, 0x65, 0x66, 0x65,
+	0x72, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x73,
+	0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x48, 0x00, 0x52, 0x0d, 0x53, 0x70, 0x65, 0x63, 0x52, 0x65,
+	0x66, 0x65, 0x72, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x3c, 0x0a, 0x09, 0x53, 0x70, 0x65, 0x63, 0x43,
+	0x68, 0x65, 0x63, 0x6b, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x73, 0x71, 0x6c,
+	0x61, 0x73, 0x74, 0x2e, 0x43, 0x68, 0x65, 0x63, 0x6b, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x48, 0x00, 0x52, 0x09, 0x53, 0x70, 0x65, 0x63,
+	0x43, 0x68, 0x65, 0x63, 0x6b, 0x42, 0x06, 0x0a, 0x04, 0x53, 0x70, 0x65, 0x63, 0x22, 0xb8, 0x01,
+	0x0a, 0x0c, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x3f,
+	0x0a, 0x10, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x44, 0x65, 0x66, 0x45, 0x6c, 0x65, 0x6d, 0x65,
+	0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73,
+	0x74, 0x2e, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x44, 0x65, 0x66, 0x48, 0x00, 0x52, 0x10, 0x43,
+	0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x44, 0x65, 0x66, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12,
+	0x51, 0x0a, 0x16, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61, 0x69,
+	0x6e, 0x74, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x17, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x48, 0x00, 0x52, 0x16, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x74, 0x45, 0x6c, 0x65, 0x6d, 0x65,
+	0x6e, 0x74, 0x42, 0x14, 0x0a, 0x12, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x45, 0x6c, 0x65, 0x6d, 0x65,
+	0x6e, 0x74, 0x43, 0x6c, 0x61, 0x75, 0x73, 0x65, 0x22, 0x5f, 0x0a, 0x0b, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x10, 0x54, 0x61, 0x62, 0x6c, 0x65,
+	0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x0d, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x49, 0x64, 0x65, 0x6e, 0x74,
+	0x48, 0x00, 0x52, 0x10, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x49,
+	0x64, 0x65, 0x6e, 0x74, 0x42, 0x13, 0x0a, 0x11, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x4f, 0x70, 0x74,
+	0x69, 0x6f, 0x6e, 0x43, 0x6c, 0x61, 0x75, 0x73, 0x65, 0x22, 0xfc, 0x01, 0x0a, 0x0f, 0x43, 0x72,
+	0x65, 0x61, 0x74, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x53, 0x74, 0x6d, 0x74, 0x12, 0x23, 0x0a,
+	0x06, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e,
+	0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x50, 0x6f, 0x73, 0x52, 0x06, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x12, 0x29, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x15, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x75,
+	0x6e, 0x64, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x30, 0x0a,
+	0x08, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x14, 0x2e, 0x73, 0x71, 0x6c, 0x61, 0x73, 0x74, 0x2e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x45, 0x6c,
+	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x08, 0x45, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12,
+	0x1a, 0x0a, 0x08, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x4e,
+	0x6f, 0x74, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09,
+	0x4e, 0x6f, 0x74, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x12, 0x2d, 0x0a, 0x07, 0x4f, 0x70, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73, 0x71, 0x6c,
+	0x61, 0x73, 0x74, 0x2e, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x07, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2a, 0xbc, 0x01, 0x0a, 0x0c, 0x4f, 0x70, 0x65,
+	0x72, 0x61, 0x74, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65, 0x12, 0x08, 0x0a, 0x04, 0x50, 0x6c, 0x75,
+	0x73, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x69, 0x6e, 0x75, 0x73, 0x10, 0x01, 0x12, 0x0c,
+	0x0a, 0x08, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x70, 0x6c, 0x79, 0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06,
+	0x44, 0x69, 0x76, 0x69, 0x64, 0x65, 0x10, 0x03, 0x12, 0x0b, 0x0a, 0x07, 0x4d, 0x6f, 0x64, 0x75,
+	0x6c, 0x75, 0x73, 0x10, 0x04, 0x12, 0x06, 0x0a, 0x02, 0x47, 0x74, 0x10, 0x05, 0x12, 0x06, 0x0a,
+	0x02, 0x4c, 0x74, 0x10, 0x06, 0x12, 0x08, 0x0a, 0x04, 0x47, 0x74, 0x45, 0x71, 0x10, 0x07, 0x12,
+	0x08, 0x0a, 0x04, 0x4c, 0x74, 0x45, 0x71, 0x10, 0x08, 0x12, 0x06, 0x0a, 0x02, 0x45, 0x71, 0x10,
+	0x09, 0x12, 0x09, 0x0a, 0x05, 0x4e, 0x6f, 0x74, 0x45, 0x71, 0x10, 0x0a, 0x12, 0x07, 0x0a, 0x03,
+	0x41, 0x6e, 0x64, 0x10, 0x0b, 0x12, 0x06, 0x0a, 0x02, 0x4f, 0x72, 0x10, 0x0c, 0x12, 0x07, 0x0a,
+	0x03, 0x4e, 0x6f, 0x74, 0x10, 0x0d, 0x12, 0x08, 0x0a, 0x04, 0x4c, 0x69, 0x6b, 0x65, 0x10, 0x0e,
+	0x12, 0x0b, 0x0a, 0x07, 0x4e, 0x6f, 0x74, 0x4c, 0x69, 0x6b, 0x65, 0x10, 0x0f, 0x12, 0x08, 0x0a,
+	0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x10, 0x2a, 0x48, 0x0a, 0x07, 0x41, 0x67, 0x67, 0x54, 0x79,
+	0x70, 0x65, 0x12, 0x0e, 0x0a, 0x0a, 0x55, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x41, 0x67, 0x67,
+	0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4d, 0x41, 0x58, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x4d,
+	0x49, 0x4e, 0x10, 0x02, 0x12, 0x09, 0x0a, 0x05, 0x43, 0x4f, 0x55, 0x4e, 0x54, 0x10, 0x03, 0x12,
+	0x07, 0x0a, 0x03, 0x53, 0x55, 0x4d, 0x10, 0x04, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x56, 0x47, 0x10,
+	0x05, 0x2a, 0x37, 0x0a, 0x0f, 0x53, 0x65, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x09, 0x0a, 0x05, 0x55, 0x6e, 0x69, 0x6f, 0x6e, 0x10, 0x00, 0x12,
+	0x0d, 0x0a, 0x09, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x73, 0x65, 0x63, 0x74, 0x10, 0x01, 0x12, 0x0a,
+	0x0a, 0x06, 0x45, 0x78, 0x63, 0x65, 0x70, 0x74, 0x10, 0x02, 0x2a, 0x79, 0x0a, 0x11, 0x4a, 0x6f,
+	0x69, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x43, 0x6f, 0x6e, 0x64, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x09, 0x0a, 0x05, 0x49, 0x4e, 0x4e, 0x45, 0x52, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x4c, 0x45,
+	0x46, 0x54, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x49, 0x47, 0x48, 0x54, 0x10, 0x02, 0x12,
+	0x08, 0x0a, 0x04, 0x46, 0x55, 0x4c, 0x4c, 0x10, 0x03, 0x12, 0x0d, 0x0a, 0x09, 0x4c, 0x45, 0x46,
+	0x54, 0x4f, 0x55, 0x54, 0x45, 0x52, 0x10, 0x04, 0x12, 0x0e, 0x0a, 0x0a, 0x52, 0x49, 0x47, 0x48,
+	0x54, 0x4f, 0x55, 0x54, 0x45, 0x52, 0x10, 0x05, 0x12, 0x0d, 0x0a, 0x09, 0x46, 0x55, 0x4c, 0x4c,
+	0x4f, 0x55, 0x54, 0x45, 0x52, 0x10, 0x06, 0x12, 0x0c, 0x0a, 0x08, 0x49, 0x4d, 0x50, 0x4c, 0x49,
+	0x43, 0x49, 0x54, 0x10, 0x07, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2f, 0x78, 0x61, 0x73, 0x74, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2703,137 +3976,195 @@ func file_sqlast_proto_rawDescGZIP() []byte {
 }
 
 var file_sqlast_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_sqlast_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_sqlast_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
 var file_sqlast_proto_goTypes = []interface{}{
-	(OperatorType)(0),               // 0: sqlast.OperatorType
-	(AggType)(0),                    // 1: sqlast.AggType
-	(SetOperatorType)(0),            // 2: sqlast.SetOperatorType
-	(JoinTypeCondition)(0),          // 3: sqlast.JoinTypeCondition
-	(*Pos)(nil),                     // 4: sqlast.Pos
-	(*Ident)(nil),                   // 5: sqlast.Ident
-	(*CompoundIdent)(nil),           // 6: sqlast.CompoundIdent
-	(*Operator)(nil),                // 7: sqlast.Operator
-	(*SetOperator)(nil),             // 8: sqlast.SetOperator
-	(*JoinType)(nil),                // 9: sqlast.JoinType
-	(*StringUnit)(nil),              // 10: sqlast.StringUnit
-	(*DoubleUnit)(nil),              // 11: sqlast.DoubleUnit
-	(*LongUnit)(nil),                // 12: sqlast.LongUnit
-	(*BinaryExpr)(nil),              // 13: sqlast.BinaryExpr
-	(*UnaryExpr)(nil),               // 14: sqlast.UnaryExpr
-	(*ResultMessage)(nil),           // 15: sqlast.ResultMessage
-	(*CaseExpr)(nil),                // 16: sqlast.CaseExpr
-	(*AggFunction)(nil),             // 17: sqlast.AggFunction
-	(*JoinCondition)(nil),           // 18: sqlast.JoinCondition
-	(*QualifiedJoin)(nil),           // 19: sqlast.QualifiedJoin
-	(*OrderByExpr)(nil),             // 20: sqlast.OrderByExpr
-	(*LimitExpr)(nil),               // 21: sqlast.LimitExpr
-	(*SQLSelectItem)(nil),           // 22: sqlast.SQLSelectItem
-	(*Nested)(nil),                  // 23: sqlast.Nested
-	(*InSubQuery)(nil),              // 24: sqlast.InSubQuery
-	(*SQLSelect)(nil),               // 25: sqlast.SQLSelect
-	(*SetOperationExpr)(nil),        // 26: sqlast.SetOperationExpr
-	(*QueryStmt)(nil),               // 27: sqlast.QueryStmt
-	(*AggFunction_ArgsMessage)(nil), // 28: sqlast.AggFunction.ArgsMessage
-	(*QueryStmt_CTE)(nil),           // 29: sqlast.QueryStmt.CTE
+	(OperatorType)(0),                  // 0: sqlast.OperatorType
+	(AggType)(0),                       // 1: sqlast.AggType
+	(SetOperatorType)(0),               // 2: sqlast.SetOperatorType
+	(JoinTypeCondition)(0),             // 3: sqlast.JoinTypeCondition
+	(*Pos)(nil),                        // 4: sqlast.Pos
+	(*Ident)(nil),                      // 5: sqlast.Ident
+	(*CompoundIdent)(nil),              // 6: sqlast.CompoundIdent
+	(*Operator)(nil),                   // 7: sqlast.Operator
+	(*SetOperator)(nil),                // 8: sqlast.SetOperator
+	(*JoinType)(nil),                   // 9: sqlast.JoinType
+	(*StringUnit)(nil),                 // 10: sqlast.StringUnit
+	(*DoubleUnit)(nil),                 // 11: sqlast.DoubleUnit
+	(*LongUnit)(nil),                   // 12: sqlast.LongUnit
+	(*BinaryExpr)(nil),                 // 13: sqlast.BinaryExpr
+	(*UnaryExpr)(nil),                  // 14: sqlast.UnaryExpr
+	(*ResultMessage)(nil),              // 15: sqlast.ResultMessage
+	(*CaseExpr)(nil),                   // 16: sqlast.CaseExpr
+	(*AggFunction)(nil),                // 17: sqlast.AggFunction
+	(*JoinCondition)(nil),              // 18: sqlast.JoinCondition
+	(*QualifiedJoin)(nil),              // 19: sqlast.QualifiedJoin
+	(*OrderByExpr)(nil),                // 20: sqlast.OrderByExpr
+	(*LimitExpr)(nil),                  // 21: sqlast.LimitExpr
+	(*SQLSelectItem)(nil),              // 22: sqlast.SQLSelectItem
+	(*Nested)(nil),                     // 23: sqlast.Nested
+	(*InSubQuery)(nil),                 // 24: sqlast.InSubQuery
+	(*SQLSelect)(nil),                  // 25: sqlast.SQLSelect
+	(*SetOperationExpr)(nil),           // 26: sqlast.SetOperationExpr
+	(*QueryStmt)(nil),                  // 27: sqlast.QueryStmt
+	(*IntType)(nil),                    // 28: sqlast.IntType
+	(*VarcharType)(nil),                // 29: sqlast.VarcharType
+	(*UniqueColumnSpec)(nil),           // 30: sqlast.UniqueColumnSpec
+	(*CheckColumnSpec)(nil),            // 31: sqlast.CheckColumnSpec
+	(*ColumnConstraint)(nil),           // 32: sqlast.ColumnConstraint
+	(*MyDataTypeDecoration)(nil),       // 33: sqlast.MyDataTypeDecoration
+	(*ColumnDef)(nil),                  // 34: sqlast.ColumnDef
+	(*ReferenceKeyExpr)(nil),           // 35: sqlast.ReferenceKeyExpr
+	(*ReferentialTableConstraint)(nil), // 36: sqlast.ReferentialTableConstraint
+	(*CheckTableConstraint)(nil),       // 37: sqlast.CheckTableConstraint
+	(*TableConstraint)(nil),            // 38: sqlast.TableConstraint
+	(*TableElement)(nil),               // 39: sqlast.TableElement
+	(*TableOption)(nil),                // 40: sqlast.TableOption
+	(*CreateTableStmt)(nil),            // 41: sqlast.CreateTableStmt
+	(*AggFunction_ArgsMessage)(nil),    // 42: sqlast.AggFunction.ArgsMessage
+	(*QueryStmt_CTE)(nil),              // 43: sqlast.QueryStmt.CTE
 }
 var file_sqlast_proto_depIdxs = []int32{
-	4,  // 0: sqlast.Ident.From:type_name -> sqlast.Pos
-	4,  // 1: sqlast.Ident.To:type_name -> sqlast.Pos
-	5,  // 2: sqlast.CompoundIdent.Idents:type_name -> sqlast.Ident
-	0,  // 3: sqlast.Operator.Type:type_name -> sqlast.OperatorType
-	4,  // 4: sqlast.Operator.From:type_name -> sqlast.Pos
-	4,  // 5: sqlast.Operator.To:type_name -> sqlast.Pos
-	2,  // 6: sqlast.SetOperator.Type:type_name -> sqlast.SetOperatorType
-	4,  // 7: sqlast.SetOperator.From:type_name -> sqlast.Pos
-	4,  // 8: sqlast.SetOperator.To:type_name -> sqlast.Pos
-	3,  // 9: sqlast.JoinType.Condition:type_name -> sqlast.JoinTypeCondition
-	4,  // 10: sqlast.JoinType.From:type_name -> sqlast.Pos
-	4,  // 11: sqlast.JoinType.To:type_name -> sqlast.Pos
-	4,  // 12: sqlast.StringUnit.From:type_name -> sqlast.Pos
-	4,  // 13: sqlast.StringUnit.To:type_name -> sqlast.Pos
-	4,  // 14: sqlast.DoubleUnit.From:type_name -> sqlast.Pos
-	4,  // 15: sqlast.DoubleUnit.To:type_name -> sqlast.Pos
-	4,  // 16: sqlast.LongUnit.From:type_name -> sqlast.Pos
-	4,  // 17: sqlast.LongUnit.To:type_name -> sqlast.Pos
-	6,  // 18: sqlast.BinaryExpr.LeftIdents:type_name -> sqlast.CompoundIdent
-	13, // 19: sqlast.BinaryExpr.LeftBinary:type_name -> sqlast.BinaryExpr
-	10, // 20: sqlast.BinaryExpr.LeftSingleQuoted:type_name -> sqlast.StringUnit
-	11, // 21: sqlast.BinaryExpr.LeftDouble:type_name -> sqlast.DoubleUnit
-	12, // 22: sqlast.BinaryExpr.LeftLong:type_name -> sqlast.LongUnit
-	7,  // 23: sqlast.BinaryExpr.Op:type_name -> sqlast.Operator
-	6,  // 24: sqlast.BinaryExpr.RightIdents:type_name -> sqlast.CompoundIdent
-	13, // 25: sqlast.BinaryExpr.RightBinary:type_name -> sqlast.BinaryExpr
-	24, // 26: sqlast.BinaryExpr.QueryValue:type_name -> sqlast.InSubQuery
-	10, // 27: sqlast.BinaryExpr.SingleQuotedString:type_name -> sqlast.StringUnit
-	11, // 28: sqlast.BinaryExpr.DoubleValue:type_name -> sqlast.DoubleUnit
-	12, // 29: sqlast.BinaryExpr.LongValue:type_name -> sqlast.LongUnit
-	4,  // 30: sqlast.UnaryExpr.From:type_name -> sqlast.Pos
-	7,  // 31: sqlast.UnaryExpr.Op:type_name -> sqlast.Operator
-	13, // 32: sqlast.UnaryExpr.Expr:type_name -> sqlast.BinaryExpr
-	5,  // 33: sqlast.ResultMessage.ResultIdent:type_name -> sqlast.Ident
-	14, // 34: sqlast.ResultMessage.ResultUnary:type_name -> sqlast.UnaryExpr
-	4,  // 35: sqlast.CaseExpr.Case:type_name -> sqlast.Pos
-	4,  // 36: sqlast.CaseExpr.CaseEnd:type_name -> sqlast.Pos
-	7,  // 37: sqlast.CaseExpr.Operand:type_name -> sqlast.Operator
-	13, // 38: sqlast.CaseExpr.Conditions:type_name -> sqlast.BinaryExpr
-	15, // 39: sqlast.CaseExpr.Results:type_name -> sqlast.ResultMessage
-	5,  // 40: sqlast.CaseExpr.ElseResult:type_name -> sqlast.Ident
-	1,  // 41: sqlast.AggFunction.TypeName:type_name -> sqlast.AggType
-	28, // 42: sqlast.AggFunction.RestArgs:type_name -> sqlast.AggFunction.ArgsMessage
-	4,  // 43: sqlast.AggFunction.From:type_name -> sqlast.Pos
-	4,  // 44: sqlast.AggFunction.To:type_name -> sqlast.Pos
-	13, // 45: sqlast.JoinCondition.SearchCondition:type_name -> sqlast.BinaryExpr
-	4,  // 46: sqlast.JoinCondition.On:type_name -> sqlast.Pos
-	6,  // 47: sqlast.QualifiedJoin.Name:type_name -> sqlast.CompoundIdent
-	5,  // 48: sqlast.QualifiedJoin.AliasName:type_name -> sqlast.Ident
-	19, // 49: sqlast.QualifiedJoin.LeftElement:type_name -> sqlast.QualifiedJoin
-	9,  // 50: sqlast.QualifiedJoin.TypeCondition:type_name -> sqlast.JoinType
-	18, // 51: sqlast.QualifiedJoin.Spec:type_name -> sqlast.JoinCondition
-	6,  // 52: sqlast.OrderByExpr.Expr:type_name -> sqlast.CompoundIdent
-	4,  // 53: sqlast.OrderByExpr.OrderingPos:type_name -> sqlast.Pos
-	4,  // 54: sqlast.LimitExpr.AllPos:type_name -> sqlast.Pos
-	4,  // 55: sqlast.LimitExpr.Limit:type_name -> sqlast.Pos
-	12, // 56: sqlast.LimitExpr.LimitValue:type_name -> sqlast.LongUnit
-	12, // 57: sqlast.LimitExpr.OffsetValue:type_name -> sqlast.LongUnit
-	6,  // 58: sqlast.SQLSelectItem.FieldIdents:type_name -> sqlast.CompoundIdent
-	17, // 59: sqlast.SQLSelectItem.FieldFunction:type_name -> sqlast.AggFunction
-	16, // 60: sqlast.SQLSelectItem.FieldCase:type_name -> sqlast.CaseExpr
-	23, // 61: sqlast.SQLSelectItem.FieldNested:type_name -> sqlast.Nested
-	14, // 62: sqlast.SQLSelectItem.FieldUnary:type_name -> sqlast.UnaryExpr
-	13, // 63: sqlast.SQLSelectItem.FieldBinary:type_name -> sqlast.BinaryExpr
-	5,  // 64: sqlast.SQLSelectItem.AliasName:type_name -> sqlast.Ident
-	22, // 65: sqlast.Nested.AST:type_name -> sqlast.SQLSelectItem
-	4,  // 66: sqlast.Nested.LParen:type_name -> sqlast.Pos
-	4,  // 67: sqlast.Nested.RParen:type_name -> sqlast.Pos
-	6,  // 68: sqlast.InSubQuery.Expr:type_name -> sqlast.CompoundIdent
-	27, // 69: sqlast.InSubQuery.SubQuery:type_name -> sqlast.QueryStmt
-	4,  // 70: sqlast.InSubQuery.RParen:type_name -> sqlast.Pos
-	22, // 71: sqlast.SQLSelect.Projection:type_name -> sqlast.SQLSelectItem
-	19, // 72: sqlast.SQLSelect.FromClause:type_name -> sqlast.QualifiedJoin
-	24, // 73: sqlast.SQLSelect.InQuery:type_name -> sqlast.InSubQuery
-	13, // 74: sqlast.SQLSelect.BinExpr:type_name -> sqlast.BinaryExpr
-	6,  // 75: sqlast.SQLSelect.GroupByClause:type_name -> sqlast.CompoundIdent
-	13, // 76: sqlast.SQLSelect.HavingClause:type_name -> sqlast.BinaryExpr
-	4,  // 77: sqlast.SQLSelect.Select:type_name -> sqlast.Pos
-	25, // 78: sqlast.SetOperationExpr.LeftSide:type_name -> sqlast.SQLSelect
-	8,  // 79: sqlast.SetOperationExpr.Op:type_name -> sqlast.SetOperator
-	26, // 80: sqlast.SetOperationExpr.RightSide:type_name -> sqlast.SetOperationExpr
-	4,  // 81: sqlast.QueryStmt.With:type_name -> sqlast.Pos
-	29, // 82: sqlast.QueryStmt.CTEs:type_name -> sqlast.QueryStmt.CTE
-	26, // 83: sqlast.QueryStmt.Body:type_name -> sqlast.SetOperationExpr
-	20, // 84: sqlast.QueryStmt.OrderBy:type_name -> sqlast.OrderByExpr
-	21, // 85: sqlast.QueryStmt.LimitExpression:type_name -> sqlast.LimitExpr
-	6,  // 86: sqlast.AggFunction.ArgsMessage.FieldIdents:type_name -> sqlast.CompoundIdent
-	17, // 87: sqlast.AggFunction.ArgsMessage.FieldFunction:type_name -> sqlast.AggFunction
-	16, // 88: sqlast.AggFunction.ArgsMessage.FieldCase:type_name -> sqlast.CaseExpr
-	5,  // 89: sqlast.QueryStmt.CTE.AliasName:type_name -> sqlast.Ident
-	27, // 90: sqlast.QueryStmt.CTE.Query:type_name -> sqlast.QueryStmt
-	4,  // 91: sqlast.QueryStmt.CTE.RParen:type_name -> sqlast.Pos
-	92, // [92:92] is the sub-list for method output_type
-	92, // [92:92] is the sub-list for method input_type
-	92, // [92:92] is the sub-list for extension type_name
-	92, // [92:92] is the sub-list for extension extendee
-	0,  // [0:92] is the sub-list for field type_name
+	4,   // 0: sqlast.Ident.From:type_name -> sqlast.Pos
+	4,   // 1: sqlast.Ident.To:type_name -> sqlast.Pos
+	5,   // 2: sqlast.CompoundIdent.Idents:type_name -> sqlast.Ident
+	0,   // 3: sqlast.Operator.Type:type_name -> sqlast.OperatorType
+	4,   // 4: sqlast.Operator.From:type_name -> sqlast.Pos
+	4,   // 5: sqlast.Operator.To:type_name -> sqlast.Pos
+	2,   // 6: sqlast.SetOperator.Type:type_name -> sqlast.SetOperatorType
+	4,   // 7: sqlast.SetOperator.From:type_name -> sqlast.Pos
+	4,   // 8: sqlast.SetOperator.To:type_name -> sqlast.Pos
+	3,   // 9: sqlast.JoinType.Condition:type_name -> sqlast.JoinTypeCondition
+	4,   // 10: sqlast.JoinType.From:type_name -> sqlast.Pos
+	4,   // 11: sqlast.JoinType.To:type_name -> sqlast.Pos
+	4,   // 12: sqlast.StringUnit.From:type_name -> sqlast.Pos
+	4,   // 13: sqlast.StringUnit.To:type_name -> sqlast.Pos
+	4,   // 14: sqlast.DoubleUnit.From:type_name -> sqlast.Pos
+	4,   // 15: sqlast.DoubleUnit.To:type_name -> sqlast.Pos
+	4,   // 16: sqlast.LongUnit.From:type_name -> sqlast.Pos
+	4,   // 17: sqlast.LongUnit.To:type_name -> sqlast.Pos
+	6,   // 18: sqlast.BinaryExpr.LeftIdents:type_name -> sqlast.CompoundIdent
+	13,  // 19: sqlast.BinaryExpr.LeftBinary:type_name -> sqlast.BinaryExpr
+	10,  // 20: sqlast.BinaryExpr.LeftSingleQuoted:type_name -> sqlast.StringUnit
+	11,  // 21: sqlast.BinaryExpr.LeftDouble:type_name -> sqlast.DoubleUnit
+	12,  // 22: sqlast.BinaryExpr.LeftLong:type_name -> sqlast.LongUnit
+	7,   // 23: sqlast.BinaryExpr.Op:type_name -> sqlast.Operator
+	6,   // 24: sqlast.BinaryExpr.RightIdents:type_name -> sqlast.CompoundIdent
+	13,  // 25: sqlast.BinaryExpr.RightBinary:type_name -> sqlast.BinaryExpr
+	24,  // 26: sqlast.BinaryExpr.QueryValue:type_name -> sqlast.InSubQuery
+	10,  // 27: sqlast.BinaryExpr.SingleQuotedString:type_name -> sqlast.StringUnit
+	11,  // 28: sqlast.BinaryExpr.DoubleValue:type_name -> sqlast.DoubleUnit
+	12,  // 29: sqlast.BinaryExpr.LongValue:type_name -> sqlast.LongUnit
+	4,   // 30: sqlast.UnaryExpr.From:type_name -> sqlast.Pos
+	7,   // 31: sqlast.UnaryExpr.Op:type_name -> sqlast.Operator
+	13,  // 32: sqlast.UnaryExpr.Expr:type_name -> sqlast.BinaryExpr
+	5,   // 33: sqlast.ResultMessage.ResultIdent:type_name -> sqlast.Ident
+	14,  // 34: sqlast.ResultMessage.ResultUnary:type_name -> sqlast.UnaryExpr
+	4,   // 35: sqlast.CaseExpr.Case:type_name -> sqlast.Pos
+	4,   // 36: sqlast.CaseExpr.CaseEnd:type_name -> sqlast.Pos
+	7,   // 37: sqlast.CaseExpr.Operand:type_name -> sqlast.Operator
+	13,  // 38: sqlast.CaseExpr.Conditions:type_name -> sqlast.BinaryExpr
+	15,  // 39: sqlast.CaseExpr.Results:type_name -> sqlast.ResultMessage
+	5,   // 40: sqlast.CaseExpr.ElseResult:type_name -> sqlast.Ident
+	1,   // 41: sqlast.AggFunction.TypeName:type_name -> sqlast.AggType
+	42,  // 42: sqlast.AggFunction.RestArgs:type_name -> sqlast.AggFunction.ArgsMessage
+	4,   // 43: sqlast.AggFunction.From:type_name -> sqlast.Pos
+	4,   // 44: sqlast.AggFunction.To:type_name -> sqlast.Pos
+	13,  // 45: sqlast.JoinCondition.SearchCondition:type_name -> sqlast.BinaryExpr
+	4,   // 46: sqlast.JoinCondition.On:type_name -> sqlast.Pos
+	6,   // 47: sqlast.QualifiedJoin.Name:type_name -> sqlast.CompoundIdent
+	5,   // 48: sqlast.QualifiedJoin.AliasName:type_name -> sqlast.Ident
+	19,  // 49: sqlast.QualifiedJoin.LeftElement:type_name -> sqlast.QualifiedJoin
+	9,   // 50: sqlast.QualifiedJoin.TypeCondition:type_name -> sqlast.JoinType
+	18,  // 51: sqlast.QualifiedJoin.Spec:type_name -> sqlast.JoinCondition
+	6,   // 52: sqlast.OrderByExpr.Expr:type_name -> sqlast.CompoundIdent
+	4,   // 53: sqlast.OrderByExpr.OrderingPos:type_name -> sqlast.Pos
+	4,   // 54: sqlast.LimitExpr.AllPos:type_name -> sqlast.Pos
+	4,   // 55: sqlast.LimitExpr.Limit:type_name -> sqlast.Pos
+	12,  // 56: sqlast.LimitExpr.LimitValue:type_name -> sqlast.LongUnit
+	12,  // 57: sqlast.LimitExpr.OffsetValue:type_name -> sqlast.LongUnit
+	6,   // 58: sqlast.SQLSelectItem.FieldIdents:type_name -> sqlast.CompoundIdent
+	17,  // 59: sqlast.SQLSelectItem.FieldFunction:type_name -> sqlast.AggFunction
+	16,  // 60: sqlast.SQLSelectItem.FieldCase:type_name -> sqlast.CaseExpr
+	23,  // 61: sqlast.SQLSelectItem.FieldNested:type_name -> sqlast.Nested
+	14,  // 62: sqlast.SQLSelectItem.FieldUnary:type_name -> sqlast.UnaryExpr
+	13,  // 63: sqlast.SQLSelectItem.FieldBinary:type_name -> sqlast.BinaryExpr
+	5,   // 64: sqlast.SQLSelectItem.AliasName:type_name -> sqlast.Ident
+	22,  // 65: sqlast.Nested.AST:type_name -> sqlast.SQLSelectItem
+	4,   // 66: sqlast.Nested.LParen:type_name -> sqlast.Pos
+	4,   // 67: sqlast.Nested.RParen:type_name -> sqlast.Pos
+	6,   // 68: sqlast.InSubQuery.Expr:type_name -> sqlast.CompoundIdent
+	27,  // 69: sqlast.InSubQuery.SubQuery:type_name -> sqlast.QueryStmt
+	4,   // 70: sqlast.InSubQuery.RParen:type_name -> sqlast.Pos
+	22,  // 71: sqlast.SQLSelect.Projection:type_name -> sqlast.SQLSelectItem
+	19,  // 72: sqlast.SQLSelect.FromClause:type_name -> sqlast.QualifiedJoin
+	24,  // 73: sqlast.SQLSelect.InQuery:type_name -> sqlast.InSubQuery
+	13,  // 74: sqlast.SQLSelect.BinExpr:type_name -> sqlast.BinaryExpr
+	6,   // 75: sqlast.SQLSelect.GroupByClause:type_name -> sqlast.CompoundIdent
+	13,  // 76: sqlast.SQLSelect.HavingClause:type_name -> sqlast.BinaryExpr
+	4,   // 77: sqlast.SQLSelect.Select:type_name -> sqlast.Pos
+	25,  // 78: sqlast.SetOperationExpr.LeftSide:type_name -> sqlast.SQLSelect
+	8,   // 79: sqlast.SetOperationExpr.Op:type_name -> sqlast.SetOperator
+	26,  // 80: sqlast.SetOperationExpr.RightSide:type_name -> sqlast.SetOperationExpr
+	4,   // 81: sqlast.QueryStmt.With:type_name -> sqlast.Pos
+	43,  // 82: sqlast.QueryStmt.CTEs:type_name -> sqlast.QueryStmt.CTE
+	26,  // 83: sqlast.QueryStmt.Body:type_name -> sqlast.SetOperationExpr
+	20,  // 84: sqlast.QueryStmt.OrderBy:type_name -> sqlast.OrderByExpr
+	21,  // 85: sqlast.QueryStmt.LimitExpression:type_name -> sqlast.LimitExpr
+	4,   // 86: sqlast.IntType.From:type_name -> sqlast.Pos
+	4,   // 87: sqlast.IntType.To:type_name -> sqlast.Pos
+	4,   // 88: sqlast.IntType.Unsigned:type_name -> sqlast.Pos
+	4,   // 89: sqlast.VarcharType.Character:type_name -> sqlast.Pos
+	4,   // 90: sqlast.VarcharType.Varying:type_name -> sqlast.Pos
+	4,   // 91: sqlast.VarcharType.RParen:type_name -> sqlast.Pos
+	4,   // 92: sqlast.UniqueColumnSpec.Primary:type_name -> sqlast.Pos
+	4,   // 93: sqlast.UniqueColumnSpec.Key:type_name -> sqlast.Pos
+	4,   // 94: sqlast.UniqueColumnSpec.Unique:type_name -> sqlast.Pos
+	13,  // 95: sqlast.CheckColumnSpec.Expr:type_name -> sqlast.BinaryExpr
+	4,   // 96: sqlast.CheckColumnSpec.Check:type_name -> sqlast.Pos
+	4,   // 97: sqlast.CheckColumnSpec.RParen:type_name -> sqlast.Pos
+	5,   // 98: sqlast.ColumnConstraint.Name:type_name -> sqlast.Ident
+	4,   // 99: sqlast.ColumnConstraint.Constraint:type_name -> sqlast.Pos
+	30,  // 100: sqlast.ColumnConstraint.UniqueSpec:type_name -> sqlast.UniqueColumnSpec
+	31,  // 101: sqlast.ColumnConstraint.CheckSpec:type_name -> sqlast.CheckColumnSpec
+	5,   // 102: sqlast.MyDataTypeDecoration.MyDataTypeDecorationIdent:type_name -> sqlast.Ident
+	5,   // 103: sqlast.ColumnDef.Name:type_name -> sqlast.Ident
+	28,  // 104: sqlast.ColumnDef.IntData:type_name -> sqlast.IntType
+	29,  // 105: sqlast.ColumnDef.VarcharData:type_name -> sqlast.VarcharType
+	10,  // 106: sqlast.ColumnDef.StringDefault:type_name -> sqlast.StringUnit
+	12,  // 107: sqlast.ColumnDef.LongDefault:type_name -> sqlast.LongUnit
+	33,  // 108: sqlast.ColumnDef.MyDataTypeDecorations:type_name -> sqlast.MyDataTypeDecoration
+	32,  // 109: sqlast.ColumnDef.Constraints:type_name -> sqlast.ColumnConstraint
+	5,   // 110: sqlast.ReferenceKeyExpr.TableName:type_name -> sqlast.Ident
+	5,   // 111: sqlast.ReferenceKeyExpr.Columns:type_name -> sqlast.Ident
+	4,   // 112: sqlast.ReferenceKeyExpr.RParen:type_name -> sqlast.Pos
+	4,   // 113: sqlast.ReferentialTableConstraint.Foreign:type_name -> sqlast.Pos
+	5,   // 114: sqlast.ReferentialTableConstraint.Columns:type_name -> sqlast.Ident
+	35,  // 115: sqlast.ReferentialTableConstraint.KeyExpr:type_name -> sqlast.ReferenceKeyExpr
+	4,   // 116: sqlast.CheckTableConstraint.Check:type_name -> sqlast.Pos
+	4,   // 117: sqlast.CheckTableConstraint.RParen:type_name -> sqlast.Pos
+	13,  // 118: sqlast.CheckTableConstraint.Expr:type_name -> sqlast.BinaryExpr
+	4,   // 119: sqlast.TableConstraint.Constraint:type_name -> sqlast.Pos
+	5,   // 120: sqlast.TableConstraint.Name:type_name -> sqlast.Ident
+	36,  // 121: sqlast.TableConstraint.SpecReference:type_name -> sqlast.ReferentialTableConstraint
+	37,  // 122: sqlast.TableConstraint.SpecCheck:type_name -> sqlast.CheckTableConstraint
+	34,  // 123: sqlast.TableElement.ColumnDefElement:type_name -> sqlast.ColumnDef
+	38,  // 124: sqlast.TableElement.TableConstraintElement:type_name -> sqlast.TableConstraint
+	5,   // 125: sqlast.TableOption.TableOptionIdent:type_name -> sqlast.Ident
+	4,   // 126: sqlast.CreateTableStmt.Create:type_name -> sqlast.Pos
+	6,   // 127: sqlast.CreateTableStmt.Name:type_name -> sqlast.CompoundIdent
+	39,  // 128: sqlast.CreateTableStmt.Elements:type_name -> sqlast.TableElement
+	40,  // 129: sqlast.CreateTableStmt.Options:type_name -> sqlast.TableOption
+	6,   // 130: sqlast.AggFunction.ArgsMessage.FieldIdents:type_name -> sqlast.CompoundIdent
+	17,  // 131: sqlast.AggFunction.ArgsMessage.FieldFunction:type_name -> sqlast.AggFunction
+	16,  // 132: sqlast.AggFunction.ArgsMessage.FieldCase:type_name -> sqlast.CaseExpr
+	5,   // 133: sqlast.QueryStmt.CTE.AliasName:type_name -> sqlast.Ident
+	27,  // 134: sqlast.QueryStmt.CTE.Query:type_name -> sqlast.QueryStmt
+	4,   // 135: sqlast.QueryStmt.CTE.RParen:type_name -> sqlast.Pos
+	136, // [136:136] is the sub-list for method output_type
+	136, // [136:136] is the sub-list for method input_type
+	136, // [136:136] is the sub-list for extension type_name
+	136, // [136:136] is the sub-list for extension extendee
+	0,   // [0:136] is the sub-list for field type_name
 }
 
 func init() { file_sqlast_proto_init() }
@@ -3131,7 +4462,7 @@ func file_sqlast_proto_init() {
 			}
 		}
 		file_sqlast_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AggFunction_ArgsMessage); i {
+			switch v := v.(*IntType); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3143,6 +4474,174 @@ func file_sqlast_proto_init() {
 			}
 		}
 		file_sqlast_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*VarcharType); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UniqueColumnSpec); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CheckColumnSpec); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ColumnConstraint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MyDataTypeDecoration); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ColumnDef); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ReferenceKeyExpr); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ReferentialTableConstraint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CheckTableConstraint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TableConstraint); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TableElement); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TableOption); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateTableStmt); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AggFunction_ArgsMessage); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_sqlast_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*QueryStmt_CTE); i {
 			case 0:
 				return &v.state
@@ -3184,7 +4683,31 @@ func file_sqlast_proto_init() {
 		(*SQLSelect_InQuery)(nil),
 		(*SQLSelect_BinExpr)(nil),
 	}
-	file_sqlast_proto_msgTypes[24].OneofWrappers = []interface{}{
+	file_sqlast_proto_msgTypes[28].OneofWrappers = []interface{}{
+		(*ColumnConstraint_UniqueSpec)(nil),
+		(*ColumnConstraint_CheckSpec)(nil),
+	}
+	file_sqlast_proto_msgTypes[29].OneofWrappers = []interface{}{
+		(*MyDataTypeDecoration_MyDataTypeDecorationIdent)(nil),
+	}
+	file_sqlast_proto_msgTypes[30].OneofWrappers = []interface{}{
+		(*ColumnDef_IntData)(nil),
+		(*ColumnDef_VarcharData)(nil),
+		(*ColumnDef_StringDefault)(nil),
+		(*ColumnDef_LongDefault)(nil),
+	}
+	file_sqlast_proto_msgTypes[34].OneofWrappers = []interface{}{
+		(*TableConstraint_SpecReference)(nil),
+		(*TableConstraint_SpecCheck)(nil),
+	}
+	file_sqlast_proto_msgTypes[35].OneofWrappers = []interface{}{
+		(*TableElement_ColumnDefElement)(nil),
+		(*TableElement_TableConstraintElement)(nil),
+	}
+	file_sqlast_proto_msgTypes[36].OneofWrappers = []interface{}{
+		(*TableOption_TableOptionIdent)(nil),
+	}
+	file_sqlast_proto_msgTypes[38].OneofWrappers = []interface{}{
 		(*AggFunction_ArgsMessage_FieldIdents)(nil),
 		(*AggFunction_ArgsMessage_FieldFunction)(nil),
 		(*AggFunction_ArgsMessage_FieldCase)(nil),
@@ -3195,7 +4718,7 @@ func file_sqlast_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_sqlast_proto_rawDesc,
 			NumEnums:      4,
-			NumMessages:   26,
+			NumMessages:   40,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

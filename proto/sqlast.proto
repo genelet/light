@@ -229,17 +229,122 @@ message SetOperationExpr {
 
 message QueryStmt {
 	Pos With = 1;
-
 	message CTE {
 		Ident AliasName = 1;
 		QueryStmt Query = 2;
 		Pos RParen = 3;
 	}
 	repeated CTE CTEs = 2;
-
 	SetOperationExpr Body = 4;
-
 	repeated OrderByExpr OrderBy = 5;
-
 	LimitExpr LimitExpression = 6;
 }
+
+// start ... create table
+
+message IntType {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message VarcharType {
+	uint32 Size = 1;
+	Pos Character = 2;
+	Pos Varying = 3;
+	Pos RParen = 4;
+} 
+
+message UniqueColumnSpec {
+	bool IsPrimaryKey = 1;
+	Pos Primary = 2;
+	Pos Key = 3;
+	Pos Unique = 4;
+}
+
+message CheckColumnSpec {
+	BinaryExpr Expr = 1;
+	Pos Check = 2;
+	Pos RParen = 3;
+}
+
+message ColumnConstraint {
+	Ident Name = 1;
+	Pos Constraint = 2;
+	oneof Spec {
+		UniqueColumnSpec UniqueSpec = 3;
+		CheckColumnSpec CheckSpec = 4;
+	}
+}
+
+message MyDataTypeDecoration {
+	oneof MyDataTypeDecorationClause {
+		Ident MyDataTypeDecorationIdent = 1;
+	}
+}
+
+message ColumnDef {
+	Ident Name = 1;
+	oneof DataType {
+		IntType IntData = 2;
+		VarcharType VarcharData = 3;
+	}
+	oneof Default {
+		StringUnit StringDefault = 8;
+		LongUnit LongDefault = 9;
+	}
+	repeated MyDataTypeDecoration MyDataTypeDecorations = 14;
+	repeated ColumnConstraint Constraints = 15;
+}
+
+message ReferenceKeyExpr {
+	Ident TableName = 1;
+	repeated Ident Columns = 2;
+	Pos RParen = 3;
+}
+
+message ReferentialTableConstraint {
+	Pos Foreign = 1;
+	repeated Ident Columns = 2;
+	ReferenceKeyExpr KeyExpr = 3;
+}
+
+message CheckTableConstraint {
+	Pos Check = 1;
+	Pos RParen = 2;
+	BinaryExpr Expr = 3;
+}
+
+message TableConstraint {
+	Pos Constraint = 1;
+	Ident Name = 2;
+	oneof Spec {
+		ReferentialTableConstraint SpecReference = 3;
+		CheckTableConstraint SpecCheck = 4;
+	}
+}
+	
+message TableElement {
+	oneof TableElementClause {
+		ColumnDef ColumnDefElement = 1;
+		TableConstraint TableConstraintElement = 2;
+	}	
+}
+
+message TableOption {
+	oneof TableOptionClause {
+		Ident TableOptionIdent = 1;
+	}
+}
+
+message CreateTableStmt {
+	Pos Create = 1;
+	CompoundIdent Name = 2;
+	repeated TableElement Elements = 3;
+	string Location = 4;
+	bool NotExists = 5;
+	repeated TableOption Options = 6;
+}
+
+// end ... create table
