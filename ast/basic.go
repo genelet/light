@@ -220,7 +220,7 @@ func longTo(t *xast.LongUnit) *sqlast.LongValue {
         To: posTo(t.To)}
 }
 
-func xfunctionTo(s *sqlast.Function) *xast.AggFunction {
+func xfunctionTo(s *sqlast.Function) *xast.QueryStmt_SQLSelect_AggFunction {
     if s == nil { return nil }
 
 	name := s.Name.Idents[0]
@@ -238,14 +238,14 @@ func xfunctionTo(s *sqlast.Function) *xast.AggFunction {
 			args = append(args, nil)
 		}
 	}
-	return &xast.AggFunction{
+	return &xast.QueryStmt_SQLSelect_AggFunction{
 		TypeName: aggType,
 		RestArgs: args,
 		From: xposTo(name.From),
 		To: xposTo(name.To)}
 }
 
-func functionTo(f *xast.AggFunction) *sqlast.Function {
+func functionTo(f *xast.QueryStmt_SQLSelect_AggFunction) *sqlast.Function {
     if f == nil { return nil }
 
 	aggname := xast.AggType_name[int32(f.TypeName)]

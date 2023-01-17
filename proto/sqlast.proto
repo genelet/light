@@ -65,14 +65,6 @@ message SetOperator {
 	Pos To = 3;
 }
 
-message AggFunction {
-	AggType TypeName = 1;
-	// starting from the second args. The first one is in FunctionField below
-	repeated CompoundIdent RestArgs = 2;
-	Pos From = 3;
-	Pos To = 4;
-}
-
 enum JoinTypeCondition {
 	INNER = 0;
 	LEFT = 1;
@@ -182,6 +174,14 @@ message QueryStmt {
 			SQLSelectItem AST = 1;
 			Pos LParen = 2;
 			Pos RParen = 3;
+		}
+
+		message AggFunction {
+			AggType TypeName = 1;
+			// starting from the second args. The first one is in FunctionField below
+			repeated CompoundIdent RestArgs = 2;
+			Pos From = 3;
+			Pos To = 4;
 		}
 
 		message SQLSelectItem {

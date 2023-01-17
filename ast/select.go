@@ -1,6 +1,7 @@
 package ast
 
 import (
+"github.com/k0kubun/pp/v3"
 	"fmt"
 	"github.com/genelet/sqlproto/xast"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -100,6 +101,7 @@ func xitemToXsql(selectItem *xast.QueryStmt_SQLSelect_SQLSelectItem, t sqlast.No
 	case *sqlast.CompoundIdent:
 		selectItem.SelectItemClause = &xast.QueryStmt_SQLSelect_SQLSelectItem_FieldIdents{FieldIdents: xcompoundTo(s)}
 	case *sqlast.Function: // single function name
+pp.Println(s)
 		selectItem.SelectItemClause = &xast.QueryStmt_SQLSelect_SQLSelectItem_FieldFunction{FieldFunction: xfunctionTo(s)}
 	case *sqlast.Wildcard:
 		selectItem.SelectItemClause = &xast.QueryStmt_SQLSelect_SQLSelectItem_FieldIdents{FieldIdents: xwildcardsTo(s)}
