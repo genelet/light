@@ -6,12 +6,12 @@ import (
 	"github.com/akito0107/xsqlparser/sqlast"
 )
 
-func xjoinconditionTo(c *sqlast.JoinCondition) (*xast.QueryStmt_SQLSelect_QualifiedJoin_JoinCondition, error) {
+func xjoinconditionTo(c *sqlast.JoinCondition) (*xast.JoinCondition, error) {
 	switch t := c.SearchCondition.(type) {
 	case *sqlast.BinaryExpr:
-		sc, err := xbinaryexprTo(t)
+		sc, err := xbinaryExprTo(t)
 		if err != nil { return nil, err }
-		return &xast.QueryStmt_SQLSelect_QualifiedJoin_JoinCondition{
+		return &xast.JoinCondition{
 			SearchCondition: sc,
 			On: xposTo(c.On)}, nil
 	default:
@@ -19,34 +19,34 @@ func xjoinconditionTo(c *sqlast.JoinCondition) (*xast.QueryStmt_SQLSelect_Qualif
 	return nil, fmt.Errorf("search condition %#v", c.SearchCondition)
 }
 
-func joinconditionTo(c *xast.QueryStmt_SQLSelect_QualifiedJoin_JoinCondition) *sqlast.JoinCondition {
+func joinconditionTo(c *xast.JoinCondition) *sqlast.JoinCondition {
 	if c == nil || c.SearchCondition == nil { return nil }
 	return &sqlast.JoinCondition{
-		SearchCondition: binaryexprTo(c.SearchCondition),
+		SearchCondition: binaryExprTo(c.SearchCondition),
 		On: posTo(c.On)}
 }
 
-func xtableTo(t *sqlast.Table) *xast.QueryStmt_SQLSelect_QualifiedJoin {
-	return &xast.QueryStmt_SQLSelect_QualifiedJoin {
+func xtableTo(t *sqlast.Table) *xast.QualifiedJoin {
+	return &xast.QualifiedJoin {
 		Name: xobjectnameTo(t.Name),
 		AliasName: xidentTo(t.Alias)}
 }
 
-func tableTo(t *xast.QueryStmt_SQLSelect_QualifiedJoin) *sqlast.Table {
+func tableTo(t *xast.QualifiedJoin) *sqlast.Table {
 	table := &sqlast.Table{
-		Name: compoundToObjectname(t.Name)}
+		Name: objectnameTo(t.Name)}
 	if t.AliasName != nil {
 		table.Alias = identTo(t.AliasName).(*sqlast.Ident)
 	}
 	return table
 }
 
-func xqualifiedjoinTo(item *sqlast.QualifiedJoin) (*xast.QueryStmt_SQLSelect_QualifiedJoin, error) {
+func xqualifiedjoinTo(item *sqlast.QualifiedJoin) (*xast.QualifiedJoin, error) {
 	spec, err := xjoinconditionTo(item.Spec.(*sqlast.JoinCondition))
 	if err != nil { return nil, err }
 
 	table := item.RightElement.Ref.(*sqlast.Table)
-	output := &xast.QueryStmt_SQLSelect_QualifiedJoin{
+	output := &xast.QualifiedJoin{
 		Name: xobjectnameTo(table.Name),
 		AliasName: xidentTo(table.Alias),
 		TypeCondition: xjointypeTo(item.Type),
@@ -63,7 +63,7 @@ func xqualifiedjoinTo(item *sqlast.QualifiedJoin) (*xast.QueryStmt_SQLSelect_Qua
 	return output, err
 }
 
-func qualifiedjoinTo(item *xast.QueryStmt_SQLSelect_QualifiedJoin) *sqlast.QualifiedJoin {
+func qualifiedjoinTo(item *xast.QualifiedJoin) *sqlast.QualifiedJoin {
 	// thisLeft is never nil
 	thisLeft := item.LeftElement
 	var ref sqlast.TableReference
@@ -80,7 +80,7 @@ func qualifiedjoinTo(item *xast.QueryStmt_SQLSelect_QualifiedJoin) *sqlast.Quali
 		Spec: joinconditionTo(item.Spec)}
 }
 
-func xtablereferenceTo(item sqlast.TableReference) (*xast.QueryStmt_SQLSelect_QualifiedJoin, error) {
+func xtablereferenceTo(item sqlast.TableReference) (*xast.QualifiedJoin, error) {
 	switch t := item.(type) {
 	case *sqlast.Table:
 		return xtableTo(t), nil
@@ -91,7 +91,7 @@ func xtablereferenceTo(item sqlast.TableReference) (*xast.QueryStmt_SQLSelect_Qu
 	return nil, fmt.Errorf("join type %#v", item)
 }
 
-func tablereferenceTo(item *xast.QueryStmt_SQLSelect_QualifiedJoin) sqlast.TableReference {
+func tablereferenceTo(item *xast.QualifiedJoin) sqlast.TableReference {
 	if item == nil { return nil }
 	if item.LeftElement != nil {
 		return qualifiedjoinTo(item)

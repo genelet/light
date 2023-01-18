@@ -38,6 +38,10 @@ message CompoundIdent {
 	repeated Ident Idents = 1;
 }
 
+message ObjectName {
+	repeated Ident Idents = 1;
+}
+
 message Operator {
 	OperatorType Type = 1;
 	Pos From = 2;
@@ -82,161 +86,407 @@ message JoinType {
 	Pos To = 3;
 }
 
-message StringUnit {
+message SingleQuotedString {
 	string Value = 1;
 	Pos From = 2;
 	Pos To = 3;
 }
 
-message DoubleUnit {
+message DoubleValue {
 	double Value = 1;
 	Pos From = 2;
 	Pos To = 3;
 }
 
-message LongUnit {
+message LongValue {
 	int64 Value = 1;
 	Pos From = 2;
 	Pos To = 3;
 }
 
+message BinaryExpr {
+	oneof LeftOneOf {
+		CompoundIdent LeftIdents = 1;
+		BinaryExpr LeftBinary = 2;
+		SingleQuotedString LeftSingleQuoted = 10;
+		DoubleValue LeftDouble = 11;
+		LongValue LeftLong = 12;
+	}
+	Operator Op = 3;
+	oneof RightOneOf {
+		CompoundIdent RightIdents = 4;
+		BinaryExpr RightBinary = 5;
+		InSubQuery QueryValue = 6;
+		SingleQuotedString SingleQuotedString = 7;
+		DoubleValue DoubleValue = 8;
+		LongValue LongValue = 9;
+	}
+}
+
+message UnaryExpr {
+	Pos From = 1;
+	Operator Op = 2;
+	BinaryExpr Expr = 3;
+}
+	
+//CASE [Operand] WHEN Conditions... THEN Results... [ELSE ElseResult] END
+message ResultMessage {
+	oneof ResultClause {
+		Ident ResultIdent = 1;
+		UnaryExpr ResultUnary = 2;
+	}
+}
+message CaseExpr {
+    Pos Case = 1;
+    Pos CaseEnd = 2;
+    Operator Operand = 3;
+    repeated BinaryExpr Conditions = 4;
+    repeated ResultMessage Results = 5;
+	Ident ElseResult = 6;
+}
+
+message AggFunction {
+	AggType TypeName = 1;
+	message ArgsMessage {
+		oneof ArgsClause {
+			CompoundIdent FieldIdents = 1;
+			AggFunction FieldFunction = 2;
+			CaseExpr FieldCase = 3;
+		}
+	}
+	repeated ArgsMessage RestArgs = 2;
+	Pos From = 3;
+	Pos To = 4;
+}
+
+message JoinCondition {
+	BinaryExpr SearchCondition = 1;
+	Pos On = 2;
+}
+
+message QualifiedJoin {
+	ObjectName Name = 1;
+	Ident AliasName = 2;
+	QualifiedJoin LeftElement = 3;
+	JoinType TypeCondition = 4;
+	JoinCondition Spec = 5;
+}
+
+message OrderByExpr {
+	CompoundIdent Expr = 1;
+	Pos OrderingPos = 2;
+	bool ASCBool = 3;
+}
+
+message LimitExpr {
+	bool AllBool = 1;
+	Pos AllPos = 2;
+	Pos Limit = 3;
+	LongValue LimitValue = 4;
+	LongValue OffsetValue = 5;
+}
+
+message SQLSelectItem {
+	oneof SelectItemClause {
+		CompoundIdent FieldIdents = 1;
+		AggFunction FieldFunction = 2;
+		CaseExpr FieldCase = 3;
+		Nested FieldNested = 4;
+		UnaryExpr FieldUnary = 5;
+		BinaryExpr FieldBinary = 6;
+	}
+	Ident AliasName = 10;
+}
+
+message Nested {
+	SQLSelectItem AST = 1;
+	Pos LParen = 2;
+	Pos RParen = 3;
+}
+
+message InSubQuery {
+	CompoundIdent Expr = 1;
+	QueryStmt SubQuery = 2;
+	bool Negated = 3;
+	Pos RParen = 4;
+}
+
+message SQLSelect {
+	bool DistinctBool = 1;
+	repeated SQLSelectItem Projection = 2;
+	repeated QualifiedJoin FromClause = 3;
+	oneof WhereClause {
+		InSubQuery InQuery = 4;
+		BinaryExpr BinExpr = 5;
+	}
+	repeated CompoundIdent GroupByClause = 8;
+	BinaryExpr HavingClause = 9;
+	Pos Select = 10;
+}
+
+message SetOperationExpr {
+	SQLSelect LeftSide = 1;
+	bool AllBool = 2;
+	SetOperator Op = 3;
+	SetOperationExpr RightSide = 4;
+}
+
 message QueryStmt {
 	Pos With = 1;
-
 	message CTE {
 		Ident AliasName = 1;
 		QueryStmt Query = 2;
 		Pos RParen = 3;
 	}
 	repeated CTE CTEs = 2;
-
-	message InSubQuery {
-		CompoundIdent Expr = 1;
-		QueryStmt SubQuery = 2;
-		bool Negated = 3;
-		Pos RParen = 4;
-	}
-
-	message BinaryExpr {
-		oneof LeftOneOf {
-			CompoundIdent LeftIdents = 1;
-			BinaryExpr LeftBinary = 2;
-			StringUnit LeftSingleQuoted = 10;
-			DoubleUnit LeftDouble = 11;
-			LongUnit LeftLong = 12;
-		}
-		Operator Op = 3;
-		oneof RightOneOf {
-			CompoundIdent RightIdents = 4;
-			BinaryExpr RightBinary = 5;
-			InSubQuery QueryValue = 6;
-			StringUnit SingleQuotedString = 7;
-			DoubleUnit DoubleValue = 8;
-			LongUnit LongValue = 9;
-		}
-	}
-
-	message UnaryExpr {
-		Pos From = 1;
-		Operator Op = 2;
-		BinaryExpr Expr = 3;
-	}
-	
-	message SQLSelect {
-		bool DistinctBool = 1;
-
-		//CASE [Operand] WHEN Conditions... THEN Results... [ELSE ElseResult] END
-		message ResultMessage {
-			oneof ResultClause {
-				Ident ResultIdent = 1;
-				UnaryExpr ResultUnary = 2;
-			}
-		}
-		message CaseExpr {
-		    Pos Case = 1;
-		    Pos CaseEnd = 2;
-		    Operator Operand = 3;
-		    repeated BinaryExpr Conditions = 4;
-		    repeated ResultMessage Results = 5;
-			Ident ElseResult = 6;
-		}
-
-		message Nested {
-			SQLSelectItem AST = 1;
-			Pos LParen = 2;
-			Pos RParen = 3;
-		}
-
-		message AggFunction {
-			AggType TypeName = 1;
-			message ArgsMessage {
-				oneof ArgsClause {
-					CompoundIdent FieldIdents = 1;
-					AggFunction FieldFunction = 2;
-					CaseExpr FieldCase = 3;
-				}
-			}
-			repeated ArgsMessage RestArgs = 2;
-			Pos From = 3;
-			Pos To = 4;
-		}
-
-		message SQLSelectItem {
-			oneof SelectItemClause {
-				CompoundIdent FieldIdents = 1;
-				AggFunction FieldFunction = 2;
-				CaseExpr FieldCase = 3;
-				Nested FieldNested = 4;
-				UnaryExpr FieldUnary = 5;
-				BinaryExpr FieldBinary = 6;
-			}
-			Ident AliasName = 10;
-		}
-		repeated SQLSelectItem Projection = 2;
-
-		message QualifiedJoin {
-			CompoundIdent Name = 1;
-			Ident AliasName = 2;
-			QualifiedJoin LeftElement = 3;
-			JoinType TypeCondition = 4;
-			message JoinCondition {
-				BinaryExpr SearchCondition = 1;
-				Pos On = 2;
-			}
-			JoinCondition Spec = 5;
-		}
-		repeated QualifiedJoin FromClause = 3;
-
-		oneof WhereClause {
-			InSubQuery InQuery = 4;
-			BinaryExpr BinExpr = 5;
-		}
-
-		repeated CompoundIdent GroupByClause = 8;
-		BinaryExpr HavingClause = 9;
-		Pos Select = 10;
-	}
-	message SetOperationExpr {
-		SQLSelect LeftSide = 1;
-		bool AllBool = 2;
-		SetOperator Op = 3;
-		SetOperationExpr RightSide = 4;
-	}
 	SetOperationExpr Body = 4;
-
-	message OrderByExpr {
-		CompoundIdent Expr = 1;
-		Pos OrderingPos = 2;
-		bool ASCBool = 3;
-	}
 	repeated OrderByExpr OrderBy = 5;
-
-	message LimitExpr {
-		bool AllBool = 1;
-		Pos AllPos = 2;
-		Pos Limit = 3;
-		LongUnit LimitValue = 4;
-		LongUnit OffsetValue = 5;
-	}
 	LimitExpr LimitExpression = 6;
 }
+
+// start ... create table
+
+message BigInt {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message SmallInt {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message Int {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message Double {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Real {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message Float {
+	uint32 Size = 1;
+	Pos From = 2;
+	Pos To = 3;
+	bool IsUnsigned = 4;
+	Pos Unsigned = 5;
+}
+
+message Decimal {
+	uint32 Precision = 1;
+	uint32 Scale = 2;
+	Pos Numeric = 3;
+	Pos RParen = 4;
+	bool IsUnsigned = 5;
+	Pos Unsigned = 6;
+}
+
+message Boolean {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message CharType {
+	uint32 Size = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message VarcharType {
+	uint32 Size = 1;
+	Pos Character = 2;
+	Pos Varying = 3;
+	Pos RParen = 4;
+} 
+
+message Time {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Timestamp {
+	bool WithTimeZone = 1;
+	Pos Timestamp = 2;
+	Pos Zone = 3;
+}
+
+message Date {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Bytea {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Text {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Regclass {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message UUID {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Custom {
+	CompoundIdent Ty = 1;
+}
+
+message CheckColumnSpec {
+	BinaryExpr Expr = 1;
+	Pos Check = 2;
+	Pos RParen = 3;
+}
+
+message ReferencesColumnSpec {
+	Pos References = 1;
+	Pos RParen = 2;
+	CompoundIdent TableName = 3;
+	repeated Ident Columns = 4;
+}
+
+message UniqueColumnSpec {
+	bool IsPrimaryKey = 1;
+	Pos Primary = 2;
+	Pos Key = 3;
+	Pos Unique = 4;
+}
+
+message NotNullColumnSpec {
+	Pos Not = 1;
+	Pos Null = 2;
+}
+
+message ColumnConstraint {
+	Ident Name = 1;
+	Pos Constraint = 2;
+	oneof Spec {
+		UniqueColumnSpec UniqueSpec = 3;
+		CheckColumnSpec CheckSpec = 4;
+		ReferencesColumnSpec ReferenceSpec = 5;
+		NotNullColumnSpec NotNullSpec = 6;
+	}
+}
+
+message AutoIncrement {
+	Pos Auto = 1;
+	Pos Increment = 2;
+}
+
+message MyDataTypeDecoration {
+	AutoIncrement Automent = 1;
+}
+
+message ColumnDef {
+	Ident Name = 1;
+	oneof DataType {
+		Int IntData = 2;
+		SmallInt SmallIntData = 3;
+		BigInt BigIntData = 4;
+		CharType CharData = 5;
+		VarcharType VarcharData = 6;
+	}
+	oneof Default {
+		SingleQuotedString StringDefault = 21;
+		LongValue LongDefault = 22;
+	}
+	repeated MyDataTypeDecoration MyDecos = 41;
+	repeated ColumnConstraint Constraints = 42;
+}
+
+message ReferenceKeyExpr {
+	Ident TableName = 1;
+	repeated Ident Columns = 2;
+	Pos RParen = 3;
+}
+
+message ReferentialTableConstraint {
+	Pos Foreign = 1;
+	repeated Ident Columns = 2;
+	ReferenceKeyExpr KeyExpr = 3;
+}
+
+message CheckTableConstraint {
+	Pos Check = 1;
+	Pos RParen = 2;
+	BinaryExpr Expr = 3;
+}
+
+message UniqueTableConstraint {
+	Pos Primary = 1;
+	Pos Unique = 2;
+	Pos RParen = 3;
+	bool IsPrimary = 4;
+	repeated Ident Columns = 5;
+}
+	
+message TableConstraint {
+	Pos Constraint = 1;
+	Ident Name = 2;
+	oneof Spec {
+		ReferentialTableConstraint SpecReference = 3;
+		CheckTableConstraint SpecCheck = 4;
+		UniqueTableConstraint SpecUnique = 5;
+	}
+}
+	
+message TableElement {
+	oneof TableElementClause {
+		ColumnDef ColumnDefElement = 1;
+		TableConstraint TableConstraintElement = 2;
+	}	
+}
+
+message MyEngine {
+	Pos Engine = 1;
+	bool Equal = 2;
+	Ident Name = 3;
+}
+
+message MyCharset {
+	bool IsDefault = 1;
+	Pos Default = 2;
+	Pos Charset = 3;
+	bool Equal = 4;
+	Ident Name = 5;
+}
+
+message TableOption {
+	oneof TableOptionClause {
+		MyEngine MyEngineOption = 1;
+		MyCharset MyCharsetOption = 2;
+	}
+}
+
+message CreateTableStmt {
+	Pos Create = 1;
+	ObjectName Name = 2;
+	repeated TableElement Elements = 3;
+	string Location = 4;
+	bool NotExists = 5;
+	repeated TableOption Options = 6;
+}
+
+// end ... create table

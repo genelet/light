@@ -82,8 +82,9 @@ func xcompoundTo(idents *sqlast.CompoundIdent) *xast.CompoundIdent {
 func xwildcarditemTo(t *sqlast.QualifiedWildcardSelectItem) *xast.CompoundIdent {
 	if t == nil { return nil }
 
-	comp := xobjectnameTo(t.Prefix)
-	comp.Idents = append(comp.Idents, &xast.Ident{
+	prefix := xobjectnameTo(t.Prefix)
+	comp := &xast.CompoundIdent{}
+	comp.Idents = append(prefix.Idents, &xast.Ident{
 		Value: "*",
 		From: xposTo(t.Pos()),
 		To: xposplusTo(t.Pos())})
@@ -110,14 +111,24 @@ func compoundTo(idents *xast.CompoundIdent) sqlast.Node {
 	return &sqlast.CompoundIdent{Idents:xs}
 }
 
-func xobjectnameTo(idents *sqlast.ObjectName) *xast.CompoundIdent {
+func xobjectnameTo(idents *sqlast.ObjectName) *xast.ObjectName {
 	if idents == nil { return nil }
 
 	var xs []*xast.Ident
 	for _, item := range idents.Idents {
 		xs = append(xs, xidentTo(item))
 	}
-	return &xast.CompoundIdent{Idents:xs}
+	return &xast.ObjectName{Idents:xs}
+}
+
+func objectnameTo(idents *xast.ObjectName) *sqlast.ObjectName {
+	if idents == nil { return nil }
+
+	var xs []*sqlast.Ident
+	for _, item := range idents.Idents {
+		xs = append(xs, identTo(item).(*sqlast.Ident))
+	}
+	return &sqlast.ObjectName{Idents:xs}
 }
 
 func compoundToObjectname(idents *xast.CompoundIdent) *sqlast.ObjectName {
@@ -166,16 +177,16 @@ func jointypeTo(t *xast.JoinType) *sqlast.JoinType {
 		To: posTo(t.To)}
 }
 
-func xstringTo(t *sqlast.SingleQuotedString) *xast.StringUnit {
+func xstringTo(t *sqlast.SingleQuotedString) *xast.SingleQuotedString {
     if t == nil { return nil }
 
-    return &xast.StringUnit{
+    return &xast.SingleQuotedString{
         Value: t.String,
         From: xposTo(t.From),
         To: xposTo(t.To)}
 }
 
-func stringTo(t *xast.StringUnit) *sqlast.SingleQuotedString {
+func stringTo(t *xast.SingleQuotedString) *sqlast.SingleQuotedString {
     if t == nil { return nil }
 
     return &sqlast.SingleQuotedString{
@@ -184,16 +195,16 @@ func stringTo(t *xast.StringUnit) *sqlast.SingleQuotedString {
         To: posTo(t.To)}
 }
 
-func xdoubleTo(t *sqlast.DoubleValue) *xast.DoubleUnit {
+func xdoubleTo(t *sqlast.DoubleValue) *xast.DoubleValue {
     if t == nil { return nil }
 
-    return &xast.DoubleUnit{
+    return &xast.DoubleValue{
         Value: t.Double,
         From: xposTo(t.From),
         To: xposTo(t.To)}
 }
 
-func doubleTo(t *xast.DoubleUnit) *sqlast.DoubleValue {
+func doubleTo(t *xast.DoubleValue) *sqlast.DoubleValue {
     if t == nil { return nil }
 
     return &sqlast.DoubleValue{
@@ -202,16 +213,16 @@ func doubleTo(t *xast.DoubleUnit) *sqlast.DoubleValue {
         To: posTo(t.To)}
 }
 
-func xlongTo(t *sqlast.LongValue) *xast.LongUnit {
+func xlongTo(t *sqlast.LongValue) *xast.LongValue {
     if t == nil { return nil }
 
-    return &xast.LongUnit{
+    return &xast.LongValue{
         Value: t.Long,
         From: xposTo(t.From),
         To: xposTo(t.To)}
 }
 
-func longTo(t *xast.LongUnit) *sqlast.LongValue {
+func longTo(t *xast.LongValue) *sqlast.LongValue {
     if t == nil { return nil }
 
     return &sqlast.LongValue{
@@ -220,40 +231,120 @@ func longTo(t *xast.LongUnit) *sqlast.LongValue {
         To: posTo(t.To)}
 }
 
-func xfunctionTo(s *sqlast.Function) (*xast.QueryStmt_SQLSelect_AggFunction, error) {
+func xintTo(t *sqlast.Int) *xast.Int {
+    if t == nil { return nil }
+
+    return &xast.Int{
+        From: xposTo(t.From),
+        To: xposTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.Unsigned)}
+}
+
+func intTo(t *xast.Int) *sqlast.Int {
+    if t == nil { return nil }
+
+    return &sqlast.Int{
+        From: posTo(t.From),
+        To: posTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: posTo(t.Unsigned)}
+}
+
+func xsmallIntTo(t *sqlast.SmallInt) *xast.SmallInt {
+    if t == nil { return nil }
+
+    return &xast.SmallInt{
+        From: xposTo(t.From),
+        To: xposTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.Unsigned)}
+}
+
+func smallIntTo(t *xast.SmallInt) *sqlast.SmallInt {
+    if t == nil { return nil }
+
+    return &sqlast.SmallInt{
+        From: posTo(t.From),
+        To: posTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: posTo(t.Unsigned)}
+}
+
+func xcharTypeTo(t *sqlast.CharType) *xast.CharType {
+    if t == nil { return nil }
+
+    return &xast.CharType{
+        Size: uint32(*t.Size),
+        From: xposTo(t.From),
+        To: xposTo(t.To)}
+}
+
+func charTypeTo(t *xast.CharType) *sqlast.CharType {
+    if t == nil { return nil }
+
+	size := uint(t.Size)
+    return &sqlast.CharType{
+        Size: &size,
+        From: posTo(t.From),
+        To: posTo(t.To)}
+}
+
+func xvarcharTypeTo(t *sqlast.VarcharType) *xast.VarcharType {
+    if t == nil { return nil }
+
+    return &xast.VarcharType{
+        Size: uint32(*t.Size),
+        Character: xposTo(t.Character),
+        Varying: xposTo(t.Varying),
+        RParen: xposTo(t.RParen)}
+}
+
+func varcharTypeTo(t *xast.VarcharType) *sqlast.VarcharType {
+    if t == nil { return nil }
+
+	size := uint(t.Size)
+    return &sqlast.VarcharType{
+        Size: &size,
+        Character: posTo(t.Character),
+        Varying: posTo(t.Varying),
+        RParen: posTo(t.RParen)}
+}
+
+func xfunctionTo(s *sqlast.Function) (*xast.AggFunction, error) {
 	name := s.Name.Idents[0]
 	aggType := xast.AggType(xast.AggType_value[strings.ToUpper(name.Value)])
-	var args []*xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage
+	var args []*xast.AggFunction_ArgsMessage
 	for _, item := range s.Args {
-		arg := new(xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage)
+		arg := new(xast.AggFunction_ArgsMessage)
 		switch t := item.(type) {
 		case *sqlast.Ident:
-			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldIdents{FieldIdents: xidentsTo(t)}
+			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldIdents{FieldIdents: xidentsTo(t)}
 		case *sqlast.CompoundIdent:
-			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldIdents{FieldIdents: xcompoundTo(t)}
+			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldIdents{FieldIdents: xcompoundTo(t)}
 		case *sqlast.Wildcard:
-			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldIdents{FieldIdents: xwildcardsTo(t)}
+			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldIdents{FieldIdents: xwildcardsTo(t)}
 		case *sqlast.Function:
 			fieldFunction, err := xfunctionTo(t)
 			if err != nil { return nil, err }
-			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldFunction{FieldFunction: fieldFunction}
+			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldFunction{FieldFunction: fieldFunction}
 		case *sqlast.CaseExpr:
 			fieldCase, err := xcaseExprTo(t)
 			if err != nil { return nil, err }
-			arg.ArgsClause = &xast.QueryStmt_SQLSelect_AggFunction_ArgsMessage_FieldCase{FieldCase: fieldCase}
+			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldCase{FieldCase: fieldCase}
 		default:
 			return nil, fmt.Errorf("args type not found: %T", t)	
 		}
 		args = append(args, arg)
 	}
-	return &xast.QueryStmt_SQLSelect_AggFunction{
+	return &xast.AggFunction{
 		TypeName: aggType,
 		RestArgs: args,
 		From: xposTo(name.From),
 		To: xposTo(name.To)}, nil
 }
 
-func functionTo(f *xast.QueryStmt_SQLSelect_AggFunction) *sqlast.Function {
+func functionTo(f *xast.AggFunction) *sqlast.Function {
     if f == nil { return nil }
 
 	aggname := xast.AggType_name[int32(f.TypeName)]
@@ -319,87 +410,52 @@ func setoperatorTo(op *xast.SetOperator) sqlast.SQLSetOperator {
 	return nil
 }
 
-func xunaryTo(body *sqlast.UnaryExpr) (*xast.QueryStmt_UnaryExpr, error) {
-	expr, err := xbinaryexprTo(body.Expr.(*sqlast.BinaryExpr))
-	return &xast.QueryStmt_UnaryExpr{
-		From: xposTo(body.From),
-		Op: xoperatorTo(body.Op),
-		Expr: expr}, err
-}
-
-func unaryTo(body *xast.QueryStmt_UnaryExpr) *sqlast.UnaryExpr {
-	return &sqlast.UnaryExpr{
-		From: posTo(body.From),
-		Op: operatorTo(body.Op),
-		Expr: binaryexprTo(body.Expr)}
-}
-
-func xnestedTo(body *sqlast.Nested) (*xast.QueryStmt_SQLSelect_Nested, error) {
-	output := &xast.QueryStmt_SQLSelect_SQLSelectItem{}
-	err := xitemToXsql(output, body.AST)
-	return &xast.QueryStmt_SQLSelect_Nested{
-		AST: output,
-		LParen: xposTo(body.LParen),
-		RParen: xposTo(body.RParen)}, err
-}
-
-func nestedTo(body *xast.QueryStmt_SQLSelect_Nested) *sqlast.Nested {
-	return &sqlast.Nested{
-		AST: selectitemTo(body.AST),
-		LParen: posTo(body.LParen),
-		RParen: posTo(body.RParen)}
-}
-
-func xcaseExprTo(body *sqlast.CaseExpr) (*xast.QueryStmt_SQLSelect_CaseExpr, error) {
-	output := &xast.QueryStmt_SQLSelect_CaseExpr{
-		Case: xposTo(body.Case),
-		CaseEnd: xposTo(body.CaseEnd)}
-	if body.Operand != nil {
-		output.Operand = xoperatorTo(body.Operand.(*sqlast.Operator))
+func xorderbyTo(orderby *sqlast.OrderByExpr) (*xast.OrderByExpr, error) {
+	if orderby == nil { return nil, nil }
+	output := &xast.OrderByExpr{
+		OrderingPos: xposTo(orderby.OrderingPos)}
+	if orderby.ASC == nil {
+		output.ASCBool = true
+	} else {
+		output.ASCBool = *orderby.ASC
 	}
-	if body.ElseResult != nil {
-		output.ElseResult = xidentTo(body.ElseResult.(*sqlast.Ident))
-	}
-	for i, condition := range body.Conditions {
-		item, err := xbinaryexprTo(condition.(*sqlast.BinaryExpr))
-		if err != nil { return nil, err }
 
-		resultMessage := new(xast.QueryStmt_SQLSelect_ResultMessage)
-		switch t := body.Results[i].(type) {
-        case *sqlast.Ident:
-			resultMessage.ResultClause = &xast.QueryStmt_SQLSelect_ResultMessage_ResultIdent{ResultIdent: xidentTo(t)}
-		case *sqlast.UnaryExpr:
-			result, err := xunaryTo(t)
-			if err != nil { return nil, err }
-			resultMessage.ResultClause = &xast.QueryStmt_SQLSelect_ResultMessage_ResultUnary{ResultUnary: result}
-		default:	
-            return nil, fmt.Errorf("missing result type in CaseExpr %T", t)
-        }
-
-		output.Conditions = append(output.Conditions, item)
-		output.Results = append(output.Results, resultMessage)
+	switch t := orderby.Expr.(type) {
+	case *sqlast.Ident:
+		output.Expr = xidentsTo(t)
+	case *sqlast.CompoundIdent:
+		output.Expr = xcompoundTo(t)
+	default:
+		return nil, fmt.Errorf("order by is %#v", orderby.Expr)
 	}
+
 	return output, nil
 }
 
-func caseExprTo(body *xast.QueryStmt_SQLSelect_CaseExpr) *sqlast.CaseExpr {
-	output := &sqlast.CaseExpr{
-		Case: posTo(body.Case),
-		CaseEnd: posTo(body.CaseEnd)}
-	if body.Operand != nil {
-		output.Operand = operatorTo(body.Operand)
-	}
-	if body.ElseResult != nil {
-		output.ElseResult = identTo(body.ElseResult)
-	}
-	for i, condition := range body.Conditions {
-		output.Conditions = append(output.Conditions, binaryexprTo(condition))
-		result := body.Results[i]
-		if ident := result.GetResultIdent(); ident != nil {
-			output.Results = append(output.Results, identTo(ident))
-		} else {
-			output.Results = append(output.Results, unaryTo(result.GetResultUnary()))
-		}
-	}
-	return output
+func orderbyTo(orderby *xast.OrderByExpr) *sqlast.OrderByExpr {
+	if orderby == nil { return nil }
+	return &sqlast.OrderByExpr{
+		OrderingPos: posTo(orderby.OrderingPos),
+		ASC: &orderby.ASCBool,
+		Expr: compoundTo(orderby.Expr)}
+}
+
+func xlimitTo(limit *sqlast.LimitExpr) *xast.LimitExpr {
+	if limit == nil { return nil }
+	return &xast.LimitExpr{
+		AllBool: limit.All,
+		AllPos: xposTo(limit.AllPos),
+		Limit: xposTo(limit.Limit),
+		LimitValue: xlongTo(limit.LimitValue),
+		OffsetValue: xlongTo(limit.OffsetValue)}
+}
+
+func limitTo(limit *xast.LimitExpr) *sqlast.LimitExpr {
+	if limit == nil { return nil }
+	return &sqlast.LimitExpr{
+		All: limit.AllBool,
+		AllPos: posTo(limit.AllPos),
+		Limit: posTo(limit.Limit),
+		LimitValue: longTo(limit.LimitValue),
+		OffsetValue: longTo(limit.OffsetValue)}
 }
