@@ -271,6 +271,40 @@ func smallIntTo(t *xast.SmallInt) *sqlast.SmallInt {
 		Unsigned: posTo(t.Unsigned)}
 }
 
+func xtimestampTo(t *sqlast.Timestamp) *xast.Timestamp {
+    if t == nil { return nil }
+
+    return &xast.Timestamp{
+		WithTimeZone: t.WithTimeZone,
+        Timestamp: xposTo(t.Timestamp),
+        Zone: xposTo(t.Zone)}
+}
+
+func timestampTo(t *xast.Timestamp) *sqlast.Timestamp {
+    if t == nil { return nil }
+
+    return &sqlast.Timestamp{
+		WithTimeZone: t.WithTimeZone,
+        Timestamp: posTo(t.Timestamp),
+        Zone: posTo(t.Zone)}
+}
+
+func xuuidTo(t *sqlast.UUID) *xast.UUID {
+    if t == nil { return nil }
+
+    return &xast.UUID{
+        From: xposTo(t.From),
+        To: xposTo(t.To)}
+}
+
+func uuidTo(t *xast.UUID) *sqlast.UUID {
+    if t == nil { return nil }
+
+    return &sqlast.UUID{
+        From: posTo(t.From),
+        To: posTo(t.To)}
+}
+
 func xcharTypeTo(t *sqlast.CharType) *xast.CharType {
     if t == nil { return nil }
 

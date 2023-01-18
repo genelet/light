@@ -363,7 +363,7 @@ message CheckColumnSpec {
 message ReferencesColumnSpec {
 	Pos References = 1;
 	Pos RParen = 2;
-	CompoundIdent TableName = 3;
+	ObjectName TableName = 3;
 	repeated Ident Columns = 4;
 }
 
@@ -407,10 +407,13 @@ message ColumnDef {
 		BigInt BigIntData = 4;
 		CharType CharData = 5;
 		VarcharType VarcharData = 6;
+		UUID UUIDData = 7;
+		Timestamp TimestampData = 8;
 	}
 	oneof Default {
 		SingleQuotedString StringDefault = 21;
 		LongValue LongDefault = 22;
+		Ident IdentDefault = 23;
 	}
 	repeated MyDataTypeDecoration MyDecos = 41;
 	repeated ColumnConstraint Constraints = 42;
@@ -490,3 +493,21 @@ message CreateTableStmt {
 }
 
 // end ... create table
+
+// start ... create index
+
+message CreateIndexStmt {
+	Pos Create = 1;
+	ObjectName TableName = 2;
+	bool IsUnique = 3;
+	Ident IndexName = 4;
+	Ident MethodName = 5;
+	repeated Ident ColumnNames = 6;
+	Pos RParen = 7;
+	oneof Selection {
+        InSubQuery InQuery = 8;
+		BinaryExpr BinExpr = 9;
+	}
+}
+
+// end ... create index

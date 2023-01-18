@@ -11,6 +11,10 @@ func XCreateTableTo(stmt *sqlast.CreateTableStmt) (*xast.CreateTableStmt, error)
 		Create: xposTo(stmt.Create),
 		Name: xobjectnameTo(stmt.Name),
 		NotExists: stmt.NotExists}
+	if stmt.Location != nil {
+		output.Location = *stmt.Location
+	}
+
 	for _, item := range stmt.Elements {
 		v, err := xtableElementTo(item)
 		if err != nil { return nil, err }
@@ -243,6 +247,16 @@ func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
 		if item.Default != nil {
 			columnDef.Default = &xast.ColumnDef_LongDefault{LongDefault: xlongTo(item.Default.(*sqlast.LongValue))}
 		}
+	case *sqlast.Timestamp:
+        columnDef.DataType = &xast.ColumnDef_TimestampData{TimestampData: xtimestampTo(t)}
+        if item.Default != nil {
+            columnDef.Default = &xast.ColumnDef_IdentDefault{IdentDefault: xidentTo(item.Default.(*sqlast.Ident))}
+        }
+	case *sqlast.UUID:
+        columnDef.DataType = &xast.ColumnDef_UUIDData{UUIDData: xuuidTo(t)}
+        if item.Default != nil {
+            columnDef.Default = &xast.ColumnDef_StringDefault{StringDefault: xstringTo(item.Default.(*sqlast.SingleQuotedString))}
+        }
 	case *sqlast.CharType:
 		columnDef.DataType = &xast.ColumnDef_CharData{CharData: xcharTypeTo(t)}
 		if item.Default != nil {
@@ -283,6 +297,16 @@ func columnDefTo(item *xast.ColumnDef) *sqlast.ColumnDef {
 		if item.Default != nil {
 			output.Default = longTo(item.GetLongDefault())
 		}
+    } else if item.GetTimestampData() != nil {
+        output.DataType = timestampTo(item.GetTimestampData())
+        if item.Default != nil {
+            output.Default = identTo(item.GetIdentDefault())
+        }
+    } else if item.GetUUIDData() != nil {
+        output.DataType = uuidTo(item.GetUUIDData())
+        if item.Default != nil {
+            output.Default = stringTo(item.GetStringDefault())
+        }
 	} else if item.GetCharData() != nil {
 		output.DataType = charTypeTo(item.GetCharData())
 		if item.Default != nil {
@@ -348,6 +372,15 @@ func xcolumnConstraintTo(item *sqlast.ColumnConstraint) (*xast.ColumnConstraint,
 			&xast.NotNullColumnSpec{
 				Not: xposTo(t.Not),
 				Null: xposTo(t.Null)}}
+    case *sqlast.ReferencesColumnSpec:
+		ref := &xast.ReferencesColumnSpec{
+			References: xposTo(t.References),
+			RParen: xposTo(t.RParen),
+			TableName: xobjectnameTo(t.TableName)}
+		for _, column := range t.Columns {
+			ref.Columns = append(ref.Columns, xidentTo(column))
+		}
+        output.Spec = &xast.ColumnConstraint_ReferenceSpec{ReferenceSpec: ref}
     default:
         return nil, fmt.Errorf("missing column constraint type: %T", t)
     }
@@ -371,6 +404,15 @@ func columnConstraintTo(item *xast.ColumnConstraint) *sqlast.ColumnConstraint {
 		output.Spec = &sqlast.NotNullColumnSpec{
 			Not: posTo(x.Not),
 			Null: posTo(x.Null)}
+	} else if x := item.GetReferenceSpec(); x != nil {
+		ref := &sqlast.ReferencesColumnSpec{
+			References: posTo(x.References),
+			RParen: posTo(x.RParen),
+			TableName: objectnameTo(x.TableName)}
+		for _, column := range x.Columns {
+			ref.Columns = append(ref.Columns, identTo(column).(*sqlast.Ident))
+		}
+		output.Spec = ref
 	} else {
 		x := item.GetCheckSpec()
 		output.Spec = &sqlast.CheckColumnSpec{

@@ -29,10 +29,30 @@ func TestCreateTable(t *testing.T) {
   state_name varchar(255),
   english_name varchar(255),
   PRIMARY KEY (state_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;`}
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;`,
+	`CREATE TABLE persons (
+ person_id UUID PRIMARY KEY NOT NULL,
+ first_name varchar(255) UNIQUE,
+ last_name character varying(255) NOT NULL,
+ created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL);`,
+	`CREATE TABLE persons (
+person_id int PRIMARY KEY NOT NULL,
+last_name character varying(255) NOT NULL,
+test_id int NOT NULL REFERENCES test(id1),
+email character varying(255) UNIQUE NOT NULL,
+age int NOT NULL CHECK(age > 0 AND age < 100),
+created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
+);`,
+	`CREATE TABLE persons (
+person_id int,
+CONSTRAINT production UNIQUE(test_column),
+PRIMARY KEY(person_id),
+CHECK(id > 100),
+FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)
+);`}
 
 	for i, str := range strs {
-		if i != 1 { continue }
+		//if i != 1 { continue }
 		parser, err := xsqlparser.NewParser(bytes.NewBufferString(str), &dialect.GenericSQLDialect{}, xsqlparser.ParseComment())
 		if err != nil { t.Fatal(err) }
 
