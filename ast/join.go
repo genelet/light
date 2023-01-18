@@ -34,7 +34,7 @@ func xtableTo(t *sqlast.Table) *xast.QualifiedJoin {
 
 func tableTo(t *xast.QualifiedJoin) *sqlast.Table {
 	table := &sqlast.Table{
-		Name: compoundToObjectname(t.Name)}
+		Name: objectnameTo(t.Name)}
 	if t.AliasName != nil {
 		table.Alias = identTo(t.AliasName).(*sqlast.Ident)
 	}

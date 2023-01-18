@@ -27,7 +27,7 @@ func XCreateTableTo(stmt *sqlast.CreateTableStmt) (*xast.CreateTableStmt, error)
 func CreateTableTo(stmt *xast.CreateTableStmt) *sqlast.CreateTableStmt {
 	output := &sqlast.CreateTableStmt{
 		Create: posTo(stmt.Create),
-		Name: compoundToObjectname(stmt.Name),
+		Name: objectnameTo(stmt.Name),
 		NotExists: stmt.NotExists}
 
 	for _, item := range stmt.Elements {

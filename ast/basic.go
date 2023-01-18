@@ -82,8 +82,9 @@ func xcompoundTo(idents *sqlast.CompoundIdent) *xast.CompoundIdent {
 func xwildcarditemTo(t *sqlast.QualifiedWildcardSelectItem) *xast.CompoundIdent {
 	if t == nil { return nil }
 
-	comp := xobjectnameTo(t.Prefix)
-	comp.Idents = append(comp.Idents, &xast.Ident{
+	prefix := xobjectnameTo(t.Prefix)
+	comp := &xast.CompoundIdent{}
+	comp.Idents = append(prefix.Idents, &xast.Ident{
 		Value: "*",
 		From: xposTo(t.Pos()),
 		To: xposplusTo(t.Pos())})
@@ -110,14 +111,24 @@ func compoundTo(idents *xast.CompoundIdent) sqlast.Node {
 	return &sqlast.CompoundIdent{Idents:xs}
 }
 
-func xobjectnameTo(idents *sqlast.ObjectName) *xast.CompoundIdent {
+func xobjectnameTo(idents *sqlast.ObjectName) *xast.ObjectName {
 	if idents == nil { return nil }
 
 	var xs []*xast.Ident
 	for _, item := range idents.Idents {
 		xs = append(xs, xidentTo(item))
 	}
-	return &xast.CompoundIdent{Idents:xs}
+	return &xast.ObjectName{Idents:xs}
+}
+
+func objectnameTo(idents *xast.ObjectName) *sqlast.ObjectName {
+	if idents == nil { return nil }
+
+	var xs []*sqlast.Ident
+	for _, item := range idents.Idents {
+		xs = append(xs, identTo(item).(*sqlast.Ident))
+	}
+	return &sqlast.ObjectName{Idents:xs}
 }
 
 func compoundToObjectname(idents *xast.CompoundIdent) *sqlast.ObjectName {
@@ -166,16 +177,16 @@ func jointypeTo(t *xast.JoinType) *sqlast.JoinType {
 		To: posTo(t.To)}
 }
 
-func xstringTo(t *sqlast.SingleQuotedString) *xast.StringUnit {
+func xstringTo(t *sqlast.SingleQuotedString) *xast.SingleQuotedString {
     if t == nil { return nil }
 
-    return &xast.StringUnit{
+    return &xast.SingleQuotedString{
         Value: t.String,
         From: xposTo(t.From),
         To: xposTo(t.To)}
 }
 
-func stringTo(t *xast.StringUnit) *sqlast.SingleQuotedString {
+func stringTo(t *xast.SingleQuotedString) *sqlast.SingleQuotedString {
     if t == nil { return nil }
 
     return &sqlast.SingleQuotedString{
@@ -184,16 +195,16 @@ func stringTo(t *xast.StringUnit) *sqlast.SingleQuotedString {
         To: posTo(t.To)}
 }
 
-func xdoubleTo(t *sqlast.DoubleValue) *xast.DoubleUnit {
+func xdoubleTo(t *sqlast.DoubleValue) *xast.DoubleValue {
     if t == nil { return nil }
 
-    return &xast.DoubleUnit{
+    return &xast.DoubleValue{
         Value: t.Double,
         From: xposTo(t.From),
         To: xposTo(t.To)}
 }
 
-func doubleTo(t *xast.DoubleUnit) *sqlast.DoubleValue {
+func doubleTo(t *xast.DoubleValue) *sqlast.DoubleValue {
     if t == nil { return nil }
 
     return &sqlast.DoubleValue{
@@ -202,16 +213,16 @@ func doubleTo(t *xast.DoubleUnit) *sqlast.DoubleValue {
         To: posTo(t.To)}
 }
 
-func xlongTo(t *sqlast.LongValue) *xast.LongUnit {
+func xlongTo(t *sqlast.LongValue) *xast.LongValue {
     if t == nil { return nil }
 
-    return &xast.LongUnit{
+    return &xast.LongValue{
         Value: t.Long,
         From: xposTo(t.From),
         To: xposTo(t.To)}
 }
 
-func longTo(t *xast.LongUnit) *sqlast.LongValue {
+func longTo(t *xast.LongValue) *sqlast.LongValue {
     if t == nil { return nil }
 
     return &sqlast.LongValue{

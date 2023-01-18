@@ -38,6 +38,10 @@ message CompoundIdent {
 	repeated Ident Idents = 1;
 }
 
+message ObjectName {
+	repeated Ident Idents = 1;
+}
+
 message Operator {
 	OperatorType Type = 1;
 	Pos From = 2;
@@ -82,19 +86,19 @@ message JoinType {
 	Pos To = 3;
 }
 
-message StringUnit {
+message SingleQuotedString {
 	string Value = 1;
 	Pos From = 2;
 	Pos To = 3;
 }
 
-message DoubleUnit {
+message DoubleValue {
 	double Value = 1;
 	Pos From = 2;
 	Pos To = 3;
 }
 
-message LongUnit {
+message LongValue {
 	int64 Value = 1;
 	Pos From = 2;
 	Pos To = 3;
@@ -104,18 +108,18 @@ message BinaryExpr {
 	oneof LeftOneOf {
 		CompoundIdent LeftIdents = 1;
 		BinaryExpr LeftBinary = 2;
-		StringUnit LeftSingleQuoted = 10;
-		DoubleUnit LeftDouble = 11;
-		LongUnit LeftLong = 12;
+		SingleQuotedString LeftSingleQuoted = 10;
+		DoubleValue LeftDouble = 11;
+		LongValue LeftLong = 12;
 	}
 	Operator Op = 3;
 	oneof RightOneOf {
 		CompoundIdent RightIdents = 4;
 		BinaryExpr RightBinary = 5;
 		InSubQuery QueryValue = 6;
-		StringUnit SingleQuotedString = 7;
-		DoubleUnit DoubleValue = 8;
-		LongUnit LongValue = 9;
+		SingleQuotedString SingleQuotedString = 7;
+		DoubleValue DoubleValue = 8;
+		LongValue LongValue = 9;
 	}
 }
 
@@ -161,7 +165,7 @@ message JoinCondition {
 }
 
 message QualifiedJoin {
-	CompoundIdent Name = 1;
+	ObjectName Name = 1;
 	Ident AliasName = 2;
 	QualifiedJoin LeftElement = 3;
 	JoinType TypeCondition = 4;
@@ -178,8 +182,8 @@ message LimitExpr {
 	bool AllBool = 1;
 	Pos AllPos = 2;
 	Pos Limit = 3;
-	LongUnit LimitValue = 4;
-	LongUnit OffsetValue = 5;
+	LongValue LimitValue = 4;
+	LongValue OffsetValue = 5;
 }
 
 message SQLSelectItem {
@@ -405,8 +409,8 @@ message ColumnDef {
 		VarcharType VarcharData = 6;
 	}
 	oneof Default {
-		StringUnit StringDefault = 21;
-		LongUnit LongDefault = 22;
+		SingleQuotedString StringDefault = 21;
+		LongValue LongDefault = 22;
 	}
 	repeated MyDataTypeDecoration MyDecos = 41;
 	repeated ColumnConstraint Constraints = 42;
@@ -478,7 +482,7 @@ message TableOption {
 
 message CreateTableStmt {
 	Pos Create = 1;
-	CompoundIdent Name = 2;
+	ObjectName Name = 2;
 	repeated TableElement Elements = 3;
 	string Location = 4;
 	bool NotExists = 5;
