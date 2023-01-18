@@ -220,17 +220,17 @@ func longTo(t *xast.LongUnit) *sqlast.LongValue {
         To: posTo(t.To)}
 }
 
-func xintTypeTo(t *sqlast.Int) *xast.IntType {
+func xintTo(t *sqlast.Int) *xast.Int {
     if t == nil { return nil }
 
-    return &xast.IntType{
+    return &xast.Int{
         From: xposTo(t.From),
         To: xposTo(t.To),
         IsUnsigned: t.IsUnsigned,
 		Unsigned: xposTo(t.Unsigned)}
 }
 
-func intTypeTo(t *xast.IntType) *sqlast.Int {
+func intTo(t *xast.Int) *sqlast.Int {
     if t == nil { return nil }
 
     return &sqlast.Int{
@@ -238,6 +238,45 @@ func intTypeTo(t *xast.IntType) *sqlast.Int {
         To: posTo(t.To),
         IsUnsigned: t.IsUnsigned,
 		Unsigned: posTo(t.Unsigned)}
+}
+
+func xsmallIntTo(t *sqlast.SmallInt) *xast.SmallInt {
+    if t == nil { return nil }
+
+    return &xast.SmallInt{
+        From: xposTo(t.From),
+        To: xposTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.Unsigned)}
+}
+
+func smallIntTo(t *xast.SmallInt) *sqlast.SmallInt {
+    if t == nil { return nil }
+
+    return &sqlast.SmallInt{
+        From: posTo(t.From),
+        To: posTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: posTo(t.Unsigned)}
+}
+
+func xcharTypeTo(t *sqlast.CharType) *xast.CharType {
+    if t == nil { return nil }
+
+    return &xast.CharType{
+        Size: uint32(*t.Size),
+        From: xposTo(t.From),
+        To: xposTo(t.To)}
+}
+
+func charTypeTo(t *xast.CharType) *sqlast.CharType {
+    if t == nil { return nil }
+
+	size := uint(t.Size)
+    return &sqlast.CharType{
+        Size: &size,
+        From: posTo(t.From),
+        To: posTo(t.To)}
 }
 
 func xvarcharTypeTo(t *sqlast.VarcharType) *xast.VarcharType {

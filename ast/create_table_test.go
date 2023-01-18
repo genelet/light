@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-//	"github.com/k0kubun/pp/v3"
+	"github.com/k0kubun/pp/v3"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -21,11 +21,18 @@ func TestCreateTable(t *testing.T) {
     col4 integer default 100,
     foreign key (col0, col1) references test2(col1, col2),
     CONSTRAINT test_constraint check(col1 > 10)
-);
-`}
+);`,
+	`CREATE TABLE def_state (
+  state_id smallint NOT NULL AUTO_INCREMENT,
+  country_id smallint NOT NULL,
+  state_code char(2),
+  state_name varchar(255),
+  english_name varchar(255),
+  PRIMARY KEY (state_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;`}
 
 	for i, str := range strs {
-		//if i != 17 { continue }
+		if i != 1 { continue }
 		parser, err := xsqlparser.NewParser(bytes.NewBufferString(str), &dialect.GenericSQLDialect{}, xsqlparser.ParseComment())
 		if err != nil { t.Fatal(err) }
 
@@ -33,7 +40,7 @@ func TestCreateTable(t *testing.T) {
 		if err != nil { t.Fatal(err) }
 
 		createTableStmt := file.Stmts[0].(*sqlast.CreateTableStmt)
-//pp.Println(createTableStmt)
+pp.Println(createTableStmt)
 
 		createTable, err := XCreateTableTo(createTableStmt)
 		if err != nil { t.Fatal(err) }

@@ -242,11 +242,65 @@ message QueryStmt {
 
 // start ... create table
 
-message IntType {
+message BigInt {
 	Pos From = 1;
 	Pos To = 2;
 	bool IsUnsigned = 3;
 	Pos Unsigned = 4;
+}
+
+message SmallInt {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message Int {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message Double {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Real {
+	Pos From = 1;
+	Pos To = 2;
+	bool IsUnsigned = 3;
+	Pos Unsigned = 4;
+}
+
+message Float {
+	uint32 Size = 1;
+	Pos From = 2;
+	Pos To = 3;
+	bool IsUnsigned = 4;
+	Pos Unsigned = 5;
+}
+
+message Decimal {
+	uint32 Precision = 1;
+	uint32 Scale = 2;
+	Pos Numeric = 3;
+	Pos RParen = 4;
+	bool IsUnsigned = 5;
+	Pos Unsigned = 6;
+}
+
+message Boolean {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message CharType {
+	uint32 Size = 1;
+	Pos From = 2;
+	Pos To = 3;
 }
 
 message VarcharType {
@@ -256,11 +310,44 @@ message VarcharType {
 	Pos RParen = 4;
 } 
 
-message UniqueColumnSpec {
-	bool IsPrimaryKey = 1;
-	Pos Primary = 2;
-	Pos Key = 3;
-	Pos Unique = 4;
+message Time {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Timestamp {
+	bool WithTimeZone = 1;
+	Pos Timestamp = 2;
+	Pos Zone = 3;
+}
+
+message Date {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Bytea {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Text {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Regclass {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message UUID {
+	Pos From = 1;
+	Pos To = 2;
+}
+
+message Custom {
+	CompoundIdent Ty = 1;
 }
 
 message CheckColumnSpec {
@@ -269,33 +356,60 @@ message CheckColumnSpec {
 	Pos RParen = 3;
 }
 
+message ReferencesColumnSpec {
+	Pos References = 1;
+	Pos RParen = 2;
+	CompoundIdent TableName = 3;
+	repeated Ident Columns = 4;
+}
+
+message UniqueColumnSpec {
+	bool IsPrimaryKey = 1;
+	Pos Primary = 2;
+	Pos Key = 3;
+	Pos Unique = 4;
+}
+
+message NotNullColumnSpec {
+	Pos Not = 1;
+	Pos Null = 2;
+}
+
 message ColumnConstraint {
 	Ident Name = 1;
 	Pos Constraint = 2;
 	oneof Spec {
 		UniqueColumnSpec UniqueSpec = 3;
 		CheckColumnSpec CheckSpec = 4;
+		ReferencesColumnSpec ReferenceSpec = 5;
+		NotNullColumnSpec NotNullSpec = 6;
 	}
 }
 
+message AutoIncrement {
+	Pos Auto = 1;
+	Pos Increment = 2;
+}
+
 message MyDataTypeDecoration {
-	oneof MyDataTypeDecorationClause {
-		Ident MyDataTypeDecorationIdent = 1;
-	}
+	AutoIncrement Automent = 1;
 }
 
 message ColumnDef {
 	Ident Name = 1;
 	oneof DataType {
-		IntType IntData = 2;
-		VarcharType VarcharData = 3;
+		Int IntData = 2;
+		SmallInt SmallIntData = 3;
+		BigInt BigIntData = 4;
+		CharType CharData = 5;
+		VarcharType VarcharData = 6;
 	}
 	oneof Default {
-		StringUnit StringDefault = 8;
-		LongUnit LongDefault = 9;
+		StringUnit StringDefault = 21;
+		LongUnit LongDefault = 22;
 	}
-	repeated MyDataTypeDecoration MyDataTypeDecorations = 14;
-	repeated ColumnConstraint Constraints = 15;
+	repeated MyDataTypeDecoration MyDecos = 41;
+	repeated ColumnConstraint Constraints = 42;
 }
 
 message ReferenceKeyExpr {
@@ -316,12 +430,21 @@ message CheckTableConstraint {
 	BinaryExpr Expr = 3;
 }
 
+message UniqueTableConstraint {
+	Pos Primary = 1;
+	Pos Unique = 2;
+	Pos RParen = 3;
+	bool IsPrimary = 4;
+	repeated Ident Columns = 5;
+}
+	
 message TableConstraint {
 	Pos Constraint = 1;
 	Ident Name = 2;
 	oneof Spec {
 		ReferentialTableConstraint SpecReference = 3;
 		CheckTableConstraint SpecCheck = 4;
+		UniqueTableConstraint SpecUnique = 5;
 	}
 }
 	
@@ -332,9 +455,24 @@ message TableElement {
 	}	
 }
 
+message MyEngine {
+	Pos Engine = 1;
+	bool Equal = 2;
+	Ident Name = 3;
+}
+
+message MyCharset {
+	bool IsDefault = 1;
+	Pos Default = 2;
+	Pos Charset = 3;
+	bool Equal = 4;
+	Ident Name = 5;
+}
+
 message TableOption {
 	oneof TableOptionClause {
-		Ident TableOptionIdent = 1;
+		MyEngine MyEngineOption = 1;
+		MyCharset MyCharsetOption = 2;
 	}
 }
 
