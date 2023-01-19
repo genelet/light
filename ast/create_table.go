@@ -422,3 +422,29 @@ func columnConstraintTo(item *xast.ColumnConstraint) *sqlast.ColumnConstraint {
 	}
 	return output
 }
+
+func XDropTableTo(stmt *sqlast.DropTableStmt) *xast.DropTableStmt {
+    output := &xast.DropTableStmt{
+    	Cascade: stmt.Cascade,
+    	CascadePos: xposTo(stmt.CascadePos),
+    	IfExists: stmt.IfExists,
+    	Drop:  xposTo(Drop)
+	}
+	for _, name := range stmt.TableNames {
+		output.TableNames = append(output.TableNames, xobjectnameTo(name))
+	}
+	return output
+}
+
+func DropTableTo(stmt *xast.DropTableStmt) *sqlast.DropTableStmt {
+    output := &sqlast.DropTableStmt{
+    	Cascade: stmt.Cascade,
+    	CascadePos: posTo(stmt.CascadePos),
+    	IfExists: stmt.IfExists,
+    	Drop:  posTo(Drop)
+	}
+	for _, name := range stmt.TableNames {
+		output.TableNames = append(output.TableNames, objectnameTo(name))
+	}
+	return output
+}
