@@ -410,11 +410,7 @@ message ColumnDef {
 		UUID UUIDData = 7;
 		Timestamp TimestampData = 8;
 	}
-	oneof Default {
-		SingleQuotedString StringDefault = 21;
-		LongValue LongDefault = 22;
-		Ident IdentDefault = 23;
-	}
+	ValueStmt Default = 21;
 	repeated MyDataTypeDecoration MyDecos = 41;
 	repeated ColumnConstraint Constraints = 42;
 }
@@ -497,7 +493,7 @@ message DropTableStmt {
 	bool Cascade = 2;
 	Pos CascadePos = 3;
 	bool IfExists = 4;
-	Pos Drop = 4;
+	Pos Drop = 5;
 }
 
 // end create table
@@ -506,7 +502,7 @@ message DropTableStmt {
 
 message CreateViewStmt {
 	Pos Create = 1;
-	Object Name = 2;
+	ObjectName Name = 2;
 	QueryStmt Query = 3;
 	bool Materialized = 4;
 }
@@ -521,6 +517,16 @@ message WhereStmt {
 		BinaryExpr BinExpr = 2;
 	}
 }
+
+message ValueStmt {
+	oneof ValueStmtClause {
+		SingleQuotedString StringStmtValue = 1;
+		LongValue LongStmtValue = 2;
+		Ident IdentStmtValue = 3;
+	}
+}
+
+// start ... create index
 
 message CreateIndexStmt {
 	Pos Create = 1;
@@ -574,7 +580,7 @@ message AlterTableStmt {
 		AddConstraintTableAction AddConstraintAction = 4;
 		DropConstraintTableAction DropConstraintAction = 5;
 		RemoveColumnTableAction RemoveColumnAction = 6;
-		AlterTableStmt = 7;
+		AlterTableStmt AlterStatement = 7;
 	}
 }
 
@@ -584,8 +590,7 @@ message AlterTableStmt {
 
 message Assignment {
 	Ident ID = 1;
-	oneof Value {
-	}
+	ValueStmt Value = 2;
 }
 
 message SubQuerySource {
@@ -593,7 +598,7 @@ message SubQuerySource {
 }
 
 message RowValueExpr {
-	repeated Values = 1;
+	repeated ValueStmt Values = 1;
 	Pos LParen = 2;
 	Pos RParen = 3;
 }
@@ -603,14 +608,18 @@ message ConstructorSource {
 	repeated RowValueExpr Rows = 2;
 }
 
-message InsertStmt struct {
+message SourceStmt {
+	oneof SourceStmtClause {
+		SubQuerySource SubItem = 4;
+		ConstructorSource StructorItem = 5;
+	}
+}
+	
+message InsertStmt {
 	Pos Insert = 1;
 	ObjectName TableName = 2;
 	repeated Ident Columns = 3;
-	oneof Source {
-		QueryStmt SubSource = 4;
-		ConstructorSource StructorSource = 5;
-	}
+	SourceStmt Source = 5;
 	repeated Assignment UpdateAssignments = 15; // MySQL only (ON DUPLICATED KEYS)
 }
 
@@ -620,7 +629,7 @@ message InsertStmt struct {
 
 message UpdateStmt {
 	Pos Update = 1;
-	Object TableName = 2;
+	ObjectName TableName = 2;
 	repeated Assignment Assignments = 3;
 	WhereStmt Selection = 4;
 }
@@ -631,7 +640,7 @@ message UpdateStmt {
 
 message DeleteStmt {
 	Pos Delete = 1;
-	Object TableName = 2;
+	ObjectName TableName = 2;
 	WhereStmt Selection = 3;
 }
 

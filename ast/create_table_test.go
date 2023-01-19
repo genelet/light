@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/k0kubun/pp/v3"
+//	"github.com/k0kubun/pp/v3"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -60,7 +60,7 @@ FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)
 		if err != nil { t.Fatal(err) }
 
 		createTableStmt := file.Stmts[0].(*sqlast.CreateTableStmt)
-pp.Println(createTableStmt)
+//pp.Println(createTableStmt)
 
 		createTable, err := XCreateTableTo(createTableStmt)
 		if err != nil { t.Fatal(err) }

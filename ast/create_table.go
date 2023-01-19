@@ -229,8 +229,11 @@ func referenceKeyExprTo(item *xast.ReferenceKeyExpr) *sqlast.ReferenceKeyExpr {
 }
 
 func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
+	x, err := xvalueStmtTo(item.Default)
+	if err != nil { return nil, err }
     columnDef := &xast.ColumnDef{
-		Name: xidentTo(item.Name)}
+		Name: xidentTo(item.Name),
+		Default: x}
 	for _, mydeco := range item.MyDataTypeDecoration {
 		x, err := xmyDataTypeDecorationTo(mydeco)
 		if err != nil { return nil, err }
@@ -239,34 +242,16 @@ func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
 	switch t := item.DataType.(type) {
 	case *sqlast.Int:
 		columnDef.DataType = &xast.ColumnDef_IntData{IntData: xintTo(t)}
-		if item.Default != nil {
-			columnDef.Default = &xast.ColumnDef_LongDefault{LongDefault: xlongTo(item.Default.(*sqlast.LongValue))}
-		}
 	case *sqlast.SmallInt:
 		columnDef.DataType = &xast.ColumnDef_SmallIntData{SmallIntData: xsmallIntTo(t)}
-		if item.Default != nil {
-			columnDef.Default = &xast.ColumnDef_LongDefault{LongDefault: xlongTo(item.Default.(*sqlast.LongValue))}
-		}
 	case *sqlast.Timestamp:
         columnDef.DataType = &xast.ColumnDef_TimestampData{TimestampData: xtimestampTo(t)}
-        if item.Default != nil {
-            columnDef.Default = &xast.ColumnDef_IdentDefault{IdentDefault: xidentTo(item.Default.(*sqlast.Ident))}
-        }
 	case *sqlast.UUID:
         columnDef.DataType = &xast.ColumnDef_UUIDData{UUIDData: xuuidTo(t)}
-        if item.Default != nil {
-            columnDef.Default = &xast.ColumnDef_StringDefault{StringDefault: xstringTo(item.Default.(*sqlast.SingleQuotedString))}
-        }
 	case *sqlast.CharType:
 		columnDef.DataType = &xast.ColumnDef_CharData{CharData: xcharTypeTo(t)}
-		if item.Default != nil {
-			columnDef.Default = &xast.ColumnDef_StringDefault{StringDefault: xstringTo(item.Default.(*sqlast.SingleQuotedString))}
-		}
 	case *sqlast.VarcharType:
 		columnDef.DataType = &xast.ColumnDef_VarcharData{VarcharData: xvarcharTypeTo(t)}
-		if item.Default != nil {
-			columnDef.Default = &xast.ColumnDef_StringDefault{StringDefault: xstringTo(item.Default.(*sqlast.SingleQuotedString))}
-		}
 	default:
 		return nil, fmt.Errorf("missing column def type: %T", t)
 	}
@@ -282,41 +267,24 @@ func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
 
 func columnDefTo(item *xast.ColumnDef) *sqlast.ColumnDef {
 	output := &sqlast.ColumnDef{
-		Name: identTo(item.Name).(*sqlast.Ident)}
+		Name: identTo(item.Name).(*sqlast.Ident),
+		Default: valueStmtTo(item.Default)}
 	for _, mydeco := range item.MyDecos {
 		output.MyDataTypeDecoration = append(output.MyDataTypeDecoration, myDataTypeDecorationTo(mydeco))
     }
 
 	if item.GetIntData() != nil {
 		output.DataType = intTo(item.GetIntData())
-		if item.Default != nil {
-			output.Default = longTo(item.GetLongDefault())
-		}
 	} else if item.GetSmallIntData() != nil {
 		output.DataType = smallIntTo(item.GetSmallIntData())
-		if item.Default != nil {
-			output.Default = longTo(item.GetLongDefault())
-		}
     } else if item.GetTimestampData() != nil {
         output.DataType = timestampTo(item.GetTimestampData())
-        if item.Default != nil {
-            output.Default = identTo(item.GetIdentDefault())
-        }
     } else if item.GetUUIDData() != nil {
         output.DataType = uuidTo(item.GetUUIDData())
-        if item.Default != nil {
-            output.Default = stringTo(item.GetStringDefault())
-        }
 	} else if item.GetCharData() != nil {
 		output.DataType = charTypeTo(item.GetCharData())
-		if item.Default != nil {
-			output.Default = stringTo(item.GetStringDefault())
-		}
 	} else { // GetVarcharData()
 		output.DataType = varcharTypeTo(item.GetVarcharData())
-		if item.Default != nil {
-			output.Default = stringTo(item.GetStringDefault())
-		}
 	}
 	for _, constraint := range item.Constraints {
 		output.Constraints = append(output.Constraints, columnConstraintTo(constraint))
@@ -428,8 +396,7 @@ func XDropTableTo(stmt *sqlast.DropTableStmt) *xast.DropTableStmt {
     	Cascade: stmt.Cascade,
     	CascadePos: xposTo(stmt.CascadePos),
     	IfExists: stmt.IfExists,
-    	Drop:  xposTo(Drop)
-	}
+    	Drop:  xposTo(stmt.Drop)}
 	for _, name := range stmt.TableNames {
 		output.TableNames = append(output.TableNames, xobjectnameTo(name))
 	}
@@ -441,8 +408,7 @@ func DropTableTo(stmt *xast.DropTableStmt) *sqlast.DropTableStmt {
     	Cascade: stmt.Cascade,
     	CascadePos: posTo(stmt.CascadePos),
     	IfExists: stmt.IfExists,
-    	Drop:  posTo(Drop)
-	}
+    	Drop:  posTo(stmt.Drop)}
 	for _, name := range stmt.TableNames {
 		output.TableNames = append(output.TableNames, objectnameTo(name))
 	}

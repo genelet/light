@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"fmt"
 	"github.com/genelet/sqlproto/xast"
 	"github.com/akito0107/xsqlparser/sqlast"
 )
@@ -16,7 +15,7 @@ func XCreateViewTo(stmt *sqlast.CreateViewStmt) (*xast.CreateViewStmt, error) {
 }
 
 func CreateViewTo(stmt *xast.CreateViewStmt) *sqlast.CreateViewStmt {
-	return &xast.CreateViewStmt{
+	return &sqlast.CreateViewStmt{
 		Create: posTo(stmt.Create),
 		Name: objectnameTo(stmt.Name),
 		Query: QueryTo(stmt.Query),
