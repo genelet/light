@@ -572,16 +572,19 @@ message RemoveColumnTableAction {
 	Pos Drop = 4;
 }
 
+message AlterTableAction {
+	oneof AlterTableActionClause {
+		AddColumnTableAction AddColumnItem = 3;
+		AddConstraintTableAction AddConstraintItem = 4;
+		DropConstraintTableAction DropConstraintItem = 5;
+		RemoveColumnTableAction RemoveColumnItem = 6;
+	}
+}
+
 message AlterTableStmt {
 	Pos Alter = 1;
 	ObjectName TableName = 2;
-	oneof Action {
-		AddColumnTableAction AddColumnAction = 3;
-		AddConstraintTableAction AddConstraintAction = 4;
-		DropConstraintTableAction DropConstraintAction = 5;
-		RemoveColumnTableAction RemoveColumnAction = 6;
-		AlterTableStmt AlterStatement = 7;
-	}
+	AlterTableAction Action = 3;
 }
 
 // end alter table

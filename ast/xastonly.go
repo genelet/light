@@ -100,3 +100,46 @@ func sourceStmtTo(stmt *xast.SourceStmt) sqlast.InsertSource {
     }
 	return nil
 }
+
+func xalterTableActionTo(stmt sqlast.AlterTableAction) (*xast.AlterTableAction, error) {
+	if stmt == nil { return nil, nil }
+
+	output := &xast.AlterTableAction{}
+    switch t := stmt.(type) {
+    case *sqlast.AddColumnTableAction:
+        x, err := xaddColumnTableActionTo(t)
+        if err != nil { return nil, err }
+        output.AlterTableActionClause = &xast.AlterTableAction_AddColumnItem{AddColumnItem: x}
+    case *sqlast.AddConstraintTableAction:
+        x, err := xaddConstraintTableActionTo(t)
+        if err != nil { return nil, err }
+        output.AlterTableActionClause = &xast.AlterTableAction_AddConstraintItem{AddConstraintItem: x}
+    case *sqlast.DropConstraintTableAction:
+        x, err := xdropConstraintTableActionTo(t)
+        if err != nil { return nil, err }
+        output.AlterTableActionClause = &xast.AlterTableAction_DropConstraintItem{DropConstraintItem: x}
+    case *sqlast.RemoveColumnTableAction:
+        x, err := xremoveColumnTableActionTo(t)
+        if err != nil { return nil, err }
+        output.AlterTableActionClause = &xast.AlterTableAction_RemoveColumnItem{RemoveColumnItem: x}
+    default:
+        return nil, fmt.Errorf("missing actio node type %T", t)
+    }
+
+	return output, nil
+}
+
+func alterTableActionTo(stmt *xast.AlterTableAction) sqlast.AlterTableAction {
+	if stmt == nil { return nil }
+
+	if x := stmt.GetAddColumnItem(); x != nil {
+        return addColumnTableActionTo(x)
+    } else if x := stmt.GetAddConstraintItem(); x != nil {
+        return addConstraintTableActionTo(x)
+    } else if x := stmt.GetDropConstraintItem(); x != nil {
+        return dropConstraintTableActionTo(x)
+    } else if x := stmt.GetRemoveColumnItem(); x != nil {
+        return removeColumnTableActionTo(x)
+    }
+	return nil
+}
