@@ -492,9 +492,35 @@ message CreateTableStmt {
 	repeated TableOption Options = 6;
 }
 
-// end ... create table
+message DropTableStmt {
+	repeated ObjectName TableNames = 1;
+	bool Cascade = 2;
+	Pos CascadePos = 3;
+	bool IfExists = 4;
+	Pos Drop = 4;
+}
+
+// end create table
+
+// start ... create view
+
+message CreateViewStmt {
+	Pos Create = 1;
+	Object Name = 2;
+	QueryStmt Query = 3;
+	bool Materialized = 4;
+}
+
+// end create view
 
 // start ... create index
+
+message WhereStmt {
+	oneof WhereStmtClause {
+        InSubQuery InQuery = 1;
+		BinaryExpr BinExpr = 2;
+	}
+}
 
 message CreateIndexStmt {
 	Pos Create = 1;
@@ -504,10 +530,109 @@ message CreateIndexStmt {
 	Ident MethodName = 5;
 	repeated Ident ColumnNames = 6;
 	Pos RParen = 7;
-	oneof Selection {
-        InSubQuery InQuery = 8;
-		BinaryExpr BinExpr = 9;
+	WhereStmt Selection = 8;
+}
+
+message DropIndexStmt {
+	Pos Drop = 1;
+	repeated Ident IndexNames = 2;
+}
+
+// end create index
+
+// start ... alter table
+
+message AddColumnTableAction {
+	Pos Add = 1;
+	ColumnDef Column = 2;
+}
+
+message AddConstraintTableAction {
+	Pos Add = 1;
+	TableConstraint Constraint = 2;
+}
+
+message DropConstraintTableAction {
+	ObjectName Name = 1;
+	Pos Drop = 2;
+	bool Cascade = 3;
+	Pos CascadePos = 4;
+}
+
+message RemoveColumnTableAction {
+	Ident Name = 1;
+	bool Cascade = 2;
+	Pos CascadePos = 3;
+	Pos Drop = 4;
+}
+
+message AlterTableStmt {
+	Pos Alter = 1;
+	ObjectName TableName = 2;
+	oneof Action {
+		AddColumnTableAction AddColumnAction = 3;
+		AddConstraintTableAction AddConstraintAction = 4;
+		DropConstraintTableAction DropConstraintAction = 5;
+		RemoveColumnTableAction RemoveColumnAction = 6;
+		AlterTableStmt = 7;
 	}
 }
 
-// end ... create index
+// end alter table
+
+// start ... insert
+
+message Assignment {
+	Ident ID = 1;
+	oneof Value {
+	}
+}
+
+message SubQuerySource {
+	QueryStmt SubQuery = 1;
+}
+
+message RowValueExpr {
+	repeated Values = 1;
+	Pos LParen = 2;
+	Pos RParen = 3;
+}
+
+message ConstructorSource {
+	Pos Values = 1;
+	repeated RowValueExpr Rows = 2;
+}
+
+message InsertStmt struct {
+	Pos Insert = 1;
+	ObjectName TableName = 2;
+	repeated Ident Columns = 3;
+	oneof Source {
+		QueryStmt SubSource = 4;
+		ConstructorSource StructorSource = 5;
+	}
+	repeated Assignment UpdateAssignments = 15; // MySQL only (ON DUPLICATED KEYS)
+}
+
+// end insert
+
+// start ... update
+
+message UpdateStmt {
+	Pos Update = 1;
+	Object TableName = 2;
+	repeated Assignment Assignments = 3;
+	WhereStmt Selection = 4;
+}
+
+// end update
+
+// start ... delete
+
+message DeleteStmt {
+	Pos Delete = 1;
+	Object TableName = 2;
+	WhereStmt Selection = 3;
+}
+
+// end delete
