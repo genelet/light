@@ -6,7 +6,7 @@ import (
 )
 
 func XUpdateTo(stmt *sqlast.UpdateStmt) (*xast.UpdateStmt, error) {
-	selection, err := xwhereStmtTo(stmt.Selection)
+	selection, err := xwhereNodeTo(stmt.Selection)
 	if err != nil { return nil, err }
 
 	output := &xast.UpdateStmt{
@@ -25,7 +25,7 @@ func UpdateTo(stmt *xast.UpdateStmt) *sqlast.UpdateStmt {
 	output := &sqlast.UpdateStmt{
 		Update: posTo(stmt.Update),
 		TableName: objectnameTo(stmt.TableName),
-		Selection: whereStmtTo(stmt.Selection)}
+		Selection: whereNodeTo(stmt.Selection)}
 	for _, assignment := range stmt.Assignments {
 		output.Assignments = append(output.Assignments, assignmentTo(assignment))
 	}

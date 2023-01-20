@@ -6,7 +6,7 @@ import (
 )
 
 func XInsertTo(stmt *sqlast.InsertStmt) (*xast.InsertStmt, error) {
-	source, err := xsourceStmtTo(stmt.Source)
+	source, err := xinsertSourceTo(stmt.Source)
 	if err != nil { return nil, err }
 
 	output := &xast.InsertStmt{
@@ -28,7 +28,7 @@ func InsertTo(stmt *xast.InsertStmt) *sqlast.InsertStmt {
 	output := &sqlast.InsertStmt{
 		Insert: posTo(stmt.Insert),
 		TableName: objectnameTo(stmt.TableName),
-		Source: sourceStmtTo(stmt.Source)}
+		Source: insertSourceTo(stmt.Source)}
 	for _, column := range stmt.Columns {
 		output.Columns = append(output.Columns, identTo(column).(*sqlast.Ident))
 	}
@@ -63,7 +63,7 @@ func xrowValueExprTo(item *sqlast.RowValueExpr) (*xast.RowValueExpr, error) {
 		LParen: xposTo(item.LParen),
 		RParen: xposTo(item.RParen)}
 	for _, value := range item.Values {
-		x, err := xvalueStmtTo(value)
+		x, err := xvalueNodeTo(value)
 		if err != nil { return nil, err }
 		output.Values = append(output.Values, x)
 	}
@@ -75,13 +75,13 @@ func rowValueExprTo(item *xast.RowValueExpr) *sqlast.RowValueExpr {
 		LParen: posTo(item.LParen),
 		RParen: posTo(item.RParen)}
 	for _, value := range item.Values {
-		output.Values = append(output.Values, valueStmtTo(value))
+		output.Values = append(output.Values, valueNodeTo(value))
 	}
 	return output
 }
 
 func xassignmentTo(item *sqlast.Assignment) (*xast.Assignment, error) {
-	x, err := xvalueStmtTo(item.Value)
+	x, err := xvalueNodeTo(item.Value)
 	if err != nil { return nil, err }
 	return &xast.Assignment{
 		ID: xidentTo(item.ID),
@@ -91,5 +91,5 @@ func xassignmentTo(item *sqlast.Assignment) (*xast.Assignment, error) {
 func assignmentTo(item *xast.Assignment) *sqlast.Assignment {
 	return &sqlast.Assignment{
 		ID: identTo(item.ID).(*sqlast.Ident),
-		Value: valueStmtTo(item.Value)}
+		Value: valueNodeTo(item.Value)}
 }

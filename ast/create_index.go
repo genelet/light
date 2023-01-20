@@ -6,7 +6,7 @@ import (
 )
 
 func XCreateIndexTo(stmt *sqlast.CreateIndexStmt) (*xast.CreateIndexStmt, error) {
-	selection, err := xwhereStmtTo(stmt.Selection)
+	selection, err := xwhereNodeTo(stmt.Selection)
 	if err != nil { return nil, err }
 
 	output := &xast.CreateIndexStmt{
@@ -30,7 +30,7 @@ func CreateIndexTo(stmt *xast.CreateIndexStmt) *sqlast.CreateIndexStmt {
 		RParen: posTo(stmt.RParen),
 		TableName: objectnameTo(stmt.TableName),
 		IsUnique: stmt.IsUnique,
-		Selection: whereStmtTo(stmt.Selection)}
+		Selection: whereNodeTo(stmt.Selection)}
 	if iname := identTo(stmt.IndexName); iname != nil {
 		output.IndexName = iname.(*sqlast.Ident)
 	}

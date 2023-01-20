@@ -379,15 +379,19 @@ message NotNullColumnSpec {
 	Pos Null = 2;
 }
 
+message ColumnConstraintSpec {
+	oneof ColumnConstraintSpecClause {
+		UniqueColumnSpec UniqueItem = 3;
+		CheckColumnSpec CheckItem = 4;
+		ReferencesColumnSpec ReferenceItem = 5;
+		NotNullColumnSpec NotNullItem = 6;
+	}
+}
+
 message ColumnConstraint {
 	Ident Name = 1;
 	Pos Constraint = 2;
-	oneof Spec {
-		UniqueColumnSpec UniqueSpec = 3;
-		CheckColumnSpec CheckSpec = 4;
-		ReferencesColumnSpec ReferenceSpec = 5;
-		NotNullColumnSpec NotNullSpec = 6;
-	}
+	ColumnConstraintSpec Spec = 3;
 }
 
 message AutoIncrement {
@@ -399,9 +403,8 @@ message MyDataTypeDecoration {
 	AutoIncrement Automent = 1;
 }
 
-message ColumnDef {
-	Ident Name = 1;
-	oneof DataType {
+message Type {
+	oneof TypeClause {
 		Int IntData = 2;
 		SmallInt SmallIntData = 3;
 		BigInt BigIntData = 4;
@@ -410,9 +413,14 @@ message ColumnDef {
 		UUID UUIDData = 7;
 		Timestamp TimestampData = 8;
 	}
-	ValueStmt Default = 21;
-	repeated MyDataTypeDecoration MyDecos = 41;
-	repeated ColumnConstraint Constraints = 42;
+}
+
+message ColumnDef {
+	Ident Name = 1;
+	Type DataType = 2;
+	ValueNode Default = 3;
+	repeated MyDataTypeDecoration MyDecos = 4;
+	repeated ColumnConstraint Constraints = 5;
 }
 
 message ReferenceKeyExpr {
@@ -441,14 +449,18 @@ message UniqueTableConstraint {
 	repeated Ident Columns = 5;
 }
 	
+message TableConstraintSpec {
+	oneof TableContraintSpecClause {
+		ReferentialTableConstraint ReferenceItem = 3;
+		CheckTableConstraint CheckItem = 4;
+		UniqueTableConstraint UniqueItem = 5;
+	}
+}
+
 message TableConstraint {
 	Pos Constraint = 1;
 	Ident Name = 2;
-	oneof Spec {
-		ReferentialTableConstraint SpecReference = 3;
-		CheckTableConstraint SpecCheck = 4;
-		UniqueTableConstraint SpecUnique = 5;
-	}
+	TableConstraintSpec Spec = 3;
 }
 	
 message TableElement {
@@ -509,17 +521,15 @@ message CreateViewStmt {
 
 // end create view
 
-// start ... create index
-
-message WhereStmt {
-	oneof WhereStmtClause {
+message WhereNode {
+	oneof WhereNodeClause {
         InSubQuery InQuery = 1;
 		BinaryExpr BinExpr = 2;
 	}
 }
 
-message ValueStmt {
-	oneof ValueStmtClause {
+message ValueNode {
+	oneof ValueNodeClause {
 		SingleQuotedString StringStmtValue = 1;
 		LongValue LongStmtValue = 2;
 		Ident IdentStmtValue = 3;
@@ -536,7 +546,7 @@ message CreateIndexStmt {
 	Ident MethodName = 5;
 	repeated Ident ColumnNames = 6;
 	Pos RParen = 7;
-	WhereStmt Selection = 8;
+	WhereNode Selection = 8;
 }
 
 message DropIndexStmt {
@@ -593,7 +603,7 @@ message AlterTableStmt {
 
 message Assignment {
 	Ident ID = 1;
-	ValueStmt Value = 2;
+	ValueNode Value = 2;
 }
 
 message SubQuerySource {
@@ -601,7 +611,7 @@ message SubQuerySource {
 }
 
 message RowValueExpr {
-	repeated ValueStmt Values = 1;
+	repeated ValueNode Values = 1;
 	Pos LParen = 2;
 	Pos RParen = 3;
 }
@@ -611,8 +621,8 @@ message ConstructorSource {
 	repeated RowValueExpr Rows = 2;
 }
 
-message SourceStmt {
-	oneof SourceStmtClause {
+message InsertSource {
+	oneof InsertSourceClause {
 		SubQuerySource SubItem = 4;
 		ConstructorSource StructorItem = 5;
 	}
@@ -622,7 +632,7 @@ message InsertStmt {
 	Pos Insert = 1;
 	ObjectName TableName = 2;
 	repeated Ident Columns = 3;
-	SourceStmt Source = 5;
+	InsertSource Source = 5;
 	repeated Assignment UpdateAssignments = 15; // MySQL only (ON DUPLICATED KEYS)
 }
 
@@ -634,7 +644,7 @@ message UpdateStmt {
 	Pos Update = 1;
 	ObjectName TableName = 2;
 	repeated Assignment Assignments = 3;
-	WhereStmt Selection = 4;
+	WhereNode Selection = 4;
 }
 
 // end update
@@ -644,7 +654,7 @@ message UpdateStmt {
 message DeleteStmt {
 	Pos Delete = 1;
 	ObjectName TableName = 2;
-	WhereStmt Selection = 3;
+	WhereNode Selection = 3;
 }
 
 // end delete

@@ -6,7 +6,7 @@ import (
 )
 
 func XDeleteTo(stmt *sqlast.DeleteStmt) (*xast.DeleteStmt, error) {
-	selection, err := xwhereStmtTo(stmt.Selection)
+	selection, err := xwhereNodeTo(stmt.Selection)
 	if err != nil { return nil, err }
 
 	return &xast.DeleteStmt{
@@ -19,5 +19,5 @@ func DeleteTo(stmt *xast.DeleteStmt) *sqlast.DeleteStmt {
 	return &sqlast.DeleteStmt{
 		Delete: posTo(stmt.Delete),
 		TableName: objectnameTo(stmt.TableName),
-		Selection: whereStmtTo(stmt.Selection)}
+		Selection: whereNodeTo(stmt.Selection)}
 }

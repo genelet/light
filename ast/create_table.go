@@ -44,120 +44,20 @@ func CreateTableTo(stmt *xast.CreateTableStmt) *sqlast.CreateTableStmt {
 	return output
 }
 
-func xtableElementTo(item sqlast.TableElement) (*xast.TableElement, error) {
-	element := new(xast.TableElement)
-	switch t := item.(type) {
-	case *sqlast.ColumnDef:
-		x, err := xcolumnDefTo(t)
-		if err != nil { return nil, err }
-		element.TableElementClause = &xast.TableElement_ColumnDefElement{
-			ColumnDefElement:x}
-	case *sqlast.TableConstraint:
-		x, err := xtableConstraintTo(t)
-		if err != nil { return nil, err }
-		element.TableElementClause = &xast.TableElement_TableConstraintElement{
-			TableConstraintElement: x}
-	default:
-		return nil, fmt.Errorf("missing table element type %T", t)
-	}
-	return element, nil
-}
-
-func tableElementTo(item *xast.TableElement) sqlast.TableElement {
-	if item.GetColumnDefElement() != nil {
-		return columnDefTo(item.GetColumnDefElement())
-	}
-	return tableConstraintTo(item.GetTableConstraintElement())
-}
-
-func xtableOptionTo(item sqlast.TableOption) (*xast.TableOption, error) {
-	output := &xast.TableOption{}
-	switch t := item.(type) {
-	case *sqlast.MyEngine:
-		output.TableOptionClause = &xast.TableOption_MyEngineOption{MyEngineOption:
-            &xast.MyEngine{
-                Engine: xposTo(t.Engine),
-                Equal: t.Equal,
-                Name: xidentTo(t.Name)}}
-	case *sqlast.MyCharset:
-		output.TableOptionClause = &xast.TableOption_MyCharsetOption{MyCharsetOption:
-            &xast.MyCharset{
-                IsDefault: t.IsDefault,
-                Default: xposTo(t.Default),
-                Charset: xposTo(t.Charset),
-                Equal: t.Equal,
-                Name: xidentTo(t.Name)}}
-	default:
-		return nil, fmt.Errorf("missing table element type %T", item)
-	}
-	return output, nil
-}
-
-func tableOptionTo(item *xast.TableOption) sqlast.TableOption {
-    if x := item.GetMyEngineOption(); x != nil {
-        return &sqlast.MyEngine{
-            Engine: posTo(x.Engine),
-            Equal: x.Equal,
-            Name: identTo(x.Name).(*sqlast.Ident)}
-    } else if x := item.GetMyCharsetOption(); x != nil {
-		return &sqlast.MyCharset{
-            IsDefault: x.IsDefault,
-            Default: posTo(x.Default),
-            Charset: posTo(x.Charset),
-			Equal: x.Equal,
-            Name: identTo(x.Name).(*sqlast.Ident)}
-	}
-	return nil
-}
-
 func xtableConstraintTo(item *sqlast.TableConstraint) (*xast.TableConstraint, error) {
-	output := &xast.TableConstraint{
+	x, err := xtableConstraintSpecTo(item.Spec)
+	return &xast.TableConstraint{
 		Constraint: xposTo(item.Constraint),
-		Name: xidentTo(item.Name)}
-	switch t := item.Spec.(type) {
-	case *sqlast.ReferentialTableConstraint:
-		x, err := xreferentialTableConstraintTo(t)
-		if err != nil { return nil, err }
-		output.Spec = &xast.TableConstraint_SpecReference{SpecReference: x}
-	case *sqlast.UniqueTableConstraint:
-		x, err := xuniqueTableConstraintTo(t)
-		if err != nil { return nil, err }
-		output.Spec = &xast.TableConstraint_SpecUnique{SpecUnique: x}
-	case *sqlast.CheckTableConstraint:
-		switch s := t.Expr.(type) {
-		case *sqlast.BinaryExpr:
-			x, err := xbinaryExprTo(s)
-			if err != nil { return nil, err }
-			output.Spec = &xast.TableConstraint_SpecCheck{
-				SpecCheck: &xast.CheckTableConstraint{
-					Check: xposTo(t.Check),
-					RParen: xposTo(t.RParen),
-					Expr: x}}
-		default:
-			return nil, fmt.Errorf("missing type in table constaint Spec: %T", s)
-		}
-	default:
-		return nil, fmt.Errorf("missing type in table constaint: %T", t)
-	}
-	return output, nil
+		Name: xidentTo(item.Name),
+		Spec: x}, err
 }
 
 func tableConstraintTo(item *xast.TableConstraint) *sqlast.TableConstraint {
 	output := &sqlast.TableConstraint{
-		Constraint: posTo(item.Constraint)}
+		Constraint: posTo(item.Constraint),
+		Spec: tableConstraintSpecTo(item.Spec)}
 	if item.Name != nil {
 		output.Name = identTo(item.Name).(*sqlast.Ident)
-	}
-	if x := item.GetSpecReference(); x != nil {
-		output.Spec = referentialTableConstraintTo(x)
-	} else if x := item.GetSpecUnique(); x != nil {
-		output.Spec = uniqueTableConstraintTo(x)
-	} else {
-		x := item.GetSpecCheck()
-		output.Spec = &sqlast.CheckTableConstraint{
-			Check: posTo(x.Check),
-			RParen: posTo(x.RParen),
-			Expr: binaryExprTo(x.Expr)}
 	}
 	return output
 }
@@ -229,31 +129,18 @@ func referenceKeyExprTo(item *xast.ReferenceKeyExpr) *sqlast.ReferenceKeyExpr {
 }
 
 func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
-	x, err := xvalueStmtTo(item.Default)
+	x, err := xvalueNodeTo(item.Default)
+	if err != nil { return nil, err }
+	y, err := xtypeTo(item.DataType)
 	if err != nil { return nil, err }
     columnDef := &xast.ColumnDef{
 		Name: xidentTo(item.Name),
-		Default: x}
+		Default: x,
+		DataType: y}
 	for _, mydeco := range item.MyDataTypeDecoration {
 		x, err := xmyDataTypeDecorationTo(mydeco)
 		if err != nil { return nil, err }
 		columnDef.MyDecos = append(columnDef.MyDecos, x)
-	}
-	switch t := item.DataType.(type) {
-	case *sqlast.Int:
-		columnDef.DataType = &xast.ColumnDef_IntData{IntData: xintTo(t)}
-	case *sqlast.SmallInt:
-		columnDef.DataType = &xast.ColumnDef_SmallIntData{SmallIntData: xsmallIntTo(t)}
-	case *sqlast.Timestamp:
-        columnDef.DataType = &xast.ColumnDef_TimestampData{TimestampData: xtimestampTo(t)}
-	case *sqlast.UUID:
-        columnDef.DataType = &xast.ColumnDef_UUIDData{UUIDData: xuuidTo(t)}
-	case *sqlast.CharType:
-		columnDef.DataType = &xast.ColumnDef_CharData{CharData: xcharTypeTo(t)}
-	case *sqlast.VarcharType:
-		columnDef.DataType = &xast.ColumnDef_VarcharData{VarcharData: xvarcharTypeTo(t)}
-	default:
-		return nil, fmt.Errorf("missing column def type: %T", t)
 	}
 
 	for _, constraint := range item.Constraints {
@@ -268,27 +155,16 @@ func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
 func columnDefTo(item *xast.ColumnDef) *sqlast.ColumnDef {
 	output := &sqlast.ColumnDef{
 		Name: identTo(item.Name).(*sqlast.Ident),
-		Default: valueStmtTo(item.Default)}
+		Default: valueNodeTo(item.Default),
+		DataType: typeTo(item.DataType)}
 	for _, mydeco := range item.MyDecos {
 		output.MyDataTypeDecoration = append(output.MyDataTypeDecoration, myDataTypeDecorationTo(mydeco))
     }
-
-	if item.GetIntData() != nil {
-		output.DataType = intTo(item.GetIntData())
-	} else if item.GetSmallIntData() != nil {
-		output.DataType = smallIntTo(item.GetSmallIntData())
-    } else if item.GetTimestampData() != nil {
-        output.DataType = timestampTo(item.GetTimestampData())
-    } else if item.GetUUIDData() != nil {
-        output.DataType = uuidTo(item.GetUUIDData())
-	} else if item.GetCharData() != nil {
-		output.DataType = charTypeTo(item.GetCharData())
-	} else { // GetVarcharData()
-		output.DataType = varcharTypeTo(item.GetVarcharData())
-	}
+	
 	for _, constraint := range item.Constraints {
-		output.Constraints = append(output.Constraints, columnConstraintTo(constraint))
-    }
+		x := columnConstraintTo(constraint)
+		output.Constraints = append(output.Constraints, x)
+	}
 
 	return output
 }
@@ -311,82 +187,19 @@ func myDataTypeDecorationTo(item *xast.MyDataTypeDecoration) sqlast.MyDataTypeDe
 }
 
 func xcolumnConstraintTo(item *sqlast.ColumnConstraint) (*xast.ColumnConstraint, error) {
-    output := &xast.ColumnConstraint{
+	x, err := xcolumnConstraintSpecTo(item.Spec)
+    return &xast.ColumnConstraint{
         Name: xidentTo(item.Name),
-		Constraint: xposTo(item.Constraint)}
-    switch t := item.Spec.(type) {
-    case *sqlast.CheckColumnSpec:
-		switch s := t.Expr.(type) {
-		case *sqlast.BinaryExpr:
-        	x, err := xbinaryExprTo(s)
-			if err != nil { return nil, err }
-        	output.Spec = &xast.ColumnConstraint_CheckSpec{CheckSpec:
-				&xast.CheckColumnSpec{
-					Expr: x,
-					Check: xposTo(t.Check),
-					RParen: xposTo(t.RParen)}}
-		default:
-			return nil, fmt.Errorf("missing column constraint Expr type: %T", s)
-		}
-    case *sqlast.UniqueColumnSpec:
-        output.Spec = &xast.ColumnConstraint_UniqueSpec{UniqueSpec:
-			&xast.UniqueColumnSpec{
-				IsPrimaryKey: t.IsPrimaryKey,
-				Primary: xposTo(t.Primary),
-				Key: xposTo(t.Key),
-				Unique: xposTo(t.Unique)}}
-    case *sqlast.NotNullColumnSpec:
-        output.Spec = &xast.ColumnConstraint_NotNullSpec{NotNullSpec:
-			&xast.NotNullColumnSpec{
-				Not: xposTo(t.Not),
-				Null: xposTo(t.Null)}}
-    case *sqlast.ReferencesColumnSpec:
-		ref := &xast.ReferencesColumnSpec{
-			References: xposTo(t.References),
-			RParen: xposTo(t.RParen),
-			TableName: xobjectnameTo(t.TableName)}
-		for _, column := range t.Columns {
-			ref.Columns = append(ref.Columns, xidentTo(column))
-		}
-        output.Spec = &xast.ColumnConstraint_ReferenceSpec{ReferenceSpec: ref}
-    default:
-        return nil, fmt.Errorf("missing column constraint type: %T", t)
-    }
-
-    return output, nil
+		Constraint: xposTo(item.Constraint),
+		Spec: x}, err
 }
 
 func columnConstraintTo(item *xast.ColumnConstraint) *sqlast.ColumnConstraint {
     output := &sqlast.ColumnConstraint{
-		Constraint: posTo(item.Constraint)}
+		Constraint: posTo(item.Constraint),
+		Spec: columnConstraintSpecTo(item.Spec)}
 	if item.Name != nil {
 		output.Name = identTo(item.Name).(*sqlast.Ident)
-	}
-	if x := item.GetUniqueSpec(); x != nil {
-		output.Spec = &sqlast.UniqueColumnSpec{
-			IsPrimaryKey: x.IsPrimaryKey,
-			Primary: posTo(x.Primary),
-			Key: posTo(x.Key),
-			Unique: posTo(x.Unique)}
-	} else if x := item.GetNotNullSpec(); x != nil {
-		output.Spec = &sqlast.NotNullColumnSpec{
-			Not: posTo(x.Not),
-			Null: posTo(x.Null)}
-	} else if x := item.GetReferenceSpec(); x != nil {
-		ref := &sqlast.ReferencesColumnSpec{
-			References: posTo(x.References),
-			RParen: posTo(x.RParen),
-			TableName: objectnameTo(x.TableName)}
-		for _, column := range x.Columns {
-			ref.Columns = append(ref.Columns, identTo(column).(*sqlast.Ident))
-		}
-		output.Spec = ref
-	} else {
-		x := item.GetCheckSpec()
-		output.Spec = &sqlast.CheckColumnSpec{
-			Expr: binaryExprTo(x.Expr),
-			Check: posTo(x.Check),
-			RParen: posTo(x.RParen)}
 	}
 	return output
 }
