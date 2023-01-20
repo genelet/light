@@ -348,60 +348,31 @@ func varcharTypeTo(t *xast.VarcharType) *sqlast.VarcharType {
 func xfunctionTo(s *sqlast.Function) (*xast.AggFunction, error) {
 	name := s.Name.Idents[0]
 	aggType := xast.AggType(xast.AggType_value[strings.ToUpper(name.Value)])
-	var args []*xast.AggFunction_ArgsMessage
-	for _, item := range s.Args {
-		arg := new(xast.AggFunction_ArgsMessage)
-		switch t := item.(type) {
-		case *sqlast.Ident:
-			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldIdents{FieldIdents: xidentsTo(t)}
-		case *sqlast.CompoundIdent:
-			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldIdents{FieldIdents: xcompoundTo(t)}
-		case *sqlast.Wildcard:
-			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldIdents{FieldIdents: xwildcardsTo(t)}
-		case *sqlast.Function:
-			fieldFunction, err := xfunctionTo(t)
-			if err != nil { return nil, err }
-			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldFunction{FieldFunction: fieldFunction}
-		case *sqlast.CaseExpr:
-			fieldCase, err := xcaseExprTo(t)
-			if err != nil { return nil, err }
-			arg.ArgsClause = &xast.AggFunction_ArgsMessage_FieldCase{FieldCase: fieldCase}
-		default:
-			return nil, fmt.Errorf("args type not found: %T", t)	
-		}
-		args = append(args, arg)
-	}
-	return &xast.AggFunction{
+	output := &xast.AggFunction{
 		TypeName: aggType,
-		RestArgs: args,
 		From: xposTo(name.From),
-		To: xposTo(name.To)}, nil
+		To: xposTo(name.To)}
+	for _, item := range s.Args {
+		x, err := xargsNodeTo(item)
+		if err != nil { return nil, err }
+		output.RestArgs = append(output.RestArgs, x)
+	}
+	return output, nil
 }
 
 func functionTo(f *xast.AggFunction) *sqlast.Function {
     if f == nil { return nil }
 
 	aggname := xast.AggType_name[int32(f.TypeName)]
-	on := &sqlast.ObjectName{Idents:[]*sqlast.Ident{&sqlast.Ident{
-		Value: aggname,
-		From: posTo(f.From),
-		To: posTo(f.To)}}}
-
-	var args []sqlast.Node
+	output := &sqlast.Function{
+		Name: &sqlast.ObjectName{Idents:[]*sqlast.Ident{&sqlast.Ident{
+			Value: aggname,
+			From: posTo(f.From),
+			To: posTo(f.To)}}}}
 	for _, item := range f.RestArgs {
-		var arg sqlast.Node
-		if item.GetFieldIdents() != nil {
-			arg = compoundTo(item.GetFieldIdents())
-		} else if item.GetFieldFunction() != nil {
-			arg = functionTo(item.GetFieldFunction())	
-		} else if item.GetFieldCase() != nil {
-			arg = caseExprTo(item.GetFieldCase())	
-		}
-		args = append(args, arg)
+		output.Args = append(output.Args, argsNodeTo(item))
 	}
-	return &sqlast.Function{
-		Name: on,
-		Args: args}
+	return output
 }
 
 func xsetoperatorTo(op sqlast.SQLSetOperator) (*xast.SetOperator, error) {

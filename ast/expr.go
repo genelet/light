@@ -28,27 +28,18 @@ func xcaseExprTo(body *sqlast.CaseExpr) (*xast.CaseExpr, error) {
 	if body.Operand != nil {
 		output.Operand = xoperatorTo(body.Operand.(*sqlast.Operator))
 	}
-	if body.ElseResult != nil {
-		output.ElseResult = xidentTo(body.ElseResult.(*sqlast.Ident))
-	}
-	for i, condition := range body.Conditions {
-		item, err := xbinaryExprTo(condition.(*sqlast.BinaryExpr))
+	x, err := xargsNodeTo(body.ElseResult)
+	if err != nil { return nil, err }
+	output.ElseResult = x
+	for _, condition := range body.Conditions {
+		x, err := xconditionNodeTo(condition)
 		if err != nil { return nil, err }
-
-		resultMessage := new(xast.ResultMessage)
-		switch t := body.Results[i].(type) {
-        case *sqlast.Ident:
-			resultMessage.ResultClause = &xast.ResultMessage_ResultIdent{ResultIdent: xidentTo(t)}
-		case *sqlast.UnaryExpr:
-			result, err := xunaryExprTo(t)
-			if err != nil { return nil, err }
-			resultMessage.ResultClause = &xast.ResultMessage_ResultUnary{ResultUnary: result}
-		default:	
-            return nil, fmt.Errorf("missing result type in CaseExpr %T", t)
-        }
-
-		output.Conditions = append(output.Conditions, item)
-		output.Results = append(output.Results, resultMessage)
+		output.Conditions = append(output.Conditions, x)
+	}
+	for _, result := range body.Results {
+		x, err := xargsNodeTo(result)
+		if err != nil { return nil, err }
+		output.Results = append(output.Results, x)
 	}
 	return output, nil
 }
@@ -56,22 +47,18 @@ func xcaseExprTo(body *sqlast.CaseExpr) (*xast.CaseExpr, error) {
 func caseExprTo(body *xast.CaseExpr) *sqlast.CaseExpr {
 	output := &sqlast.CaseExpr{
 		Case: posTo(body.Case),
-		CaseEnd: posTo(body.CaseEnd)}
+		CaseEnd: posTo(body.CaseEnd),
+		ElseResult: argsNodeTo(body.ElseResult)}
 	if body.Operand != nil {
 		output.Operand = operatorTo(body.Operand)
 	}
-	if body.ElseResult != nil {
-		output.ElseResult = identTo(body.ElseResult)
+	for _, condition := range body.Conditions {
+		output.Conditions = append(output.Conditions, conditionNodeTo(condition))
 	}
-	for i, condition := range body.Conditions {
-		output.Conditions = append(output.Conditions, binaryExprTo(condition))
-		result := body.Results[i]
-		if ident := result.GetResultIdent(); ident != nil {
-			output.Results = append(output.Results, identTo(ident))
-		} else {
-			output.Results = append(output.Results, unaryExprTo(result.GetResultUnary()))
-		}
+	for _, result := range body.Results {
+		output.Results = append(output.Results, argsNodeTo(result))
 	}
+
 	return output
 }
 

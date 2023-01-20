@@ -381,3 +381,156 @@ func typeTo(item *xast.Type) sqlast.Type {
 
 	return nil
 }
+
+/*
+func xresultNodeTo(item sqlast.Node) (*xast.ResultNode, error) {
+	if item == nil { return nil, nil }
+
+	output := &xast.ResultNode{}
+	switch t := item.(type) {
+	case *sqlast.Ident:
+		output.ResultNodeClause = &xast.ResultNode_IdentItem{IdentItem: xidentTo(t)}
+	case *sqlast.UnaryExpr:
+		x, err := xunaryExprTo(t)
+		if err != nil { return nil, err }
+		output.ResultNodeClause = &xast.ResultNode_UnaryItem{UnaryItem: x}
+	default:	
+		return nil, fmt.Errorf("missing result type in CaseExpr %T", t)
+	}
+
+	return output, nil
+}
+
+func resultNodeTo(item *xast.ResultNode) sqlast.Node {
+	if item == nil { return nil }
+
+	if x := item.GetIdentItem(); x != nil {
+		return identTo(x)
+	} else if x := item.GetUnaryItem(); x != nil {
+		return unaryExprTo(x)
+	}
+	return nil
+}
+*/
+
+func xconditionNodeTo(item sqlast.Node) (*xast.ConditionNode, error) {
+	if item == nil { return nil, nil }
+
+	output := &xast.ConditionNode{}
+	switch t := item.(type) {
+	case *sqlast.BinaryExpr:
+		x, err := xbinaryExprTo(t)
+		if err != nil { return nil, err }
+		output.ConditionNodeClause = &xast.ConditionNode_BinaryItem{BinaryItem: x}
+	default:	
+		return nil, fmt.Errorf("missing condition type in CaseExpr %T", t)
+	}
+
+	return output, nil
+}
+
+func conditionNodeTo(item *xast.ConditionNode) sqlast.Node {
+	if item == nil { return nil }
+
+	if x := item.GetBinaryItem(); x != nil {
+		return binaryExprTo(x)
+	}
+	return nil
+}
+
+func xargsNodeTo(item sqlast.Node) (*xast.ArgsNode, error) {
+	if item == nil { return nil, nil }
+
+	output := &xast.ArgsNode{}
+	switch t := item.(type) {
+	case *sqlast.Ident:
+		output.ArgsNodeClause = &xast.ArgsNode_CompoundItem{CompoundItem: xidentsTo(t)}
+	case *sqlast.CompoundIdent:
+		output.ArgsNodeClause = &xast.ArgsNode_CompoundItem{CompoundItem: xcompoundTo(t)}
+	case *sqlast.Wildcard:
+		output.ArgsNodeClause = &xast.ArgsNode_CompoundItem{CompoundItem: xwildcardsTo(t)}
+	case *sqlast.Function:
+		x, err := xfunctionTo(t)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_FunctionItem{FunctionItem: x}
+	case *sqlast.CaseExpr:
+		x, err := xcaseExprTo(t)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_CaseItem{CaseItem: x}
+	case *sqlast.Nested:
+		x, err := xnestedTo(t)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_NestedItem{NestedItem: x}
+	case *sqlast.UnaryExpr:
+		x, err := xunaryExprTo(t)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_UnaryItem{UnaryItem: x}
+	case *sqlast.BinaryExpr:
+		x, err := xbinaryExprTo(t)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_BinaryItem{BinaryItem: x}
+	default:	
+		return nil, fmt.Errorf("missing args type in args node %T", t)
+	}
+
+	return output, nil
+}
+
+func argsNodeTo(item *xast.ArgsNode) sqlast.Node {
+	if item == nil { return nil }
+
+	if x := item.GetCompoundItem(); x != nil {
+		return compoundTo(x)
+	} else if x := item.GetFunctionItem(); x != nil {
+		return functionTo(x)	
+	} else if x := item.GetCaseItem(); x != nil {
+		return caseExprTo(x)	
+	} else if x := item.GetNestedItem(); x != nil {
+		return nestedTo(x)	
+	} else if x := item.GetUnaryItem(); x != nil {
+		return unaryExprTo(x)	
+	} else if x := item.GetBinaryItem(); x != nil {
+		return binaryExprTo(x)	
+	}
+
+	return nil
+}
+
+func xsqlSelectItemTo(item sqlast.SQLSelectItem) (*xast.SQLSelectItem, error) {
+	if item == nil { return nil, nil }
+
+	output := &xast.SQLSelectItem{}
+	switch t := item.(type) {
+	case *sqlast.UnnamedSelectItem:
+		x, err := xargsNodeTo(t.Node)
+		if err != nil { return nil, err }
+		output.SQLSelectItemClause = &xast.SQLSelectItem_UnnamedItem{UnnamedItem:
+			&xast.UnnamedSelectItem{Node:x}}
+	case *sqlast.AliasSelectItem:
+		x, err := xargsNodeTo(t.Expr)
+		if err != nil { return nil, err }
+		output.SQLSelectItemClause = &xast.SQLSelectItem_AliasItem{AliasItem:
+			&xast.AliasSelectItem{Expr:x, Alias: xidentTo(t.Alias)}}
+	case *sqlast.QualifiedWildcardSelectItem:
+		output.SQLSelectItemClause = &xast.SQLSelectItem_WildcardItem{WildcardItem:
+			&xast.QualifiedWildcardSelectItem{Prefix: xobjectnameTo(t.Prefix)}}
+	default:
+		return nil, fmt.Errorf("missing select item type %T", t)
+	}
+
+	return output, nil
+}
+
+func sqlSelectItemTo(item *xast.SQLSelectItem) sqlast.SQLSelectItem {
+	if item == nil { return nil }
+
+	if x := item.GetUnnamedItem(); x != nil {
+		return &sqlast.UnnamedSelectItem{Node: argsNodeTo(x.Node)}
+	} else if x := item.GetAliasItem(); x != nil {
+		return &sqlast.AliasSelectItem{Expr: argsNodeTo(x.Expr), Alias: identTo(x.Alias).(*sqlast.Ident)}
+	} else if x := item.GetWildcardItem(); x != nil {
+		return &sqlast.QualifiedWildcardSelectItem{Prefix: objectnameTo(x.Prefix)}
+	}
+
+	return nil
+}

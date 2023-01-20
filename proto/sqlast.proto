@@ -130,31 +130,37 @@ message UnaryExpr {
 }
 	
 //CASE [Operand] WHEN Conditions... THEN Results... [ELSE ElseResult] END
-message ResultMessage {
-	oneof ResultClause {
-		Ident ResultIdent = 1;
-		UnaryExpr ResultUnary = 2;
+// message ResultNode  = ArgsNode
+
+message ConditionNode {
+	oneof ConditionNodeClause {
+		BinaryExpr BinaryItem = 1;
 	}
 }
+
 message CaseExpr {
     Pos Case = 1;
     Pos CaseEnd = 2;
     Operator Operand = 3;
-    repeated BinaryExpr Conditions = 4;
-    repeated ResultMessage Results = 5;
-	Ident ElseResult = 6;
+    repeated ConditionNode Conditions = 4;
+    repeated ArgsNode Results = 5;
+	ArgsNode ElseResult = 6;
+}
+
+message ArgsNode {
+	oneof ArgsNodeClause {
+		CompoundIdent CompoundItem = 1;
+		AggFunction FunctionItem = 2;
+		CaseExpr CaseItem = 3;
+		Nested NestedItem = 4;
+		UnaryExpr UnaryItem = 5;
+		BinaryExpr BinaryItem = 6;
+	}
 }
 
 message AggFunction {
 	AggType TypeName = 1;
-	message ArgsMessage {
-		oneof ArgsClause {
-			CompoundIdent FieldIdents = 1;
-			AggFunction FieldFunction = 2;
-			CaseExpr FieldCase = 3;
-		}
-	}
-	repeated ArgsMessage RestArgs = 2;
+	repeated ArgsNode RestArgs = 2;
 	Pos From = 3;
 	Pos To = 4;
 }
@@ -186,20 +192,29 @@ message LimitExpr {
 	LongValue OffsetValue = 5;
 }
 
+message UnnamedSelectItem {
+	ArgsNode Node = 1;
+}
+
+message AliasSelectItem {
+	ArgsNode Expr = 1;
+	Ident Alias = 2;
+}
+
+message QualifiedWildcardSelectItem {
+	ObjectName Prefix = 1;
+}
+
 message SQLSelectItem {
-	oneof SelectItemClause {
-		CompoundIdent FieldIdents = 1;
-		AggFunction FieldFunction = 2;
-		CaseExpr FieldCase = 3;
-		Nested FieldNested = 4;
-		UnaryExpr FieldUnary = 5;
-		BinaryExpr FieldBinary = 6;
+	oneof SQLSelectItemClause {
+		UnnamedSelectItem UnnamedItem = 1;
+		AliasSelectItem AliasItem = 2;
+		QualifiedWildcardSelectItem WildcardItem = 3;
 	}
-	Ident AliasName = 10;
 }
 
 message Nested {
-	SQLSelectItem AST = 1;
+	ArgsNode AST = 1;
 	Pos LParen = 2;
 	Pos RParen = 3;
 }
@@ -215,13 +230,10 @@ message SQLSelect {
 	bool DistinctBool = 1;
 	repeated SQLSelectItem Projection = 2;
 	repeated QualifiedJoin FromClause = 3;
-	oneof WhereClause {
-		InSubQuery InQuery = 4;
-		BinaryExpr BinExpr = 5;
-	}
-	repeated CompoundIdent GroupByClause = 8;
-	BinaryExpr HavingClause = 9;
-	Pos Select = 10;
+	WhereNode WhereClause = 4;
+	repeated CompoundIdent GroupByClause = 5;
+	BinaryExpr HavingClause = 6;
+	Pos Select = 7;
 }
 
 message SetOperationExpr {

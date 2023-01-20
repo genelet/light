@@ -7,103 +7,18 @@ import (
 )
 
 func xnestedTo(body *sqlast.Nested) (*xast.Nested, error) {
-	output := &xast.SQLSelectItem{}
-	err := xitemToXsql(output, body.AST)
+	x, err := xargsNodeTo(body.AST)
 	return &xast.Nested{
-		AST: output,
+		AST: x,
 		LParen: xposTo(body.LParen),
 		RParen: xposTo(body.RParen)}, err
 }
 
 func nestedTo(body *xast.Nested) *sqlast.Nested {
 	return &sqlast.Nested{
-		AST: selectitemTo(body.AST),
+		AST: argsNodeTo(body.AST),
 		LParen: posTo(body.LParen),
 		RParen: posTo(body.RParen)}
-}
-
-func xitemToXsql(selectItem *xast.SQLSelectItem, t sqlast.Node) error {
-	switch s := t.(type) {
-	case *sqlast.Ident:
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldIdents{FieldIdents: xidentsTo(s)}
-	case *sqlast.CompoundIdent:
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldIdents{FieldIdents: xcompoundTo(s)}
-	case *sqlast.Function: // single function name
-		fieldFunction, err := xfunctionTo(s)
-		if err != nil { return err }
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldFunction{FieldFunction: fieldFunction}
-	case *sqlast.Wildcard:
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldIdents{FieldIdents: xwildcardsTo(s)}
-	case *sqlast.CaseExpr:
-		fieldCase, err := xcaseExprTo(s)
-		if err != nil { return err }
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldCase{FieldCase: fieldCase}
-	case *sqlast.Nested:
-		fieldNested, err := xnestedTo(s)
-		if err != nil { return err }
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldNested{FieldNested: fieldNested}
-	case *sqlast.UnaryExpr:
-		fieldUnary, err := xunaryExprTo(s)
-		if err != nil { return err }
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldUnary{FieldUnary: fieldUnary}
-	case *sqlast.BinaryExpr:
-		fieldBinary, err := xbinaryExprTo(s)
-		if err != nil { return err }
-		selectItem.SelectItemClause = &xast.SQLSelectItem_FieldBinary{FieldBinary: fieldBinary}
-	default:
-		return fmt.Errorf("unknown select item %T: %#v", t, t)
-	}
-	return nil
-}
-
-func xselectitemTo(item sqlast.SQLSelectItem) (*xast.SQLSelectItem, error) {
-	output := &xast.SQLSelectItem{}
-	var err error
-
-	switch t := item.(type) {
-	case *sqlast.UnnamedSelectItem:
-		err = xitemToXsql(output, t.Node)
-	case *sqlast.AliasSelectItem:
-		err = xitemToXsql(output, t.Expr)
-		if err == nil {
-			output.AliasName = xidentTo(t.Alias)
-		}
-	case *sqlast.QualifiedWildcardSelectItem:
-		output.SelectItemClause = &xast.SQLSelectItem_FieldIdents{FieldIdents: xwildcarditemTo(t)}
-	default:
-		return nil, fmt.Errorf("top select item %#v", t)
-	}
-	return output, err
-}
-
-func selectitemTo(item *xast.SQLSelectItem) sqlast.SQLSelectItem {
-	if item == nil { return nil }
-
-	var node sqlast.Node
-	if item.GetFieldFunction() != nil {
-		node = functionTo(item.GetFieldFunction())
-	} else if item.GetFieldCase() != nil {
-		node = caseExprTo(item.GetFieldCase())
-	} else if item.GetFieldIdents() != nil {
-		node = compoundTo(item.GetFieldIdents())
-	} else if item.GetFieldNested() != nil {
-		node = nestedTo(item.GetFieldNested())
-	} else if item.GetFieldCase() != nil {
-		node = caseExprTo(item.GetFieldCase())
-	} else if item.GetFieldUnary() != nil {
-		node = unaryExprTo(item.GetFieldUnary())
-	} else if item.GetFieldBinary() != nil {
-		node = binaryExprTo(item.GetFieldBinary())
-	} else {
-		return nil
-	}
-
-	if item.AliasName != nil {
-		return &sqlast.AliasSelectItem{
-			Alias: identTo(item.AliasName).(*sqlast.Ident),
-			Expr: node}
-	}
-	return &sqlast.UnnamedSelectItem{Node: node}
 }
 
 func xinsubqueryTo(sq *sqlast.InSubQuery) (*xast.InSubQuery, error) {
@@ -145,7 +60,7 @@ func xselectTo(body *sqlast.SQLSelect) (*xast.SQLSelect, error) {
 		Select: xposTo(body.Select)}
 
 	for _, item := range body.Projection {
-		selectItem, err := xselectitemTo(item)
+		selectItem, err := xsqlSelectItemTo(item)
 		if err != nil { return nil, err }
 		query.Projection = append(query.Projection, selectItem)
 	}
@@ -156,22 +71,9 @@ func xselectTo(body *sqlast.SQLSelect) (*xast.SQLSelect, error) {
 		query.FromClause = append(query.FromClause, from)
 	}
 
-	if body.WhereClause != nil {
-		switch t := body.WhereClause.(type) {
-		case *sqlast.InSubQuery:
-			where, err := xinsubqueryTo(t)
-			if err != nil { return nil, err }
-			inQuery := &xast.SQLSelect_InQuery{InQuery: where}
-			query.WhereClause = inQuery
-		case *sqlast.BinaryExpr:
-			where, err := xbinaryExprTo(t)
-			if err != nil { return nil, err }
-			binExpr := &xast.SQLSelect_BinExpr{BinExpr: where}
-			query.WhereClause = binExpr
-		default:
-			return nil, fmt.Errorf("'where' type %#v", t)
-		}
-	}
+	x, err := xwhereNodeTo(body.WhereClause)
+	if err!= nil { return nil, err }
+	query.WhereClause = x
 
 	for _, item := range body.GroupByClause {
 		switch t := item.(type) {
@@ -204,17 +106,13 @@ func selectTo(body *xast.SQLSelect) *sqlast.SQLSelect {
 		Select: posTo(body.Select)}
 
 	for _, item := range body.Projection {
-		query.Projection = append(query.Projection, selectitemTo(item))
+		query.Projection = append(query.Projection, sqlSelectItemTo(item))
 	}
 	for _, item := range body.FromClause {
 		query.FromClause = append(query.FromClause, tablereferenceTo(item))
 	}
 
-	if v := body.GetInQuery(); v != nil {
-		query.WhereClause = insubqueryTo(v)
-	} else if v := body.GetBinExpr(); v != nil {
-		query.WhereClause = binaryExprTo(v)
-	}
+	query.WhereClause = whereNodeTo(body.WhereClause)
 
 	for _, item := range body.GroupByClause {
 		query.GroupByClause = append(query.GroupByClause, compoundTo(item))
