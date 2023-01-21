@@ -18,7 +18,7 @@ func XQueryTo(stmt *sqlast.QueryStmt) (*xast.QueryStmt, error) {
 		output.CTEs = append(output.CTEs, v)
 	}
 
-	body, err := xsetexprTo(stmt.Body)
+	body, err := xsqlSetExprTo(stmt.Body)
 	if err != nil { return nil, err }
 	output.Body = body
 
@@ -47,7 +47,7 @@ func QueryTo(stmt *xast.QueryStmt) *sqlast.QueryStmt {
 		output.CTEs = append(output.CTEs, cteTo(item))
 	}
 
-	output.Body = setoperationTo(stmt.Body)
+	output.Body = sqlSetExprTo(stmt.Body)
 
 	for _, item := range stmt.OrderBy {
 		output.OrderBy = append(output.OrderBy, orderbyTo(item))

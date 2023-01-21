@@ -237,10 +237,17 @@ message SQLSelect {
 }
 
 message SetOperationExpr {
-	SQLSelect LeftSide = 1;
-	bool AllBool = 2;
-	SetOperator Op = 3;
-	SetOperationExpr RightSide = 4;
+	SetOperator Op = 1;
+	bool All = 2;
+	SQLSetExpr Left = 3;
+	SQLSetExpr Right = 4;
+}
+
+message SQLSetExpr {
+	oneof SQLSetExprClause {
+		SQLSelect SelectItem = 1;
+		SetOperationExpr ExprItem = 2;
+	}
 }
 
 message QueryStmt {
@@ -251,9 +258,9 @@ message QueryStmt {
 		Pos RParen = 3;
 	}
 	repeated CTE CTEs = 2;
-	SetOperationExpr Body = 4;
-	repeated OrderByExpr OrderBy = 5;
-	LimitExpr LimitExpression = 6;
+	SQLSetExpr Body = 3;
+	repeated OrderByExpr OrderBy = 4;
+	LimitExpr LimitExpression = 5;
 }
 
 // start ... create table

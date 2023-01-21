@@ -534,3 +534,33 @@ func sqlSelectItemTo(item *xast.SQLSelectItem) sqlast.SQLSelectItem {
 
 	return nil
 }
+
+func xsqlSetExprTo(item sqlast.SQLSetExpr) (*xast.SQLSetExpr, error) {
+	if item == nil { return nil, nil }
+
+	output := &xast.SQLSetExpr{}
+	switch t := item.(type) {
+    case *sqlast.SQLSelect:
+        x, err := xselectTo(t)
+        if err != nil { return nil, err }
+		output.SQLSetExprClause = &xast.SQLSetExpr_SelectItem{SelectItem: x}
+    case *sqlast.SetOperationExpr:
+		x, err := xsetOperationExprTo(t)
+        if err != nil { return nil, err }
+		output.SQLSetExprClause = &xast.SQLSetExpr_ExprItem{ExprItem: x}
+    default:
+    	return nil, fmt.Errorf("missing set expr type  %T", t)
+    }
+    return output, nil
+}
+
+func sqlSetExprTo(item *xast.SQLSetExpr) sqlast.SQLSetExpr {
+    if item == nil { return nil }
+
+    if x := item.GetSelectItem(); x != nil {
+		return selectTo(x)
+    } else if x := item.GetExprItem(); x != nil {
+		return setOperationExprTo(x)
+    }
+    return nil
+}

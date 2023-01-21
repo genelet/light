@@ -124,82 +124,26 @@ func selectTo(body *xast.SQLSelect) *sqlast.SQLSelect {
 	return query
 }
 
-func sqlastplusRights(right1 sqlast.SQLSetExpr, all bool, op sqlast.SQLSetOperator, right2 sqlast.SQLSetExpr) sqlast.SQLSetExpr {
-	return &sqlast.SetOperationExpr{
-		Op: op,
-		All: all,
-		Left: right1,
-		Right: right2}
-}
-
-func xsetoperationTo(body *sqlast.SetOperationExpr) (*xast.SetOperationExpr, error) {
-	output := &xast.SetOperationExpr{
-		AllBool: body.All}
-	op, err := xsetoperatorTo(body.Op)
+func xsetOperationExprTo(item *sqlast.SetOperationExpr) (*xast.SetOperationExpr, error) {
+	op, err := xsetoperatorTo(item.Op)
 	if err != nil { return nil, err }
-	output.Op = op
-
-	// body.Left is never nil, sqlast.SQLSetExpr
-	switch t := body.Left.(type) {
-	case *sqlast.SQLSelect:
-		left, err := xselectTo(t)
+	output := &xast.SetOperationExpr{Op: op, All: item.All}
+	//left is never nil
+	x, err := xsqlSetExprTo(item.Left)
+	if err != nil { return nil, err }
+	output.Left = x
+	if item.Right != nil {
+		x, err := xsqlSetExprTo(item.Right)	
 		if err != nil { return nil, err }
-		output.LeftSide = left
-		right, err := xsetexprTo(body.Right)
-		if err != nil { return nil, err }
-		output.RightSide = right
-	case *sqlast.SetOperationExpr:
-		left, err := xsetoperationTo(t)
-		if err != nil { return nil, err }
-
-		if left.RightSide == nil {
-			bodyRight, err := xsetexprTo(body.Right)
-			if err != nil { return nil, err }
-			leftOp, err := xsetoperatorTo(t.Op)
-			if err != nil { return nil, err }
-			output.RightSide = &xast.SetOperationExpr{
-				Op: leftOp,
-				AllBool: left.AllBool,
-				LeftSide: left.LeftSide,
-				RightSide: bodyRight}
-		} else {
-			newBody := &sqlast.SetOperationExpr{
-				Op: t.Op,
-				All: t.All,
-				Left: t.Left,
-				Right: sqlastplusRights(t.Right, body.All, body.Op, body.Right)}
-			return xsetoperationTo(newBody)
-		}
-	default:
-		return nil, fmt.Errorf("setexpr left is %#v", body.Left)
+		output.Right = x
 	}
-
 	return output, nil
 }
 
-func setoperationTo(body *xast.SetOperationExpr) sqlast.SQLSetExpr {
-	if body == nil { return nil }
-
-	if body.RightSide == nil {
-		return selectTo(body.LeftSide)
-	}
-
+func setOperationExprTo(item *xast.SetOperationExpr) *sqlast.SetOperationExpr {
 	return &sqlast.SetOperationExpr{
-		All: body.AllBool,
-		Op: setoperatorTo(body.Op),
-		Left: selectTo(body.LeftSide),
-		Right: setoperationTo(body.RightSide)}
-}
-
-func xsetexprTo(body sqlast.SQLSetExpr) (*xast.SetOperationExpr, error) {
-	switch t := body.(type) {
-    case *sqlast.SQLSelect:
-        xbody, err := xselectTo(t)
-        if err != nil { return nil, err }
-        return &xast.SetOperationExpr{LeftSide: xbody}, nil
-    case *sqlast.SetOperationExpr:
-        return xsetoperationTo(t)
-    default:
-	}
-	return nil, fmt.Errorf("body is %#v", body)
+		Op: setoperatorTo(item.Op),
+		All: item.All,
+		Left: sqlSetExprTo(item.Left),
+		Right: sqlSetExprTo(item.Right)}
 }
