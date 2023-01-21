@@ -110,11 +110,17 @@ func xvalueNodeTo(item sqlast.Node) (*xast.ValueNode, error ) {
 	output := &xast.ValueNode{}
     switch t := item.(type) {
     case *sqlast.SingleQuotedString:
-        output.ValueNodeClause = &xast.ValueNode_StringStmtValue{StringStmtValue: xstringTo(t)}
+        output.ValueNodeClause = &xast.ValueNode_StringItem{StringItem: xstringTo(t)}
     case *sqlast.LongValue:
-        output.ValueNodeClause = &xast.ValueNode_LongStmtValue{LongStmtValue: xlongTo(t)}
+        output.ValueNodeClause = &xast.ValueNode_LongItem{LongItem: xlongTo(t)}
+    case *sqlast.DoubleValue:
+        output.ValueNodeClause = &xast.ValueNode_DoubleItem{DoubleItem: xdoubleTo(t)}
     case *sqlast.Ident:
-        output.ValueNodeClause = &xast.ValueNode_IdentStmtValue{IdentStmtValue: xidentTo(t)}
+        output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xidentsTo(t)}
+	case *sqlast.CompoundIdent:
+		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xcompoundTo(t)}
+	case *sqlast.Wildcard:
+		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xwildcardsTo(t)}
     default:
         return nil, fmt.Errorf("missing value item type %T", t)
     }
@@ -125,11 +131,13 @@ func xvalueNodeTo(item sqlast.Node) (*xast.ValueNode, error ) {
 func valueNodeTo(item *xast.ValueNode) sqlast.Node {
 	if item == nil { return nil }
 
-	if x := item.GetLongStmtValue(); x != nil {
+	if x := item.GetLongItem(); x != nil {
 		return longTo(x)
-	} else if x := item.GetIdentStmtValue(); x != nil {
-		return identTo(x).(*sqlast.Ident)
-	} else if x := item.GetStringStmtValue(); x != nil {
+	} else if x := item.GetDoubleItem(); x != nil {
+		return doubleTo(x)
+	} else if x := item.GetCompoundItem(); x != nil {
+		return compoundTo(x)
+	} else if x := item.GetStringItem(); x != nil {
 		return stringTo(x)
 	}
 
@@ -382,37 +390,6 @@ func typeTo(item *xast.Type) sqlast.Type {
 	return nil
 }
 
-/*
-func xresultNodeTo(item sqlast.Node) (*xast.ResultNode, error) {
-	if item == nil { return nil, nil }
-
-	output := &xast.ResultNode{}
-	switch t := item.(type) {
-	case *sqlast.Ident:
-		output.ResultNodeClause = &xast.ResultNode_IdentItem{IdentItem: xidentTo(t)}
-	case *sqlast.UnaryExpr:
-		x, err := xunaryExprTo(t)
-		if err != nil { return nil, err }
-		output.ResultNodeClause = &xast.ResultNode_UnaryItem{UnaryItem: x}
-	default:	
-		return nil, fmt.Errorf("missing result type in CaseExpr %T", t)
-	}
-
-	return output, nil
-}
-
-func resultNodeTo(item *xast.ResultNode) sqlast.Node {
-	if item == nil { return nil }
-
-	if x := item.GetIdentItem(); x != nil {
-		return identTo(x)
-	} else if x := item.GetUnaryItem(); x != nil {
-		return unaryExprTo(x)
-	}
-	return nil
-}
-*/
-
 func xconditionNodeTo(item sqlast.Node) (*xast.ConditionNode, error) {
 	if item == nil { return nil, nil }
 
@@ -443,12 +420,14 @@ func xargsNodeTo(item sqlast.Node) (*xast.ArgsNode, error) {
 
 	output := &xast.ArgsNode{}
 	switch t := item.(type) {
-	case *sqlast.Ident:
-		output.ArgsNodeClause = &xast.ArgsNode_CompoundItem{CompoundItem: xidentsTo(t)}
-	case *sqlast.CompoundIdent:
-		output.ArgsNodeClause = &xast.ArgsNode_CompoundItem{CompoundItem: xcompoundTo(t)}
-	case *sqlast.Wildcard:
-		output.ArgsNodeClause = &xast.ArgsNode_CompoundItem{CompoundItem: xwildcardsTo(t)}
+	case *sqlast.Ident, *sqlast.CompoundIdent, *sqlast.Wildcard, *sqlast.SingleQuotedString, *sqlast.LongValue, *sqlast.DoubleValue:
+		x, err := xvalueNodeTo(item)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_ValueItem{ValueItem: x}
+	case *sqlast.BinaryExpr, *sqlast.InSubQuery:
+		x, err := xwhereNodeTo(t)
+		if err != nil { return nil, err }
+		output.ArgsNodeClause = &xast.ArgsNode_WhereItem{WhereItem: x}
 	case *sqlast.Function:
 		x, err := xfunctionTo(t)
 		if err != nil { return nil, err }
@@ -465,10 +444,6 @@ func xargsNodeTo(item sqlast.Node) (*xast.ArgsNode, error) {
 		x, err := xunaryExprTo(t)
 		if err != nil { return nil, err }
 		output.ArgsNodeClause = &xast.ArgsNode_UnaryItem{UnaryItem: x}
-	case *sqlast.BinaryExpr:
-		x, err := xbinaryExprTo(t)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_BinaryItem{BinaryItem: x}
 	default:	
 		return nil, fmt.Errorf("missing args type in args node %T", t)
 	}
@@ -479,8 +454,8 @@ func xargsNodeTo(item sqlast.Node) (*xast.ArgsNode, error) {
 func argsNodeTo(item *xast.ArgsNode) sqlast.Node {
 	if item == nil { return nil }
 
-	if x := item.GetCompoundItem(); x != nil {
-		return compoundTo(x)
+	if x := item.GetValueItem(); x != nil {
+		return valueNodeTo(x)
 	} else if x := item.GetFunctionItem(); x != nil {
 		return functionTo(x)	
 	} else if x := item.GetCaseItem(); x != nil {
@@ -489,8 +464,8 @@ func argsNodeTo(item *xast.ArgsNode) sqlast.Node {
 		return nestedTo(x)	
 	} else if x := item.GetUnaryItem(); x != nil {
 		return unaryExprTo(x)	
-	} else if x := item.GetBinaryItem(); x != nil {
-		return binaryExprTo(x)	
+	} else if x := item.GetWhereItem(); x != nil {
+		return whereNodeTo(x)	
 	}
 
 	return nil

@@ -105,22 +105,9 @@ message LongValue {
 }
 
 message BinaryExpr {
-	oneof LeftOneOf {
-		CompoundIdent LeftIdents = 1;
-		BinaryExpr LeftBinary = 2;
-		SingleQuotedString LeftSingleQuoted = 10;
-		DoubleValue LeftDouble = 11;
-		LongValue LeftLong = 12;
-	}
-	Operator Op = 3;
-	oneof RightOneOf {
-		CompoundIdent RightIdents = 4;
-		BinaryExpr RightBinary = 5;
-		InSubQuery QueryValue = 6;
-		SingleQuotedString SingleQuotedString = 7;
-		DoubleValue DoubleValue = 8;
-		LongValue LongValue = 9;
-	}
+	ArgsNode Left = 1;
+	Operator Op = 2;
+	ArgsNode Right = 3;
 }
 
 message UnaryExpr {
@@ -149,12 +136,12 @@ message CaseExpr {
 
 message ArgsNode {
 	oneof ArgsNodeClause {
-		CompoundIdent CompoundItem = 1;
+		ValueNode ValueItem = 1;
 		AggFunction FunctionItem = 2;
 		CaseExpr CaseItem = 3;
 		Nested NestedItem = 4;
 		UnaryExpr UnaryItem = 5;
-		BinaryExpr BinaryItem = 6;
+		WhereNode WhereItem = 6;
 	}
 }
 
@@ -549,9 +536,10 @@ message WhereNode {
 
 message ValueNode {
 	oneof ValueNodeClause {
-		SingleQuotedString StringStmtValue = 1;
-		LongValue LongStmtValue = 2;
-		Ident IdentStmtValue = 3;
+		SingleQuotedString StringItem = 1;
+		LongValue LongItem = 2;
+		DoubleValue DoubleItem = 3;
+        CompoundIdent CompoundItem = 15;
 	}
 }
 
