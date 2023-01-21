@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/k0kubun/pp/v3"
+//	"github.com/k0kubun/pp/v3"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -27,7 +27,7 @@ func TestCreateView(t *testing.T) {
 		istmt, err := parser.ParseStatement()
 		if err != nil { t.Fatal(err) }
 		stmt := istmt.(*sqlast.CreateViewStmt)
-pp.Println(stmt)
+//pp.Println(stmt)
 
 		xupdate, err := XCreateViewTo(stmt)
 		if err != nil { t.Fatal(err) }

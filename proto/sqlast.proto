@@ -411,13 +411,14 @@ message MyDataTypeDecoration {
 
 message Type {
 	oneof TypeClause {
-		Int IntData = 2;
-		SmallInt SmallIntData = 3;
-		BigInt BigIntData = 4;
-		CharType CharData = 5;
-		VarcharType VarcharData = 6;
-		UUID UUIDData = 7;
-		Timestamp TimestampData = 8;
+		Int IntData = 1;
+		SmallInt SmallIntData = 2;
+		BigInt BigIntData = 3;
+		Decimal DecimalData = 4;
+		CharType CharData = 8;
+		VarcharType VarcharData = 9;
+		UUID UUIDData = 14;
+		Timestamp TimestampData = 15;
 	}
 }
 
@@ -570,13 +571,54 @@ message AddColumnTableAction {
 	ColumnDef Column = 2;
 }
 
+message SetDefaultColumnAction{
+	Pos Set = 1;
+	ValueNode Default = 2;
+}
+
+message DropDefaultColumnAction {
+	Pos Drop = 1;
+	Pos Default = 2;
+}
+
+message PGSetNotNullColumnAction {
+	Pos Set = 1;
+	Pos Null = 2;
+}
+
+message PGDropNotNullColumnAction {
+	Pos Drop = 1;
+	Pos Null = 2;
+}
+
+message PGAlterDataTypeColumnAction {
+	Pos Type = 1;
+	Type DataType = 2;
+}
+
+message AlterColumnAction {
+	oneof AlterColumnActionClause {
+		SetDefaultColumnAction SetItem = 1;
+		DropDefaultColumnAction DropItem = 2;
+		PGSetNotNullColumnAction PGSetItem = 3;
+		PGDropNotNullColumnAction PGDropItem = 4;
+		PGAlterDataTypeColumnAction PGAlterItem = 5;
+	}
+}
+
+message AlterColumnTableAction {
+	Ident ColumnName = 1;
+	Pos Alter = 2;
+	AlterColumnAction Action = 3;
+}
+
 message AddConstraintTableAction {
 	Pos Add = 1;
 	TableConstraint Constraint = 2;
 }
 
 message DropConstraintTableAction {
-	ObjectName Name = 1;
+	Ident Name = 1;
 	Pos Drop = 2;
 	bool Cascade = 3;
 	Pos CascadePos = 4;
@@ -591,10 +633,11 @@ message RemoveColumnTableAction {
 
 message AlterTableAction {
 	oneof AlterTableActionClause {
-		AddColumnTableAction AddColumnItem = 3;
-		AddConstraintTableAction AddConstraintItem = 4;
-		DropConstraintTableAction DropConstraintItem = 5;
-		RemoveColumnTableAction RemoveColumnItem = 6;
+		AddColumnTableAction AddColumnItem = 1;
+		AlterColumnTableAction AlterColumnItem = 2;
+		AddConstraintTableAction AddConstraintItem = 3;
+		DropConstraintTableAction DropConstraintItem = 4;
+		RemoveColumnTableAction RemoveColumnItem = 5;
 	}
 }
 

@@ -271,6 +271,52 @@ func smallIntTo(t *xast.SmallInt) *sqlast.SmallInt {
 		Unsigned: posTo(t.Unsigned)}
 }
 
+func xbigIntTo(t *sqlast.BigInt) *xast.BigInt {
+    if t == nil { return nil }
+
+    return &xast.BigInt{
+        From: xposTo(t.From),
+        To: xposTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.Unsigned)}
+}
+
+func bigIntTo(t *xast.BigInt) *sqlast.BigInt {
+    if t == nil { return nil }
+
+    return &sqlast.BigInt{
+        From: posTo(t.From),
+        To: posTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+		Unsigned: posTo(t.Unsigned)}
+}
+
+func xdecimalTo(t *sqlast.Decimal) *xast.Decimal {
+	if t == nil { return nil }
+
+	return &xast.Decimal {
+		Precision: uint32(*t.Precision),
+		Scale:     uint32(*t.Scale),
+		Numeric: xposTo(t.Numeric),
+		RParen: xposTo(t.RParen),
+		IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.Unsigned)}
+}
+
+func decimalTo(t *xast.Decimal) *sqlast.Decimal {
+	if t == nil { return nil }
+
+	x := uint(t.Precision)
+	y := uint(t.Scale)
+	return &sqlast.Decimal {
+		Precision: &x,
+		Scale:     &y,
+		Numeric: posTo(t.Numeric),
+		RParen: posTo(t.RParen),
+		IsUnsigned: t.IsUnsigned,
+		Unsigned: posTo(t.Unsigned)}
+}
+
 func xtimestampTo(t *sqlast.Timestamp) *xast.Timestamp {
     if t == nil { return nil }
 

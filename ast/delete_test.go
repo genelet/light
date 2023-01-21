@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/k0kubun/pp/v3"
+//	"github.com/k0kubun/pp/v3"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -24,7 +24,7 @@ func TestDelete(t *testing.T) {
 		istmt, err := parser.ParseStatement()
 		if err != nil { t.Fatal(err) }
 		stmt := istmt.(*sqlast.DeleteStmt)
-pp.Println(stmt)
+//pp.Println(stmt)
 
 		xupdate, err := XDeleteTo(stmt)
 		if err != nil { t.Fatal(err) }

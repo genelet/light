@@ -12,11 +12,13 @@ import (
 	"github.com/akito0107/xsqlparser/dialect"
 )
 
-func TestInsert(t *testing.T) {
+func TestAlterTable(t *testing.T) {
 	strs := []string{
-	"INSERT INTO customers (customer_name, contract_name) VALUES ('Cardinal', 'Tom B. Erichsen')",
-	"INSERT INTO customers (customer_name, contract_name) VALUES ('Cardinal', 'Tom B. Erichsen'), ('Cardinal2', 'Tom B. Erichsen2'), ('Cardinal3', 'Tom B. Erichsen3')",
-	"INSERT INTO customers (customer_name, contract_name) SELECT * FROM customers2"}
+	"ALTER TABLE customers ADD COLUMN email character varying(255)",
+"ALTER TABLE products DROP COLUMN description CASCADE",
+"ALTER TABLE products ADD FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)",
+"ALTER TABLE products ALTER COLUMN created_at SET DEFAULT current_timestamp",
+"ALTER TABLE products ALTER COLUMN number TYPE numeric(255,10)"}
 
 	for i, str := range strs {
 		//if i != 17 { continue }
@@ -25,13 +27,13 @@ func TestInsert(t *testing.T) {
 
 		istmt, err := parser.ParseStatement()
 		if err != nil { t.Fatal(err) }
-		stmt := istmt.(*sqlast.InsertStmt)
+		stmt := istmt.(*sqlast.AlterTableStmt)
 //pp.Println(stmt)
 
-		xinsert, err := XInsertTo(stmt)
+		alterTable, err := XAlterTableTo(stmt)
 		if err != nil { t.Fatal(err) }
 
-		reverse := InsertTo(xinsert)
+		reverse := AlterTableTo(alterTable)
 //pp.Println(reverse)
 		if strings.ToLower(stmt.ToSQLString()) != strings.ToLower(reverse.ToSQLString()) {
 			t.Errorf("%d=>%s", i, stmt.ToSQLString())

@@ -185,6 +185,10 @@ func xalterTableActionTo(item sqlast.AlterTableAction) (*xast.AlterTableAction, 
         x, err := xaddColumnTableActionTo(t)
         if err != nil { return nil, err }
         output.AlterTableActionClause = &xast.AlterTableAction_AddColumnItem{AddColumnItem: x}
+    case *sqlast.AlterColumnTableAction:
+        x, err := xalterColumnTableActionTo(t)
+        if err != nil { return nil, err }
+        output.AlterTableActionClause = &xast.AlterTableAction_AlterColumnItem{AlterColumnItem: x}
     case *sqlast.AddConstraintTableAction:
         x, err := xaddConstraintTableActionTo(t)
         if err != nil { return nil, err }
@@ -209,6 +213,8 @@ func alterTableActionTo(item *xast.AlterTableAction) sqlast.AlterTableAction {
 
 	if x := item.GetAddColumnItem(); x != nil {
         return addColumnTableActionTo(x)
+	} else if x := item.GetAlterColumnItem(); x != nil {
+        return alterColumnTableActionTo(x)
     } else if x := item.GetAddConstraintItem(); x != nil {
         return addConstraintTableActionTo(x)
     } else if x := item.GetDropConstraintItem(); x != nil {
@@ -355,6 +361,10 @@ func xtypeTo(item sqlast.Type) (*xast.Type, error) {
 		output.TypeClause = &xast.Type_IntData{IntData: xintTo(t)}
 	case *sqlast.SmallInt:
 		output.TypeClause = &xast.Type_SmallIntData{SmallIntData: xsmallIntTo(t)}
+	case *sqlast.BigInt:
+		output.TypeClause = &xast.Type_BigIntData{BigIntData: xbigIntTo(t)}
+	case *sqlast.Decimal:
+		output.TypeClause = &xast.Type_DecimalData{DecimalData: xdecimalTo(t)}
 	case *sqlast.Timestamp:
         output.TypeClause = &xast.Type_TimestampData{TimestampData: xtimestampTo(t)}
 	case *sqlast.UUID:
@@ -377,6 +387,10 @@ func typeTo(item *xast.Type) sqlast.Type {
 		return intTo(item.GetIntData())
 	} else if item.GetSmallIntData() != nil {
 		return smallIntTo(item.GetSmallIntData())
+	} else if item.GetBigIntData() != nil {
+		return bigIntTo(item.GetBigIntData())
+	} else if item.GetDecimalData() != nil {
+		return decimalTo(item.GetDecimalData())
     } else if item.GetTimestampData() != nil {
         return timestampTo(item.GetTimestampData())
     } else if item.GetUUIDData() != nil {
@@ -539,3 +553,72 @@ func sqlSetExprTo(item *xast.SQLSetExpr) sqlast.SQLSetExpr {
     }
     return nil
 }
+
+func xalterColumnActionTo(item sqlast.AlterColumnAction) (*xast.AlterColumnAction, error) {
+	if item == nil { return nil, nil }
+
+    output := &xast.AlterColumnAction{}
+    switch t := item.(type) {
+    case *sqlast.SetDefaultColumnAction:
+		x, err := xvalueNodeTo(t.Default)
+		if err != nil { return nil, err }
+        output.AlterColumnActionClause = &xast.AlterColumnAction_SetItem{SetItem:
+			&xast.SetDefaultColumnAction{
+				Set: xposTo(t.Set),
+				Default: x}}
+    case *sqlast.DropDefaultColumnAction:
+        output.AlterColumnActionClause = &xast.AlterColumnAction_DropItem{DropItem:
+			&xast.DropDefaultColumnAction{
+				Drop: xposTo(t.Drop),
+				Default: xposTo(t.Default)}}
+    case *sqlast.PGSetNotNullColumnAction:
+        output.AlterColumnActionClause = &xast.AlterColumnAction_PGSetItem{PGSetItem:
+			&xast.PGSetNotNullColumnAction{
+				Set: xposTo(t.Set),
+				Null: xposTo(t.Null)}}
+    case *sqlast.PGDropNotNullColumnAction:
+        output.AlterColumnActionClause = &xast.AlterColumnAction_PGDropItem{PGDropItem:
+			&xast.PGDropNotNullColumnAction{
+				Drop: xposTo(t.Drop),
+				Null: xposTo(t.Null)}}
+    case *sqlast.PGAlterDataTypeColumnAction:
+		x, err := xtypeTo(t.DataType)
+		if err != nil { return nil, err }
+        output.AlterColumnActionClause = &xast.AlterColumnAction_PGAlterItem{PGAlterItem:
+			&xast.PGAlterDataTypeColumnAction{
+				Type: xposTo(t.Type),
+				DataType: x}}
+	default:
+        return nil, fmt.Errorf("missing alter column action  type: %T", t)
+    }
+
+    return output, nil
+}
+
+func alterColumnActionTo(item *xast.AlterColumnAction) sqlast.AlterColumnAction {
+	if item == nil { return nil }
+
+	if x := item.GetSetItem(); x != nil {
+		return &sqlast.SetDefaultColumnAction{
+			Set: posTo(x.Set),
+			Default: valueNodeTo(x.Default)}
+	} else if x := item.GetDropItem(); x != nil {
+		return &sqlast.DropDefaultColumnAction{
+			Drop: posTo(x.Drop),
+			Default: posTo(x.Default)}
+	} else if x := item.GetPGSetItem(); x != nil {
+		return &sqlast.PGSetNotNullColumnAction{
+			Set: posTo(x.Set),
+			Null: posTo(x.Null)}
+	} else if x := item.GetPGDropItem(); x != nil {
+		return &sqlast.PGDropNotNullColumnAction{
+			Drop: posTo(x.Drop),
+			Null: posTo(x.Null)}
+	} else if x := item.GetPGAlterItem(); x != nil {
+		return &sqlast.PGAlterDataTypeColumnAction{
+			Type: posTo(x.Type),
+			DataType: typeTo(x.DataType)}
+	}
+	return nil
+}
+
