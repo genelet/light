@@ -1,0 +1,172 @@
+syntax = "proto3";
+package sqlight;
+
+option go_package = "./xlight";
+
+enum OperatorType {
+	Plus = 0;
+	Minus = 1;
+	Multiply = 2;
+	Divide = 3;
+	Modulus = 4;
+	Gt = 5;
+	Lt = 6;
+	GtEq = 7;
+	LtEq = 8;
+	Eq = 9;
+	NotEq = 10;
+	And = 11;
+	Or = 12;
+	Not = 13;
+	Like = 14;
+	NotLike = 15;
+	None = 16;
+}
+
+message CompoundIdent {
+	repeated string Idents = 1;
+}
+
+message ObjectName {
+	repeated string Idents = 1;
+}
+
+enum AggType {
+	UnknownAgg = 0;
+	MAX    = 1;
+	MIN    = 2;
+	COUNT  = 3;
+	SUM    = 4;
+	AVG    = 5;
+}
+
+enum SetOperatorType {
+	Union = 0;
+	Intersect = 1;
+	Except = 2;
+}
+
+enum JoinTypeCondition {
+	INNER = 0;
+	LEFT = 1;
+	RIGHT = 2;
+	FULL = 3;
+	LEFTOUTER = 4;
+	RIGHTOUTER = 5;
+	FULLOUTER = 6;
+	IMPLICIT = 7;
+}
+
+message AggFunction {
+	AggType TypeName = 1;
+	repeated ArgsNode RestArgs = 2;
+}
+
+message BinaryExpr {
+    ArgsNode Left = 1;
+    Operator Op = 2;
+    ArgsNode Right = 3;
+}
+
+message UnaryExpr {
+    Operator Op = 1;
+    BinaryExpr Expr = 2;
+}
+
+message ConditionNode {
+    oneof ConditionNodeClause {
+        BinaryExpr BinaryItem = 1;
+    }
+}
+
+message CaseExpr {
+    Operator Operand = 1;
+    repeated ConditionNode Conditions = 2;
+    repeated ArgsNode Results = 3;
+    ArgsNode ElseResult = 4;
+}
+
+message JoinCondition {
+    BinaryExpr SearchCondition = 1;
+}
+
+message QualifiedJoin {
+    ObjectName Name = 1;
+    string AliasName = 2;
+    QualifiedJoin LeftElement = 3;
+    JoinType TypeCondition = 4;
+    JoinCondition Spec = 5;
+}
+
+message OrderByExpr {
+    CompoundIdent Expr = 1;
+    bool ASCBool = 2;
+}
+
+message LimitExpr {
+    bool AllBool = 1;
+    LongValue LimitValue = 2;
+    LongValue OffsetValue = 3;
+}
+
+message UnnamedSelectItem {
+    ArgsNode Node = 1;
+}
+
+message AliasSelectItem {
+    ArgsNode Expr = 1;
+    string Alias = 2;
+}
+
+message SQLSelectItem {
+    oneof SQLSelectItemClause {
+        UnnamedSelectItem UnnamedItem = 1;
+        AliasSelectItem AliasItem = 2;
+        QualifiedWildcardSelectItem WildcardItem = 3;
+    }
+}
+
+message Nested {
+    ArgsNode AST = 1;
+}
+
+message InSubQuery {
+    CompoundIdent Expr = 1;
+    QueryStmt SubQuery = 2;
+    bool Negated = 3;
+}
+
+message SQLSelect {
+    bool DistinctBool = 1;
+    repeated SQLSelectItem Projection = 2;
+    repeated QualifiedJoin FromClause = 3;
+    WhereNode WhereClause = 4;
+    repeated CompoundIdent GroupByClause = 5;
+    BinaryExpr HavingClause = 6;
+}
+
+message SetOperationExpr {
+    SetOperator Op = 1;
+    bool All = 2;
+    SQLSetExpr Left = 3;
+    SQLSetExpr Right = 4;
+}
+
+message SQLSetExpr {
+    oneof SQLSetExprClause {
+        SQLSelect SelectItem = 1;
+        SetOperationExpr ExprItem = 2;
+    }
+}
+
+message QueryStmt {
+    Pos With = 1;
+    message CTE {
+        string AliasName = 1;
+        QueryStmt Query = 2;
+    }
+    repeated CTE CTEs = 2;
+    SQLSetExpr Body = 3;
+    repeated OrderByExpr OrderBy = 4;
+    LimitExpr LimitExpression = 5;
+}

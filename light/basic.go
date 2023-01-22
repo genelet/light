@@ -40,13 +40,13 @@ func identTo(ident *xast.Ident) string {
 	return ident.Value
 }
 
-func xcompoundTo(idents *xlight.CompoundIdent, ns ...int) *xast.CompoundIdent {
+func xcompoundTo(idents *xlight.CompoundIdent, init ...int) *xast.CompoundIdent {
 	if idents == nil { return nil }
 
 	output := &xast.CompoundIdent{}
 	n := 0
-	if ns != nil {
-		n = ns[0]
+	if init != nil {
+		n = init[0]
 	}
 	for _, item := range idents.Idents {
 		output.Idents = append(output.Idents, xidentTo(item, n))
@@ -63,6 +63,20 @@ func compoundTo(idents *xast.CompoundIdent) *xlight.CompoundIdent {
 		output.Idents = append(output.Idents, identTo(item))
 	}
 	return output
+}
+
+func xobjectnameTo(idents *xlight.ObjectName, init ...int) *xast.ObjectName {
+    if idents == nil { return nil }
+
+	ci := xcompoundTo(idents, init...)
+	return &xast.ObjectName{Idents: ci.Idents}
+}
+
+func objectnameTo(idents *xast.ObjectName) *xlight.ObjectName {
+    if idents == nil { return nil }
+
+	ci := compoundTo(idents)
+    return &xlight.ObjectName{Idents:ci.Idents}
 }
 
 func xoperatorTo(op xlight.OperatorType) *xast.Operator {
@@ -87,8 +101,8 @@ func jointypeTo(t *xast.JoinType) xlight.JoinTypeCondition {
 	return xlight.JoinTypeCondition(t.Condition)
 }
 
-func xstringTo(t string) *xast.StringUnit {
-    return &xast.StringUnit{
+func xstringTo(t string) *xast.SingleQuotedString {
+    return &xast.SingleQuotedString{
         Value: t,
         From: xposTo(),
         To: xposplusTo(t)}
@@ -98,26 +112,57 @@ func stringTo(t *xast.StringUnit) string {
 	return t.Value
 }
 
-func xdoubleTo(t float64) *xast.DoubleUnit {
-    return &xast.DoubleUnit{
+func xdoubleTo(t float64) *xast.DoubleValue {
+    return &xast.DoubleValue{
         Value: t,
         From: xposTo(),
         To: xposplusTo(t)}
 }
 
-func doubleTo(t *xast.DoubleUnit) float64 {
+func doubleTo(t *xast.DoubleValue) float64 {
 	return t.Value
 }
 
-func xlongTo(t int64) *xast.LongUnit {
-    return &xast.LongUnit{
+func xlongTo(t int64) *xast.LongValue {
+    return &xast.LongValue{
         Value: t,
         From: xposTo(),
         To: xposplusTo(t)}
 }
 
-func longTo(t *xast.LongUnit) int64 {
+func longTo(t *xast.LongValue) int64 {
 	return t.Value
+}
+
+func xintTo(t int) *xast.Int {
+    return &xast.Int{
+        Value: t,
+        From: xposTo(),
+        To: xposplusTo(t)}
+}
+
+func intTo(t *xast.Int) int64 {
+	return t.Value
+}
+
+func xsmallIntTo(t int16) *xast.SmallInt {
+    if t == nil { return nil }
+
+    return &xast.SmallInt{
+        From: xposTo(t.From),
+        To: xposTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+        Unsigned: xposTo(t.Unsigned)}
+}
+
+func smallIntTo(t *xast.SmallInt) *sqlast.SmallInt {
+    if t == nil { return nil }
+
+    return &sqlast.SmallInt{
+        From: posTo(t.From),
+        To: posTo(t.To),
+        IsUnsigned: t.IsUnsigned,
+        Unsigned: posTo(t.Unsigned)}
 }
 
 func xfunctionTo(f *xlight.AggFunction) *xast.AggFunction {
@@ -129,7 +174,7 @@ func xfunctionTo(f *xlight.AggFunction) *xast.AggFunction {
 
 	n := 0
 	for _, item := range f.RestArgs {
-		y := xcompoundTo(item, n)
+		y := xargsNodeTo(item, n)
 		output.RestArgs = append(output.RestArgs, y)
 		n += len(y.Idents[len(y.Idents)-1].Value) + 1
 	}
@@ -142,7 +187,7 @@ func functionTo(f *xast.AggFunction) *xlight.AggFunction {
 
 	fl := &xlight.AggFunction{TypeName: xlight.AggType(f.TypeName)}
 	for _, item := range f.RestArgs {
-		fl.RestArgs = append(fl.RestArgs, compoundTo(item))
+		fl.RestArgs = append(fl.RestArgs, argsNodeTo(item))
 	}
 
 	return fl
