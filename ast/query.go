@@ -139,7 +139,7 @@ func xselectTo(body *sqlast.SQLSelect) (*xast.SQLSelect, error) {
 	}
 
 	for _, item := range body.FromClause {
-		from, err := xtablereferenceTo(item)
+		from, err := xtableReferenceTo(item)
 		if err != nil { return nil, err }
 		query.FromClause = append(query.FromClause, from)
 	}
@@ -182,7 +182,7 @@ func selectTo(body *xast.SQLSelect) *sqlast.SQLSelect {
 		query.Projection = append(query.Projection, sqlSelectItemTo(item))
 	}
 	for _, item := range body.FromClause {
-		query.FromClause = append(query.FromClause, tablereferenceTo(item))
+		query.FromClause = append(query.FromClause, tableReferenceTo(item))
 	}
 
 	query.WhereClause = whereNodeTo(body.WhereClause)

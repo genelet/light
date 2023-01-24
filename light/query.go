@@ -46,7 +46,7 @@ func XQueryTo(stmt *xlight.QueryStmt) *xast.QueryStmt {
 		output.CTEs = append(output.CTEs, xcteTo(item))
 	}
 
-	output.Body = xsetoperationTo(stmt.Body)
+	output.Body = xsqlSetExprTo(stmt.Body)
 
 	for _, item := range stmt.OrderBy {
 		output.OrderBy = append(output.OrderBy, xorderbyTo(item))
@@ -61,17 +61,17 @@ func XQueryTo(stmt *xlight.QueryStmt) *xast.QueryStmt {
 // QueryTo translates a xast query statement into xlight statement
 //
 func QueryTo(stmt *xast.QueryStmt) *xlight.QueryStmt {
-	output := &xlight.QueryStmt{}
+	output := &xlight.QueryStmt{
+		Body: sqlSetExprTo(stmt.Body)}
 
 	for _, item := range stmt.CTEs {
 		output.CTEs = append(output.CTEs, cteTo(item))
 	}
 
-	output.Body = setoperationTo(stmt.Body)
-
 	for _, item := range stmt.OrderBy {
 		output.OrderBy = append(output.OrderBy, orderbyTo(item))
 	}
+
 	if stmt.LimitExpression != nil {
 		output.LimitExpression = limitTo(stmt.LimitExpression)
 	}
@@ -96,122 +96,153 @@ func cteTo(cte *xast.QueryStmt_CTE) *xlight.QueryStmt_CTE {
 	return output
 }
 
-func xinsubqueryTo(sq *xlight.QueryStmt_InSubQuery) *xast.QueryStmt_InSubQuery {
+func xnestedTo(body *xlight.Nested) *xast.Nested {
+    x := xargsNodeTo(body.AST)
+    return &xast.Nested{
+        AST: x,
+        LParen: xposTo(),
+        RParen: xposTo(body)}
+}
+
+func nestedTo(body *xast.Nested) *xlight.Nested {
+    return &xlight.Nested{
+        AST: argsNodeTo(body.AST)}
+}
+
+func xinsubqueryTo(sq *xlight.InSubQuery) *xast.InSubQuery {
 	query := XQueryTo(sq.SubQuery)
 
-	return &xast.QueryStmt_InSubQuery{
+	return &xast.InSubQuery{
 		Expr: xcompoundTo(sq.Expr),
 		SubQuery: query,
 		Negated: sq.Negated,
 		RParen: xposTo()}
 }
 
-func insubqueryTo(sq *xast.QueryStmt_InSubQuery) *xlight.QueryStmt_InSubQuery {
+func insubqueryTo(sq *xast.InSubQuery) *xlight.InSubQuery {
 	query := QueryTo(sq.SubQuery)
 
-	return &xlight.QueryStmt_InSubQuery{
+	return &xlight.InSubQuery{
 		Expr: compoundTo(sq.Expr),
 		SubQuery: query,
 		Negated: sq.Negated}
 }
 
-func xbinaryexprTo(binary *xlight.QueryStmt_BinaryExpr) *xast.QueryStmt_BinaryExpr {
-	if binary == nil { return nil }
+func xselectTo(body *xlight.SQLSelect) *xast.SQLSelect {
+    if body == nil { return nil }
+    query := &xast.SQLSelect{
+        DistinctBool: body.DistinctBool,
+        Select: xposTo(),
+		WhereClause: xwhereNodeTo(body.WhereClause),
+		HavingClause: xbinaryExprTo(body.HavingClause)}
 
-	item := &xast.QueryStmt_BinaryExpr{Op: xoperatorTo(binary.Op)}
+    for _, item := range body.Projection {
+        query.Projection = append(query.Projection, xsqlSelectItemTo(item))
+    }
+    for _, item := range body.FromClause {
+        query.FromClause = append(query.FromClause, xtablereferenceTo(item))
+    }
+    for _, item := range body.GroupByClause {
+        query.GroupByClause = append(query.GroupByClause, xcompoundTo(item))
+    }
 
-	if v := binary.GetLeftIdents(); v != nil {
-		item.LeftOneOf = &xast.QueryStmt_BinaryExpr_LeftIdents{LeftIdents:xcompoundTo(v)}
-	} else if v := binary.GetLeftBinary(); v != nil {
-		item.LeftOneOf = &xast.QueryStmt_BinaryExpr_LeftBinary{LeftBinary:xbinaryexprTo(v)}
-	}
-
-	if v := binary.GetRightIdents(); v != nil {
-		item.RightOneOf = &xast.QueryStmt_BinaryExpr_RightIdents{RightIdents:xcompoundTo(v)}
-	} else if v := binary.GetSingleQuotedString(); v != "" {
-		item.RightOneOf = &xast.QueryStmt_BinaryExpr_SingleQuotedString{SingleQuotedString:xstringTo(v)}
-	} else if v := binary.GetDoubleValue(); v != 0 {
-		item.RightOneOf = &xast.QueryStmt_BinaryExpr_DoubleValue{DoubleValue:xdoubleTo(v)}
-	} else if v := binary.GetLongValue(); v != 0 {
-		item.RightOneOf = &xast.QueryStmt_BinaryExpr_LongValue{LongValue:xlongTo(v)}
-	} else if v := binary.GetQueryValue(); v != nil {
-		item.RightOneOf = &xast.QueryStmt_BinaryExpr_QueryValue{QueryValue:xinsubqueryTo(v)}
-	} else if v := binary.GetRightBinary(); v != nil {
-		item.RightOneOf = &xast.QueryStmt_BinaryExpr_RightBinary{RightBinary:xbinaryexprTo(v)}
-	}
-
-	return item
+    return query
 }
 
-func binaryexprTo(binary *xast.QueryStmt_BinaryExpr) *xlight.QueryStmt_BinaryExpr {
-	if binary == nil { return nil }
+func selectTo(body *xast.SQLSelect) *xlight.SQLSelect {
+    query := &xlight.SQLSelect{
+        DistinctBool: body.DistinctBool,
+		WhereClause: whereNodeTo(body.WhereClause),
+        HavingClause: binaryExprTo(body.HavingClause)}
 
-	item := &xlight.QueryStmt_BinaryExpr{Op: operatorTo(binary.Op)}
+    for _, item := range body.Projection {
+        query.Projection = append(query.Projection, selectItemTo(item))
+    }
+    for _, item := range body.FromClause {
+        query.FromClause = append(query.FromClause, tablereferenceTo(item))
+    }
+    for _, item := range body.GroupByClause {
+        query.GroupByClause = append(query.GroupByClause, compoundTo(item))
+    }
 
-	if v := binary.GetLeftIdents(); v != nil {
-		item.LeftOneOf = &xlight.QueryStmt_BinaryExpr_LeftIdents{LeftIdents:compoundTo(v)}
-	} else if v := binary.GetLeftBinary(); v != nil {
-		item.LeftOneOf = &xlight.QueryStmt_BinaryExpr_LeftBinary{LeftBinary:binaryexprTo(v)}
-	}
-
-	if v := binary.GetRightIdents(); v != nil {
-		item.RightOneOf = &xlight.QueryStmt_BinaryExpr_RightIdents{RightIdents:compoundTo(v)}
-	} else if v := binary.GetSingleQuotedString(); v != nil {
-		item.RightOneOf = &xlight.QueryStmt_BinaryExpr_SingleQuotedString{SingleQuotedString:stringTo(v)}
-	} else if v := binary.GetDoubleValue(); v != nil {
-		item.RightOneOf = &xlight.QueryStmt_BinaryExpr_DoubleValue{DoubleValue:doubleTo(v)}
-	} else if v := binary.GetLongValue(); v != nil {
-		item.RightOneOf = &xlight.QueryStmt_BinaryExpr_LongValue{LongValue:longTo(v)}
-	} else if v := binary.GetQueryValue(); v != nil {
-		item.RightOneOf = &xlight.QueryStmt_BinaryExpr_QueryValue{QueryValue:insubqueryTo(v)}
-	} else if v := binary.GetRightBinary(); v != nil {
-		item.RightOneOf = &xlight.QueryStmt_BinaryExpr_RightBinary{RightBinary:binaryexprTo(v)}
-	}
-
-	return item
+    return query
 }
 
-func xorderbyTo(orderby *xlight.QueryStmt_OrderByExpr) *xast.QueryStmt_OrderByExpr {
-	if orderby == nil { return nil }
-
-	return &xast.QueryStmt_OrderByExpr{
-		OrderingPos: xposTo(),
-		ASCBool: orderby.ASCBool,
-		Expr: xcompoundTo(orderby.Expr)}
+func xsetOperationExprTo(item *xlight.SetOperationExpr) *xast.SetOperationExpr {
+    output := &xast.SetOperationExpr{
+		Op: xsetoperatorTo(item.Op),
+		All: item.All}
+    output.Left = xsqlSetExprTo(item.Left)
+    if item.Right != nil {
+        output.Right = xsqlSetExprTo(item.Right)
+    }
+    return output
 }
 
-func orderbyTo(orderby *xast.QueryStmt_OrderByExpr) *xlight.QueryStmt_OrderByExpr {
-	if orderby == nil { return nil }
-
-	return &xlight.QueryStmt_OrderByExpr{
-		ASCBool: orderby.ASCBool,
-		Expr: compoundTo(orderby.Expr)}
+func setOperationExprTo(item *xast.SetOperationExpr) *xlight.SetOperationExpr {
+    return &xlight.SetOperationExpr{
+        Op: setoperatorTo(item.Op),
+        All: item.All,
+        Left: sqlSetExprTo(item.Left),
+        Right: sqlSetExprTo(item.Right)}
 }
 
-func xlimitTo(limit *xlight.QueryStmt_LimitExpr) *xast.QueryStmt_LimitExpr {
-	if limit == nil { return nil }
-
-	output := &xast.QueryStmt_LimitExpr{
-		AllBool: limit.AllBool,
-		AllPos: xposTo(),
-		Limit: xposTo(),
-		LimitValue: xlongTo(limit.LimitValue)}
-	if limit.OffsetValue != 0 {
-		output.OffsetValue = xlongTo(limit.OffsetValue)
-	}
-
-	return output
+func xunaryExprTo(body *xlight.UnaryExpr) *xast.UnaryExpr {
+    return &xast.UnaryExpr{
+        From: xposTo(),
+        Op: xoperatorTo(body.Op),
+        Expr: xbinaryExprTo(body.Expr)}
 }
 
-func limitTo(limit *xast.QueryStmt_LimitExpr) *xlight.QueryStmt_LimitExpr {
-	if limit == nil { return nil }
+func unaryExprTo(body *xast.UnaryExpr) *xlight.UnaryExpr {
+    return &xlight.UnaryExpr{
+        Op: operatorTo(body.Op),
+        Expr: binaryExprTo(body.Expr)}
+}
 
-	output := &xlight.QueryStmt_LimitExpr{
-		AllBool: limit.AllBool,
-		LimitValue: longTo(limit.LimitValue)}
-	if limit.OffsetValue != nil {
-		output.OffsetValue = longTo(limit.OffsetValue)
-	}
+func xcaseExprTo(body *xlight.CaseExpr) *xast.CaseExpr {
+    output := &xast.CaseExpr{
+        Case: xposTo(),
+        CaseEnd: xposplusTo(body),
+        Operand: xoperatorTo(body.Operand),
+		ElseResult: xargsNodeTo(body.ElseResult)}
+    for _, condition := range body.Conditions {
+        output.Conditions = append(output.Conditions, xconditionNodeTo(condition))
+    }
+    for _, result := range body.Results {
+        output.Results = append(output.Results, xargsNodeTo(result))
+    }
+    return output
+}
 
-	return output
+func caseExprTo(body *xast.CaseExpr) *xlight.CaseExpr {
+    output := &xlight.CaseExpr{
+        ElseResult: argsNodeTo(body.ElseResult),
+        Operand: operatorTo(body.Operand)}
+    for _, condition := range body.Conditions {
+        output.Conditions = append(output.Conditions, conditionNodeTo(condition))
+    }
+    for _, result := range body.Results {
+        output.Results = append(output.Results, argsNodeTo(result))
+    }
+
+    return output
+}
+
+func xbinaryExprTo(item *xlight.BinaryExpr) *xast.BinaryExpr {
+    if item == nil { return nil }
+
+    return &xast.BinaryExpr{
+		Op: xoperatorTo(item.Op),
+		Left: xargsNodeTo(item.Left),
+		Right: xargsNodeTo(item.Right)}
+}
+
+func binaryExprTo(item *xast.BinaryExpr) *xlight.BinaryExpr {
+    if item == nil { return nil }
+
+    return &xlight.BinaryExpr{
+        Op: operatorTo(item.Op),
+        Left: argsNodeTo(item.Left),
+        Right: argsNodeTo(item.Right)}
 }

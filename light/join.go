@@ -1,83 +1,103 @@
 package light
 
 import (
-//	"fmt"
+	"fmt"
 	"github.com/genelet/sqlproto/xast"
-	"github.com/genelet/sqlproto/xlight"
+	"github.com/akito0107/xsqlparser/sqlast"
 )
 
-func xtableTo(t *xlight.QueryStmt_SQLSelect_QualifiedJoin) *xast.QueryStmt_SQLSelect_QualifiedJoin {
-	output := &xast.QueryStmt_SQLSelect_QualifiedJoin {
-		Name: xcompoundTo(t.Name)}
-	if t.AliasName != "" {
-		output.AliasName = xidentTo(t.AliasName)
-	}
-	return output
-}
-
-func tableTo(t *xast.QueryStmt_SQLSelect_QualifiedJoin) *xlight.QueryStmt_SQLSelect_QualifiedJoin {
-	output := &xlight.QueryStmt_SQLSelect_QualifiedJoin{
-		Name: compoundTo(t.Name)}
-	if t.AliasName != nil {
-		output.AliasName = identTo(t.AliasName)
-	}
-
-	return output
-}
-
-func xqualifiedjoinTo(item *xlight.QueryStmt_SQLSelect_QualifiedJoin) *xast.QueryStmt_SQLSelect_QualifiedJoin {
-	// thisLeft is never nil
-	thisLeft := item.LeftElement
-	var ref *xast.QueryStmt_SQLSelect_QualifiedJoin
-	if thisLeft.LeftElement != nil {
-		ref = xqualifiedjoinTo(thisLeft)
+func xjoinconditionTo(c *xlight.JoinCondition) *xast.JoinCondition {
+	if c == nil { return nil }	
+	
+	output := &xast.JoinCondition{
+			On: xposTo()}
+	if x := c.GetSearchCondition(); x != nil {
+		output.SearchCondition = xbinaryExprTo(x)
 	} else {
-		ref = xtableTo(thisLeft)
+		return nil
 	}
-
-	output := xtableTo(item)
-	output.LeftElement = ref
-	output.TypeCondition = &xast.JoinType{
-		Condition: xast.JoinTypeCondition(item.TypeCondition),
-		From: xposTo(),
-		To: xposplusTo(item.TypeCondition)}
-	output.Spec = &xast.QueryStmt_SQLSelect_QualifiedJoin_JoinCondition{
-		SearchCondition: xbinaryexprTo(item.Spec),
-		On: xposTo()}
-
 	return output
 }
 
-func qualifiedjoinTo(item *xast.QueryStmt_SQLSelect_QualifiedJoin) *xlight.QueryStmt_SQLSelect_QualifiedJoin {
+func joinconditionTo(c *xast.JoinCondition) *xlight.JoinCondition {
+	if c == nil { return nil }	
+	
+	output := &xlight.JoinCondition{}
+	if x := c.GetSearchCondition(); x != nil {
+		output.SearchCondition = binaryExprTo(x)
+	} else {
+		return nil
+	}
+	return output
+}
+
+func xtableTo(t *xlight.Table) *xast.QualifiedJoin {
+	return &xast.QualifiedJoin {
+		Name: xobjectnameTo(t.Name),
+		AliasName: xidentTo(t.Alias)}
+}
+
+func tableTo(t *xast.QualifiedJoin) *sqlast.Table {
+	table := &sqlast.Table{
+		Name: objectnameTo(t.Name)}
+	if t.AliasName != nil {
+		table.Alias = identTo(t.AliasName).(*sqlast.Ident)
+	}
+	return table
+}
+
+func xqualifiedjoinTo(item *xlight.QualifiedJoin) (*xast.QualifiedJoin, error) {
+	spec, err := xjoinconditionTo(item.Spec.(*sqlast.JoinCondition))
+	if err != nil { return nil, err }
+
+	table := item.RightElement.Ref.(*sqlast.Table)
+	output := &xast.QualifiedJoin{
+		Name: xobjectnameTo(table.Name),
+		AliasName: xidentTo(table.Alias),
+		TypeCondition: xjointypeTo(item.Type),
+		Spec: spec}
+
+	switch t := item.LeftElement.Ref.(type) {
+	case *sqlast.Table:
+		output.LeftElement = xtableTo(t)
+	case *sqlast.QualifiedJoin:
+		output.LeftElement, err = xqualifiedjoinTo(t)
+	default:
+		return nil, fmt.Errorf("left type %#v", t)
+	}
+	return output, err
+}
+
+func qualifiedjoinTo(item *xast.QualifiedJoin) *xlight.QualifiedJoin {
 	// thisLeft is never nil
 	thisLeft := item.LeftElement
-	var ref *xlight.QueryStmt_SQLSelect_QualifiedJoin
+	var ref xlight.TableReference
 	if thisLeft.LeftElement != nil {
 		ref = qualifiedjoinTo(thisLeft)
 	} else {
 		ref = tableTo(thisLeft)
 	}
 
-	output := tableTo(item)
-	output.LeftElement = ref
-	output.TypeCondition = jointypeTo(item.TypeCondition)
-	output.Spec = binaryexprTo(item.Spec.SearchCondition)
-
-	return output
+	return &sqlast.QualifiedJoin{
+		LeftElement: &xlight.TableJoinElement{Ref: ref},
+		Type: jointypeTo(item.TypeCondition),
+		RightElement: &xlight.TableJoinElement{Ref: tableTo(item)},
+		Spec: joinconditionTo(item.Spec)}
 }
 
-func xtablereferenceTo(item *xlight.QueryStmt_SQLSelect_QualifiedJoin) *xast.QueryStmt_SQLSelect_QualifiedJoin {
-	if item == nil { return nil }
-
-	if item.LeftElement != nil {
-		return xqualifiedjoinTo(item)
+func xtablereferenceTo(item xlight.TableReference) (*xast.QualifiedJoin, error) {
+	switch t := item.(type) {
+	case *xlight.Table:
+		return xtableTo(t), nil
+	case *xlight.QualifiedJoin:
+		return xqualifiedjoinTo(t)
+	default:
 	}
-	return xtableTo(item)
+	return nil, fmt.Errorf("join type %#v", item)
 }
 
-func tablereferenceTo(item *xast.QueryStmt_SQLSelect_QualifiedJoin) *xlight.QueryStmt_SQLSelect_QualifiedJoin {
+func tablereferenceTo(item *xast.QualifiedJoin) xlight.TableReference {
 	if item == nil { return nil }
-
 	if item.LeftElement != nil {
 		return qualifiedjoinTo(item)
 	}

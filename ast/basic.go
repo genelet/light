@@ -159,7 +159,7 @@ func operatorTo(op *xast.Operator) *sqlast.Operator {
 		To: posTo(op.To)}
 }
 
-func xjointypeTo(t *sqlast.JoinType) *xast.JoinType {
+func xjoinTypeTo(t *sqlast.JoinType) *xast.JoinType {
 	if t == nil { return nil }
 
 	return &xast.JoinType{
@@ -168,7 +168,7 @@ func xjointypeTo(t *sqlast.JoinType) *xast.JoinType {
 		To: xposTo(t.To)}
 }
 
-func jointypeTo(t *xast.JoinType) *sqlast.JoinType {
+func joinTypeTo(t *xast.JoinType) *sqlast.JoinType {
 	if t == nil { return nil }
 
 	return &sqlast.JoinType{

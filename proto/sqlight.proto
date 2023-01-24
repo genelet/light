@@ -23,6 +23,10 @@ enum OperatorType {
 	None = 16;
 }
 
+message CompoundIdent {
+	repeated string Idents = 1;
+}
+
 enum AggType {
 	UnknownAgg = 0;
 	MAX    = 1;
@@ -49,98 +53,146 @@ enum JoinTypeCondition {
 	IMPLICIT = 7;
 }
 
-message CompoundIdent {
-	repeated string idents = 1;
+message AggFunction {
+	AggType TypeName = 1;
+	repeated ArgsNode RestArgs = 2;
 }
 
-message AggFunction {
-	AggType typeName = 1;
-	repeated CompoundIdent restArgs = 2;
+message BinaryExpr {
+    ArgsNode Left = 1;
+    OperatorType Op = 2;
+    ArgsNode Right = 3;
+}
+
+message UnaryExpr {
+    OperatorType Op = 1;
+    BinaryExpr Expr = 2;
+}
+
+message ConditionNode {
+    oneof ConditionNodeClause {
+        BinaryExpr BinaryItem = 1;
+    }
+}
+
+message CaseExpr {
+    OperatorType Operand = 1;
+    repeated ConditionNode Conditions = 2;
+    repeated ArgsNode Results = 3;
+    ArgsNode ElseResult = 4;
+}
+
+message ArgsNode {
+    oneof ArgsNodeClause {
+        ValueNode ValueItem = 1;
+        AggFunction FunctionItem = 2;
+        CaseExpr CaseItem = 3;
+        Nested NestedItem = 4;
+        UnaryExpr UnaryItem = 5;
+        WhereNode WhereItem = 6;
+    }
+}
+
+message UnnamedSelectItem {
+    ArgsNode Node = 1;
+}
+
+message AliasSelectItem {
+    ArgsNode Expr = 1;
+    string Alias = 2;
+}
+
+message JoinCondition {
+    BinaryExpr SearchCondition = 1;
+}
+
+message QualifiedJoin {
+    CompoundIdent Name = 1;
+    string AliasName = 2;
+    QualifiedJoin LeftElement = 3;
+    JoinTypeCondition TypeCondition = 4;
+    JoinCondition Spec = 5;
+}
+
+message OrderByExpr {
+    CompoundIdent Expr = 1;
+    bool ASCBool = 2;
+}
+
+message LimitExpr {
+    bool AllBool = 1;
+    int64 LimitValue = 2;
+    int64 OffsetValue = 3;
+}
+
+message QualifiedWildcardSelectItem {
+    CompoundIdent Prefix = 1;
+}
+
+message SQLSelectItem {
+    oneof SQLSelectItemClause {
+        UnnamedSelectItem UnnamedItem = 1;
+        AliasSelectItem AliasItem = 2;
+        QualifiedWildcardSelectItem WildcardItem = 3;
+    }
+}
+
+message Nested {
+    ArgsNode AST = 1;
+}
+
+message InSubQuery {
+    CompoundIdent Expr = 1;
+    QueryStmt SubQuery = 2;
+    bool Negated = 3;
+}
+
+message WhereNode {
+    oneof WhereNodeClause {
+        InSubQuery InQuery = 1;
+        BinaryExpr BinExpr = 2;
+    }
+}
+
+message ValueNode {
+    oneof ValueNodeClause {
+        string StringItem = 1;
+        int64 LongItem = 2;
+        double DoubleItem = 3;
+        CompoundIdent CompoundItem = 15;
+    }
+}
+
+message SQLSelect {
+    bool DistinctBool = 1;
+    repeated SQLSelectItem Projection = 2;
+    repeated QualifiedJoin FromClause = 3;
+    WhereNode WhereClause = 4;
+    repeated CompoundIdent GroupByClause = 5;
+    BinaryExpr HavingClause = 6;
+}
+
+message SetOperationExpr {
+    SetOperatorType Op = 1;
+    bool All = 2;
+    SQLSetExpr Left = 3;
+    SQLSetExpr Right = 4;
+}
+
+message SQLSetExpr {
+    oneof SQLSetExprClause {
+        SQLSelect SelectItem = 1;
+        SetOperationExpr ExprItem = 2;
+    }
 }
 
 message QueryStmt {
-	message CTE {
-		string aliasName = 1;
-		QueryStmt query = 2;
+    message CTE {
+        string AliasName = 1;
+        QueryStmt Query = 2;
     }
-	repeated CTE CTEs = 2;
-
-	message InSubQuery {
-		CompoundIdent expr = 1;
-		QueryStmt subQuery = 2;
-		bool negated = 3;
-	}
-
-	message BinaryExpr {
-		oneof LeftOneOf {
-			CompoundIdent leftIdents = 1;
-			BinaryExpr leftBinary = 2;
-		}
-		OperatorType op = 3;
-		oneof RightOneOf {
-			CompoundIdent rightIdents = 4;
-			BinaryExpr rightBinary = 5;
-			InSubQuery queryValue = 6;
-			string singleQuotedString = 7;
-			double doubleValue = 8;
-			int64 longValue = 9;
-		}
-	}
-
-	message SQLSelect {
-		bool distinctBool = 1;
-
-		//CASE [Operand] WHEN Conditions... THEN Results... [ELSE ElseResult] END
-		message CaseExpr {
-			OperatorType Operand = 1;
-			repeated BinaryExpr Conditions = 2;
-			repeated string Results = 3;
-			string ElseResult = 4;
-		}
-
-		message SQLSelectItem {
-			AggFunction fieldFunction = 1;
-			CompoundIdent fieldIdents = 2;
-			CaseExpr fieldCase = 3;
-			string aliasName = 10;
-		}
-		repeated SQLSelectItem projection = 2;
-
-		message QualifiedJoin {
-			CompoundIdent name = 1;
-			string aliasName = 2;
-			QualifiedJoin leftElement = 3;
-			JoinTypeCondition typeCondition = 4;
-			BinaryExpr spec = 5;
-		}
-		repeated QualifiedJoin fromClause = 3;
-
-		oneof WhereClause {
-			InSubQuery inQuery = 4;
-			BinaryExpr binExpr = 5;
-		}
-
-		repeated CompoundIdent groupByClause = 8;
-		BinaryExpr havingClause = 9;
-	}
-	message SetOperationExpr {
-		SQLSelect leftSide = 1;
-		bool allBool = 2;
-		SetOperatorType op = 3;
-		SetOperationExpr rightSide = 4;
-	}
-	SetOperationExpr body = 4;
-
-	message OrderByExpr {
-		CompoundIdent expr = 1;
-		bool aSCBool = 3;
-	}
-	repeated OrderByExpr orderBy = 5;
-
-	message LimitExpr {
-		bool allBool = 1;
-		int64 limitValue = 4;
-		int64 offsetValue = 5;
-	}
-	LimitExpr limitExpression = 6;
+    repeated CTE CTEs = 2;
+    SQLSetExpr Body = 3;
+    repeated OrderByExpr OrderBy = 4;
+    LimitExpr LimitExpression = 5;
 }

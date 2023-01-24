@@ -1,60 +1,60 @@
 package light
 
 import (
-	"fmt"
+	"github.com/genelet/sqlproto/xlight"
 	"github.com/genelet/sqlproto/xast"
-	"github.com/akito0107/xsqlparser/sqlast"
 )
 
-func xwhereNodeTo(item sqlast.Node) (*xast.WhereNode, error ) {
-	if item == nil { return nil, nil }
-
-	output := &xast.WhereNode{}
-    switch t := item.(type) {
-    case *sqlast.InSubQuery:
-        where, err := xinsubqueryTo(t)
-        if err != nil { return nil, err }
-        output.WhereNodeClause = &xast.WhereNode_InQuery{InQuery: where}
-    case *sqlast.BinaryExpr:
-        where, err := xbinaryExprTo(t)
-        if err != nil { return nil, err }
-        output.WhereNodeClause = &xast.WhereNode_BinExpr{BinExpr: where}
-    default:
-        return nil, fmt.Errorf("missing where type %T", t)
-    }
-
-	return output, nil
-}
-
-func whereNodeTo(item *xast.WhereNode) sqlast.Node {
+func xwhereNodeTo(item *xlight.WhereNode) *xast.WhereNode {
 	if item == nil { return nil }
 
-	if x := item.GetInQuery(); x != nil {
-        return insubqueryTo(x)
-    } else if x := item.GetBinExpr(); x != nil {
-        return binaryExprTo(x)
+	output := &xast.WhereNode{}
+    if x := item.GetInQuery(); x != nil {
+        where := xinsubqueryTo(x)
+        output.WhereNodeClause = &xast.WhereNode_InQuery{InQuery: where}
+   	} else if x := item.GetBinExpr(); x != nil { 
+        where := xbinaryExprTo(x)
+        output.WhereNodeClause = &xast.WhereNode_BinExpr{BinExpr: where}
+	} else {
+		return nil
     }
-	return nil
+
+	return output
 }
 
+func whereNodeTo(item *xast.WhereNode) *xlight.WhereNode {
+	if item == nil { return nil }
 
-func xtableElementTo(item sqlast.TableElement) (*xast.TableElement, error) {
+	output := &xlight.WhereNode{}
+	if x := item.GetInQuery(); x != nil {
+        where := insubqueryTo(x)
+        output.WhereNodeClause = &xlight.WhereNode_InQuery{InQuery: where}
+    } else if x := item.GetBinExpr(); x != nil {
+        where := binaryExprTo(x)
+        output.WhereNodeClause = &xlight.WhereNode_BinExpr{BinExpr: where}
+    } else {
+		return nil
+	}
+
+	return output
+}
+
+/*
+func xtableElementTo(item sqlast.TableElement) *xast.TableElement {
 	element := new(xast.TableElement)
 	switch t := item.(type) {
 	case *sqlast.ColumnDef:
-		x, err := xcolumnDefTo(t)
-		if err != nil { return nil, err }
+		x := xcolumnDefTo(t)
 		element.TableElementClause = &xast.TableElement_ColumnDefElement{
 			ColumnDefElement:x}
 	case *sqlast.TableConstraint:
-		x, err := xtableConstraintTo(t)
-		if err != nil { return nil, err }
+		x := xtableConstraintTo(t)
 		element.TableElementClause = &xast.TableElement_TableConstraintElement{
 			TableConstraintElement: x}
 	default:
-		return nil, fmt.Errorf("missing table element type %T", t)
+		return nil
 	}
-	return element, nil
+	return element
 }
 
 func tableElementTo(item *xast.TableElement) sqlast.TableElement {
@@ -64,105 +64,98 @@ func tableElementTo(item *xast.TableElement) sqlast.TableElement {
 	return tableConstraintTo(item.GetTableConstraintElement())
 }
 
-func xtableOptionTo(item sqlast.TableOption) (*xast.TableOption, error) {
+func xtableOptionTo(item sqlast.TableOption) *xast.TableOption {
 	output := &xast.TableOption{}
 	switch t := item.(type) {
 	case *sqlast.MyEngine:
 		output.TableOptionClause = &xast.TableOption_MyEngineOption{MyEngineOption:
             &xast.MyEngine{
-                Engine: xposTo(t.Engine),
+                Engine: xposTo(t),
                 Equal: t.Equal,
                 Name: xidentTo(t.Name)}}
 	case *sqlast.MyCharset:
 		output.TableOptionClause = &xast.TableOption_MyCharsetOption{MyCharsetOption:
             &xast.MyCharset{
                 IsDefault: t.IsDefault,
-                Default: xposTo(t.Default),
-                Charset: xposTo(t.Charset),
+                Default: xposTo(),
+                Charset: xposTo(),
                 Equal: t.Equal,
                 Name: xidentTo(t.Name)}}
 	default:
-		return nil, fmt.Errorf("missing table element type %T", item)
+		return nil
 	}
-	return output, nil
+	return output
 }
 
 func tableOptionTo(item *xast.TableOption) sqlast.TableOption {
     if x := item.GetMyEngineOption(); x != nil {
         return &sqlast.MyEngine{
-            Engine: posTo(x.Engine),
             Equal: x.Equal,
-            Name: identTo(x.Name).(*sqlast.Ident)}
+            Name: identTo(x.Name)}
     } else if x := item.GetMyCharsetOption(); x != nil {
 		return &sqlast.MyCharset{
             IsDefault: x.IsDefault,
-            Default: posTo(x.Default),
-            Charset: posTo(x.Charset),
 			Equal: x.Equal,
-            Name: identTo(x.Name).(*sqlast.Ident)}
+            Name: identTo(x.Name)}
 	}
 	return nil
 }
+*/
 
-func xvalueNodeTo(item sqlast.Node) (*xast.ValueNode, error ) {
-	if item == nil { return nil, nil }
-
-	output := &xast.ValueNode{}
-    switch t := item.(type) {
-    case *sqlast.SingleQuotedString:
-        output.ValueNodeClause = &xast.ValueNode_StringItem{StringItem: xstringTo(t)}
-    case *sqlast.LongValue:
-        output.ValueNodeClause = &xast.ValueNode_LongItem{LongItem: xlongTo(t)}
-    case *sqlast.DoubleValue:
-        output.ValueNodeClause = &xast.ValueNode_DoubleItem{DoubleItem: xdoubleTo(t)}
-    case *sqlast.Ident:
-        output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xidentsTo(t)}
-	case *sqlast.CompoundIdent:
-		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xcompoundTo(t)}
-	case *sqlast.Wildcard:
-		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xwildcardsTo(t)}
-    default:
-        return nil, fmt.Errorf("missing value item type %T", t)
-    }
-
-	return output, nil
-}
-
-func valueNodeTo(item *xast.ValueNode) sqlast.Node {
+func xvalueNodeTo(item *xlight.ValueNode) *xast.ValueNode {
 	if item == nil { return nil }
 
-	if x := item.GetLongItem(); x != nil {
-		return longTo(x)
-	} else if x := item.GetDoubleItem(); x != nil {
-		return doubleTo(x)
+	output := &xast.ValueNode{}
+	if x := item.GetStringItem(); x != "" {
+        output.ValueNodeClause = &xast.ValueNode_StringItem{StringItem: xstringTo(x)}
+	} else if x := item.GetLongItem(); x != 0 {
+        output.ValueNodeClause = &xast.ValueNode_LongItem{LongItem: xlongTo(x)}
+	} else if x := item.GetDoubleItem(); x != 0 {
+        output.ValueNodeClause = &xast.ValueNode_DoubleItem{DoubleItem: xdoubleTo(x)}
 	} else if x := item.GetCompoundItem(); x != nil {
-		return compoundTo(x)
-	} else if x := item.GetStringItem(); x != nil {
-		return stringTo(x)
-	}
+		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xcompoundTo(x)}
+    } else {
+        return nil
+    }
 
-	return nil
+	return output
 }
 
-func xinsertSourceTo(item sqlast.InsertSource) (*xast.InsertSource, error ) {
+func valueNodeTo(item *xast.ValueNode) *xlight.ValueNode {
+	if item == nil { return nil }
+
+	output := &xlight.ValueNode{}
+	if x := item.GetStringItem(); x != nil {
+        output.ValueNodeClause = &xlight.ValueNode_StringItem{StringItem: stringTo(x)}
+	} else if x := item.GetLongItem(); x != nil {
+        output.ValueNodeClause = &xlight.ValueNode_LongItem{LongItem: longTo(x)}
+	} else if x := item.GetDoubleItem(); x != nil {
+        output.ValueNodeClause = &xlight.ValueNode_DoubleItem{DoubleItem: doubleTo(x)}
+	} else if x := item.GetCompoundItem(); x != nil {
+		output.ValueNodeClause = &xlight.ValueNode_CompoundItem{CompoundItem: compoundTo(x)}
+    } else {
+        return nil
+    }
+	return output
+}
+
+/*
+func xinsertSourceTo(item sqlast.InsertSource) *xast.InsertSource {
 	if item == nil { return nil, nil }
 
 	output := &xast.InsertSource{}
     switch t := item.(type) {
     case *sqlast.SubQuerySource:
-		// definition sqlast.SubQuerySource{SubQuery: q}
-		source, err := XQueryTo(t.SubQuery)
-		if err != nil { return nil, err }
+		source := XQueryTo(t.SubQuery)
 		output.InsertSourceClause = &xast.InsertSource_SubItem{SubItem: &xast.SubQuerySource{SubQuery: source}}
     case *sqlast.ConstructorSource:
-        source, err := xconstructorSourceTo(t)
-        if err != nil { return nil, err }
+        source := xconstructorSourceTo(t)
         output.InsertSourceClause = &xast.InsertSource_StructorItem{StructorItem: source}
     default:
-        return nil, fmt.Errorf("missing source type %T", t)
+        return nil
     }
 
-	return output, nil
+	return output
 }
 
 func insertSourceTo(item *xast.InsertSource) sqlast.InsertSource {
@@ -176,36 +169,31 @@ func insertSourceTo(item *xast.InsertSource) sqlast.InsertSource {
 	return nil
 }
 
-func xalterTableActionTo(item sqlast.AlterTableAction) (*xast.AlterTableAction, error) {
-	if item == nil { return nil, nil }
+func xalterTableActionTo(item sqlast.AlterTableAction) *xast.AlterTableAction {
+	if item == nil { return nil }
 
 	output := &xast.AlterTableAction{}
     switch t := item.(type) {
     case *sqlast.AddColumnTableAction:
-        x, err := xaddColumnTableActionTo(t)
-        if err != nil { return nil, err }
+        x := xaddColumnTableActionTo(t)
         output.AlterTableActionClause = &xast.AlterTableAction_AddColumnItem{AddColumnItem: x}
     case *sqlast.AlterColumnTableAction:
-        x, err := xalterColumnTableActionTo(t)
-        if err != nil { return nil, err }
+        x := xalterColumnTableActionTo(t)
         output.AlterTableActionClause = &xast.AlterTableAction_AlterColumnItem{AlterColumnItem: x}
     case *sqlast.AddConstraintTableAction:
-        x, err := xaddConstraintTableActionTo(t)
-        if err != nil { return nil, err }
+        x := xaddConstraintTableActionTo(t)
         output.AlterTableActionClause = &xast.AlterTableAction_AddConstraintItem{AddConstraintItem: x}
     case *sqlast.DropConstraintTableAction:
-        x, err := xdropConstraintTableActionTo(t)
-        if err != nil { return nil, err }
+        x := xdropConstraintTableActionTo(t)
         output.AlterTableActionClause = &xast.AlterTableAction_DropConstraintItem{DropConstraintItem: x}
     case *sqlast.RemoveColumnTableAction:
-        x, err := xremoveColumnTableActionTo(t)
-        if err != nil { return nil, err }
+        x := xremoveColumnTableActionTo(t)
         output.AlterTableActionClause = &xast.AlterTableAction_RemoveColumnItem{RemoveColumnItem: x}
     default:
-        return nil, fmt.Errorf("missing actio node type %T", t)
+        return nil
     }
 
-	return output, nil
+	return output
 }
 
 func alterTableActionTo(item *xast.AlterTableAction) sqlast.AlterTableAction {
@@ -225,36 +213,33 @@ func alterTableActionTo(item *xast.AlterTableAction) sqlast.AlterTableAction {
 	return nil
 }
 
-func xtableConstraintSpecTo(item sqlast.TableConstraintSpec) (*xast.TableConstraintSpec, error) {
-	if item == nil { return nil, nil }
+func xtableConstraintSpecTo(item sqlast.TableConstraintSpec) *xast.TableConstraintSpec {
+	if item == nil { return nil }
 
 	output := &xast.TableConstraintSpec{}
 	switch t := item.(type) {
 	case *sqlast.ReferentialTableConstraint:
-		x, err := xreferentialTableConstraintTo(t)
-		if err != nil { return nil, err }
+		x := xreferentialTableConstraintTo(t)
 		output.TableContraintSpecClause = &xast.TableConstraintSpec_ReferenceItem{ReferenceItem: x}
 	case *sqlast.UniqueTableConstraint:
-		x, err := xuniqueTableConstraintTo(t)
-		if err != nil { return nil, err }
+		x := xuniqueTableConstraintTo(t)
 		output.TableContraintSpecClause = &xast.TableConstraintSpec_UniqueItem{UniqueItem: x}
 	case *sqlast.CheckTableConstraint:
 		switch s := t.Expr.(type) {
 		case *sqlast.BinaryExpr:
-			x, err := xbinaryExprTo(s)
-			if err != nil { return nil, err }
+			x := xbinaryExprTo(s)
 			output.TableContraintSpecClause = &xast.TableConstraintSpec_CheckItem{
 				CheckItem: &xast.CheckTableConstraint{
-					Check: xposTo(t.Check),
-					RParen: xposTo(t.RParen),
+					Check: xposTo(),
+					RParen: xposTo(t),
 					Expr: x}}
 		default:
-			return nil, fmt.Errorf("missing type in table constaint Spec: %T", s)
+			return nil
 		}
 	default:
-		return nil, fmt.Errorf("missing type in table constaint: %T", t)
+		return nil
 	}
-	return output, nil
+	return output
 }
 
 func tableConstraintSpecTo(item *xast.TableConstraintSpec) sqlast.TableConstraintSpec {
@@ -267,57 +252,54 @@ func tableConstraintSpecTo(item *xast.TableConstraintSpec) sqlast.TableConstrain
 	} else {
 		x := item.GetCheckItem()
 		return &sqlast.CheckTableConstraint{
-			Check: posTo(x.Check),
-			RParen: posTo(x.RParen),
 			Expr: binaryExprTo(x.Expr)}
 	}
 	return nil
 }
 
-func xcolumnConstraintSpecTo(item sqlast.ColumnConstraintSpec) (*xast.ColumnConstraintSpec, error) {
-	if item == nil { return nil, nil }
+func xcolumnConstraintSpecTo(item sqlast.ColumnConstraintSpec) *xast.ColumnConstraintSpec {
+	if item == nil { return nil }
 
     output := &xast.ColumnConstraintSpec{}
     switch t := item.(type) {
     case *sqlast.CheckColumnSpec:
 		switch s := t.Expr.(type) {
 		case *sqlast.BinaryExpr:
-        	x, err := xbinaryExprTo(s)
-			if err != nil { return nil, err }
+        	x := xbinaryExprTo(s)
         	output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_CheckItem{CheckItem:
 				&xast.CheckColumnSpec{
 					Expr: x,
-					Check: xposTo(t.Check),
-					RParen: xposTo(t.RParen)}}
+					Check: xposTo(),
+					RParen: xposTo(x)}}
 		default:
-			return nil, fmt.Errorf("missing column constraint Expr type: %T", s)
+			return nil
 		}
     case *sqlast.UniqueColumnSpec:
         output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_UniqueItem{UniqueItem:
 			&xast.UniqueColumnSpec{
 				IsPrimaryKey: t.IsPrimaryKey,
-				Primary: xposTo(t.Primary),
-				Key: xposTo(t.Key),
-				Unique: xposTo(t.Unique)}}
+				Primary: xposTo(),
+				Key: xposTo(t),
+				Unique: xposTo(t)}}
     case *sqlast.NotNullColumnSpec:
         output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_NotNullItem{NotNullItem:
 			&xast.NotNullColumnSpec{
-				Not: xposTo(t.Not),
-				Null: xposTo(t.Null)}}
+				Not: xposTo(),
+				Null: xposTo(t)}}
     case *sqlast.ReferencesColumnSpec:
 		ref := &xast.ReferencesColumnSpec{
-			References: xposTo(t.References),
-			RParen: xposTo(t.RParen),
+			References: xposTo(),
+			RParen: xposTo(t),
 			TableName: xobjectnameTo(t.TableName)}
 		for _, column := range t.Columns {
 			ref.Columns = append(ref.Columns, xidentTo(column))
 		}
         output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_ReferenceItem{ReferenceItem: ref}
     default:
-        return nil, fmt.Errorf("missing column constraint type: %T", t)
+        return nil
     }
 
-    return output, nil
+    return output
 }
 
 func columnConstraintSpecTo(item *xast.ColumnConstraintSpec) sqlast.ColumnConstraintSpec {
@@ -325,35 +307,26 @@ func columnConstraintSpecTo(item *xast.ColumnConstraintSpec) sqlast.ColumnConstr
 
 	if x := item.GetUniqueItem(); x != nil {
 		return &sqlast.UniqueColumnSpec{
-			IsPrimaryKey: x.IsPrimaryKey,
-			Primary: posTo(x.Primary),
-			Key: posTo(x.Key),
-			Unique: posTo(x.Unique)}
+			IsPrimaryKey: x.IsPrimaryKey}
 	} else if x := item.GetNotNullItem(); x != nil {
-		return &sqlast.NotNullColumnSpec{
-			Not: posTo(x.Not),
-			Null: posTo(x.Null)}
+		return &sqlast.NotNullColumnSpec{}
 	} else if x := item.GetReferenceItem(); x != nil {
 		ref := &sqlast.ReferencesColumnSpec{
-			References: posTo(x.References),
-			RParen: posTo(x.RParen),
 			TableName: objectnameTo(x.TableName)}
 		for _, column := range x.Columns {
-			ref.Columns = append(ref.Columns, identTo(column).(*sqlast.Ident))
+			ref.Columns = append(ref.Columns, identTo(column))
 		}
 		return ref
 	} else {
 		x := item.GetCheckItem()
 		return &sqlast.CheckColumnSpec{
-			Expr: binaryExprTo(x.Expr),
-			Check: posTo(x.Check),
-			RParen: posTo(x.RParen)}
+			Expr: binaryExprTo(x.Expr)}
 	}
 	return nil
 }
 
-func xtypeTo(item sqlast.Type) (*xast.Type, error) {
-	if item == nil { return nil, nil }
+func xtypeTo(item sqlast.Type) *xast.Type {
+	if item == nil { return nil }
 
     output := &xast.Type{}
 	switch t := item.(type) {
@@ -374,10 +347,10 @@ func xtypeTo(item sqlast.Type) (*xast.Type, error) {
 	case *sqlast.VarcharType:
 		output.TypeClause = &xast.Type_VarcharData{VarcharData: xvarcharTypeTo(t)}
 	default:
-		return nil, fmt.Errorf("missing column def type: %T", t)
+		return nil
 	}
 
-	return output, nil
+	return output
 }
 
 func typeTo(item *xast.Type) sqlast.Type {
@@ -403,196 +376,187 @@ func typeTo(item *xast.Type) sqlast.Type {
 
 	return nil
 }
+*/
 
-func xconditionNodeTo(item sqlast.Node) (*xast.ConditionNode, error) {
-	if item == nil { return nil, nil }
+func xconditionNodeTo(item *xlight.ConditionNode) *xast.ConditionNode {
+	if item == nil { return nil }
 
 	output := &xast.ConditionNode{}
-	switch t := item.(type) {
-	case *sqlast.BinaryExpr:
-		x, err := xbinaryExprTo(t)
-		if err != nil { return nil, err }
-		output.ConditionNodeClause = &xast.ConditionNode_BinaryItem{BinaryItem: x}
-	default:	
-		return nil, fmt.Errorf("missing condition type in CaseExpr %T", t)
+	if x := item.GetBinaryItem(); x != nil {
+		output.ConditionNodeClause = &xast.ConditionNode_BinaryItem{BinaryItem: xbinaryExprTo(x)}
+	} else {
+		return nil
 	}
 
-	return output, nil
+	return output
 }
 
-func conditionNodeTo(item *xast.ConditionNode) sqlast.Node {
+func conditionNodeTo(item *xast.ConditionNode) *xlight.ConditionNode {
 	if item == nil { return nil }
 
+	output := &xlight.ConditionNode{}
 	if x := item.GetBinaryItem(); x != nil {
-		return binaryExprTo(x)
+		output.ConditionNodeClause = &xlight.ConditionNode_BinaryItem{BinaryItem: binaryExprTo(x)}
+	} else {
+		return nil
 	}
-	return nil
+	return output
 }
 
-func xargsNodeTo(item sqlast.Node) (*xast.ArgsNode, error) {
-	if item == nil { return nil, nil }
+func xargsNodeTo(item *xlight.ArgsNode) *xast.ArgsNode {
+	if item == nil { return nil }
 
 	output := &xast.ArgsNode{}
-	switch t := item.(type) {
-	case *sqlast.Ident, *sqlast.CompoundIdent, *sqlast.Wildcard, *sqlast.SingleQuotedString, *sqlast.LongValue, *sqlast.DoubleValue:
-		x, err := xvalueNodeTo(item)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_ValueItem{ValueItem: x}
-	case *sqlast.BinaryExpr, *sqlast.InSubQuery:
-		x, err := xwhereNodeTo(t)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_WhereItem{WhereItem: x}
-	case *sqlast.Function:
-		x, err := xfunctionTo(t)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_FunctionItem{FunctionItem: x}
-	case *sqlast.CaseExpr:
-		x, err := xcaseExprTo(t)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_CaseItem{CaseItem: x}
-	case *sqlast.Nested:
-		x, err := xnestedTo(t)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_NestedItem{NestedItem: x}
-	case *sqlast.UnaryExpr:
-		x, err := xunaryExprTo(t)
-		if err != nil { return nil, err }
-		output.ArgsNodeClause = &xast.ArgsNode_UnaryItem{UnaryItem: x}
-	default:	
-		return nil, fmt.Errorf("missing args type in args node %T", t)
+	if x := item.GetValueItem(); x != nil {
+		output.ArgsNodeClause = &xast.ArgsNode_ValueItem{ValueItem: xvalueNodeTo(x)}
+	} else if x := item.GetWhereItem(); x != nil {
+		output.ArgsNodeClause = &xast.ArgsNode_WhereItem{WhereItem: xwhereNodeTo(x)}
+	} else if x := item.GetFunctionItem(); x != nil {
+		output.ArgsNodeClause = &xast.ArgsNode_FunctionItem{FunctionItem: xfunctionTo(x)}
+	} else if x := item.GetCaseItem(); x != nil {
+		output.ArgsNodeClause = &xast.ArgsNode_CaseItem{CaseItem: xcaseExprTo(x)}
+	} else if x := item.GetNestedItem(); x != nil {
+		output.ArgsNodeClause = &xast.ArgsNode_NestedItem{NestedItem: xnestedTo(x)}
+	} else if x := item.GetUnaryItem(); x != nil {
+		output.ArgsNodeClause = &xast.ArgsNode_UnaryItem{UnaryItem: xunaryExprTo(x)}
+	} else {
+		return nil
 	}
 
-	return output, nil
+	return output
 }
 
-func argsNodeTo(item *xast.ArgsNode) sqlast.Node {
+func argsNodeTo(item *xast.ArgsNode) *xlight.ArgsNode {
 	if item == nil { return nil }
 
+	output := &xlight.ArgsNode{}
 	if x := item.GetValueItem(); x != nil {
-		return valueNodeTo(x)
-	} else if x := item.GetFunctionItem(); x != nil {
-		return functionTo(x)	
-	} else if x := item.GetCaseItem(); x != nil {
-		return caseExprTo(x)	
-	} else if x := item.GetNestedItem(); x != nil {
-		return nestedTo(x)	
-	} else if x := item.GetUnaryItem(); x != nil {
-		return unaryExprTo(x)	
+		output.ArgsNodeClause = &xlight.ArgsNode_ValueItem{ValueItem: valueNodeTo(x)}
 	} else if x := item.GetWhereItem(); x != nil {
-		return whereNodeTo(x)	
+		output.ArgsNodeClause = &xlight.ArgsNode_WhereItem{WhereItem: whereNodeTo(x)}
+	} else if x := item.GetFunctionItem(); x != nil {
+		output.ArgsNodeClause = &xlight.ArgsNode_FunctionItem{FunctionItem: functionTo(x)}
+	} else if x := item.GetCaseItem(); x != nil {
+		output.ArgsNodeClause = &xlight.ArgsNode_CaseItem{CaseItem: caseExprTo(x)}
+	} else if x := item.GetNestedItem(); x != nil {
+		output.ArgsNodeClause = &xlight.ArgsNode_NestedItem{NestedItem: nestedTo(x)}
+	} else if x := item.GetUnaryItem(); x != nil {
+		output.ArgsNodeClause = &xlight.ArgsNode_UnaryItem{UnaryItem: unaryExprTo(x)}
+	} else {
+		return nil
 	}
 
-	return nil
+	return output
 }
 
-func xsqlSelectItemTo(item sqlast.SQLSelectItem) (*xast.SQLSelectItem, error) {
-	if item == nil { return nil, nil }
+func xsqlSelectItemTo(item *xlight.SQLSelectItem) *xast.SQLSelectItem {
+	if item == nil { return nil }
 
 	output := &xast.SQLSelectItem{}
-	switch t := item.(type) {
-	case *sqlast.UnnamedSelectItem:
-		x, err := xargsNodeTo(t.Node)
-		if err != nil { return nil, err }
+	if x := item.GetUnnamedItem(); x != nil {
 		output.SQLSelectItemClause = &xast.SQLSelectItem_UnnamedItem{UnnamedItem:
-			&xast.UnnamedSelectItem{Node:x}}
-	case *sqlast.AliasSelectItem:
-		x, err := xargsNodeTo(t.Expr)
-		if err != nil { return nil, err }
+			&xast.UnnamedSelectItem{Node: xargsNodeTo(x.Node)}}
+	} else if x := item.GetAliasItem(); x != nil {
 		output.SQLSelectItemClause = &xast.SQLSelectItem_AliasItem{AliasItem:
-			&xast.AliasSelectItem{Expr:x, Alias: xidentTo(t.Alias)}}
-	case *sqlast.QualifiedWildcardSelectItem:
+			&xast.AliasSelectItem{Expr:xargsNodeTo(x.Expr), Alias: xidentTo(x.Alias)}}
+	} else if x := item.GetWildcardItem(); x != nil {
 		output.SQLSelectItemClause = &xast.SQLSelectItem_WildcardItem{WildcardItem:
-			&xast.QualifiedWildcardSelectItem{Prefix: xobjectnameTo(t.Prefix)}}
-	default:
-		return nil, fmt.Errorf("missing select item type %T", t)
+			&xast.QualifiedWildcardSelectItem{Prefix: xobjectnameTo(x.Prefix)}}
+	} else {
+		return nil
 	}
 
-	return output, nil
+	return output
 }
 
-func sqlSelectItemTo(item *xast.SQLSelectItem) sqlast.SQLSelectItem {
+func sqlSelectItemTo(item *xast.SQLSelectItem) *xlight.SQLSelectItem {
 	if item == nil { return nil }
 
+	output := &xlight.SQLSelectItem{}
 	if x := item.GetUnnamedItem(); x != nil {
-		return &sqlast.UnnamedSelectItem{Node: argsNodeTo(x.Node)}
+		output.SQLSelectItemClause = &xlight.SQLSelectItem_UnnamedItem{UnnamedItem:
+			&xlight.UnnamedSelectItem{Node: argsNodeTo(x.Node)}}
 	} else if x := item.GetAliasItem(); x != nil {
-		return &sqlast.AliasSelectItem{Expr: argsNodeTo(x.Expr), Alias: identTo(x.Alias).(*sqlast.Ident)}
+		output.SQLSelectItemClause = &xlight.SQLSelectItem_AliasItem{AliasItem:
+			&xlight.AliasSelectItem{Expr:argsNodeTo(x.Expr), Alias: identTo(x.Alias)}}
 	} else if x := item.GetWildcardItem(); x != nil {
-		return &sqlast.QualifiedWildcardSelectItem{Prefix: objectnameTo(x.Prefix)}
+		output.SQLSelectItemClause = &xlight.SQLSelectItem_WildcardItem{WildcardItem:
+			&xlight.QualifiedWildcardSelectItem{Prefix: objectnameTo(x.Prefix)}}
+	} else {
+		return nil
 	}
 
-	return nil
+	return output
 }
 
-func xsqlSetExprTo(item sqlast.SQLSetExpr) (*xast.SQLSetExpr, error) {
-	if item == nil { return nil, nil }
+func xsqlSetExprTo(item *xlight.SQLSetExpr) *xast.SQLSetExpr {
+	if item == nil { return nil }
 
 	output := &xast.SQLSetExpr{}
-	switch t := item.(type) {
-    case *sqlast.SQLSelect:
-        x, err := xselectTo(t)
-        if err != nil { return nil, err }
-		output.SQLSetExprClause = &xast.SQLSetExpr_SelectItem{SelectItem: x}
-    case *sqlast.SetOperationExpr:
-		x, err := xsetOperationExprTo(t)
-        if err != nil { return nil, err }
-		output.SQLSetExprClause = &xast.SQLSetExpr_ExprItem{ExprItem: x}
-    default:
-    	return nil, fmt.Errorf("missing set expr type  %T", t)
+    if x := item.GetSelectItem(); x != nil {
+		output.SQLSetExprClause = &xast.SQLSetExpr_SelectItem{SelectItem: xselectTo(x)}
+    } else if x := item.GetExprItem(); x != nil {
+		output.SQLSetExprClause = &xast.SQLSetExpr_ExprItem{ExprItem: xsetOperationExprTo(x)}
+    } else {
+    	return nil
     }
-    return output, nil
+
+    return output
 }
 
-func sqlSetExprTo(item *xast.SQLSetExpr) sqlast.SQLSetExpr {
+func sqlSetExprTo(item *xast.SQLSetExpr) *xlight.SQLSetExpr {
     if item == nil { return nil }
 
+	output := &xlight.SQLSetExpr{}
     if x := item.GetSelectItem(); x != nil {
-		return selectTo(x)
+		output.SQLSetExprClause = &xlight.SQLSetExpr_SelectItem{SelectItem: selectTo(x)}
     } else if x := item.GetExprItem(); x != nil {
-		return setOperationExprTo(x)
+		output.SQLSetExprClause = &xlight.SQLSetExpr_ExprItem{ExprItem: setOperationExprTo(x)}
+    } else {
+    	return nil
     }
-    return nil
+
+    return output
 }
 
-func xalterColumnActionTo(item sqlast.AlterColumnAction) (*xast.AlterColumnAction, error) {
-	if item == nil { return nil, nil }
+/*
+func xalterColumnActionTo(item sqlast.AlterColumnAction) *xast.AlterColumnAction {
+	if item == nil { return nil }
 
     output := &xast.AlterColumnAction{}
     switch t := item.(type) {
     case *sqlast.SetDefaultColumnAction:
-		x, err := xvalueNodeTo(t.Default)
-		if err != nil { return nil, err }
+		x := xvalueNodeTo(t.Default)
         output.AlterColumnActionClause = &xast.AlterColumnAction_SetItem{SetItem:
 			&xast.SetDefaultColumnAction{
-				Set: xposTo(t.Set),
+				Set: xposTo(),
 				Default: x}}
     case *sqlast.DropDefaultColumnAction:
         output.AlterColumnActionClause = &xast.AlterColumnAction_DropItem{DropItem:
 			&xast.DropDefaultColumnAction{
-				Drop: xposTo(t.Drop),
-				Default: xposTo(t.Default)}}
+				Drop: xposTo(),
+				Default: xposTo()}}
     case *sqlast.PGSetNotNullColumnAction:
         output.AlterColumnActionClause = &xast.AlterColumnAction_PGSetItem{PGSetItem:
 			&xast.PGSetNotNullColumnAction{
-				Set: xposTo(t.Set),
-				Null: xposTo(t.Null)}}
+				Set: xposTo(),
+				Null: xposTo()}}
     case *sqlast.PGDropNotNullColumnAction:
         output.AlterColumnActionClause = &xast.AlterColumnAction_PGDropItem{PGDropItem:
 			&xast.PGDropNotNullColumnAction{
-				Drop: xposTo(t.Drop),
-				Null: xposTo(t.Null)}}
+				Drop: xposTo(),
+				Null: xposTo()}}
     case *sqlast.PGAlterDataTypeColumnAction:
-		x, err := xtypeTo(t.DataType)
-		if err != nil { return nil, err }
+		x := xtypeTo(t.DataType)
         output.AlterColumnActionClause = &xast.AlterColumnAction_PGAlterItem{PGAlterItem:
 			&xast.PGAlterDataTypeColumnAction{
-				Type: xposTo(t.Type),
+				Type: xposTo(),
 				DataType: x}}
 	default:
-        return nil, fmt.Errorf("missing alter column action  type: %T", t)
+        return nil
     }
 
-    return output, nil
+    return output
 }
 
 func alterColumnActionTo(item *xast.AlterColumnAction) sqlast.AlterColumnAction {
@@ -621,4 +585,4 @@ func alterColumnActionTo(item *xast.AlterColumnAction) sqlast.AlterColumnAction 
 	}
 	return nil
 }
-
+*/
