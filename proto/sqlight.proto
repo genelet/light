@@ -93,25 +93,51 @@ message ArgsNode {
     }
 }
 
-message UnnamedSelectItem {
-    ArgsNode Node = 1;
-}
-
-message AliasSelectItem {
-    ArgsNode Expr = 1;
-    string Alias = 2;
-}
-
 message JoinCondition {
     BinaryExpr SearchCondition = 1;
 }
 
+message TableJoinElement {
+    TableReference Ref = 1;
+}
+
+message JoinSpec {
+    oneof JoinSpecClause {
+        JoinCondition JoinItem = 1;
+        NamedColumnsJoin NameItem = 2;
+    }
+}
+
 message QualifiedJoin {
+    TableJoinElement LeftElement = 1;
+    JoinTypeCondition Type = 2;
+    TableJoinElement RightElement = 3;
+    JoinSpec Spec = 4;
+}
+
+message NamedColumnsJoin {
+    repeated string ColumnList = 1;
+}
+
+message Table {
     CompoundIdent Name = 1;
-    string AliasName = 2;
-    QualifiedJoin LeftElement = 3;
-    JoinTypeCondition TypeCondition = 4;
-    JoinCondition Spec = 5;
+    string Alias = 2;
+    repeated ArgsNode Args = 3;
+    repeated ArgsNode WithHints = 5;
+}
+
+message NaturalJoin {
+    TableJoinElement LeftElement = 1;
+    JoinTypeCondition Type = 2;
+    TableJoinElement RightElement = 3;
+}
+
+message TableReference {
+    oneof TableReferenceClause {
+        Table TableItem = 1;
+        QualifiedJoin QualifiedItem = 2;
+        NaturalJoin NaturalItem = 3;
+    }
 }
 
 message OrderByExpr {
@@ -123,6 +149,15 @@ message LimitExpr {
     bool AllBool = 1;
     int64 LimitValue = 2;
     int64 OffsetValue = 3;
+}
+
+message UnnamedSelectItem {
+    ArgsNode Node = 1;
+}
+
+message AliasSelectItem {
+    ArgsNode Expr = 1;
+    string Alias = 2;
 }
 
 message QualifiedWildcardSelectItem {
@@ -166,7 +201,7 @@ message ValueNode {
 message SQLSelect {
     bool DistinctBool = 1;
     repeated SQLSelectItem Projection = 2;
-    repeated QualifiedJoin FromClause = 3;
+    repeated TableReference FromClause = 3;
     WhereNode WhereClause = 4;
     repeated CompoundIdent GroupByClause = 5;
     BinaryExpr HavingClause = 6;

@@ -140,7 +140,7 @@ func xselectTo(body *xlight.SQLSelect) *xast.SQLSelect {
         query.Projection = append(query.Projection, xsqlSelectItemTo(item))
     }
     for _, item := range body.FromClause {
-        query.FromClause = append(query.FromClause, xtablereferenceTo(item))
+        query.FromClause = append(query.FromClause, xtableReferenceTo(item))
     }
     for _, item := range body.GroupByClause {
         query.GroupByClause = append(query.GroupByClause, xcompoundTo(item))
@@ -156,10 +156,10 @@ func selectTo(body *xast.SQLSelect) *xlight.SQLSelect {
         HavingClause: binaryExprTo(body.HavingClause)}
 
     for _, item := range body.Projection {
-        query.Projection = append(query.Projection, selectItemTo(item))
+        query.Projection = append(query.Projection, sqlSelectItemTo(item))
     }
     for _, item := range body.FromClause {
-        query.FromClause = append(query.FromClause, tablereferenceTo(item))
+        query.FromClause = append(query.FromClause, tableReferenceTo(item))
     }
     for _, item := range body.GroupByClause {
         query.GroupByClause = append(query.GroupByClause, compoundTo(item))

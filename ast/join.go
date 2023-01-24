@@ -71,23 +71,6 @@ func joinConditionTo(c *xast.JoinCondition) *sqlast.JoinCondition {
 		On: posTo(c.On)}
 }
 
-/*
-func xtableTo(t *sqlast.Table) *xast.QualifiedJoin {
-	return &xast.QualifiedJoin {
-		Name: xobjectnameTo(t.Name),
-		AliasName: xidentTo(t.Alias)}
-}
-
-func tableTo(t *xast.QualifiedJoin) *sqlast.Table {
-	table := &sqlast.Table{
-		Name: objectnameTo(t.Name)}
-	if t.AliasName != nil {
-		table.Alias = identTo(t.AliasName).(*sqlast.Ident)
-	}
-	return table
-}
-*/
-
 func xtableJoinElementTo(item *sqlast.TableJoinElement) (*xast.TableJoinElement, error) {
 	x, err := xtableReferenceTo(item.Ref)
 	return &xast.TableJoinElement{Ref: x}, err
