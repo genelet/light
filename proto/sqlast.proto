@@ -3,6 +3,25 @@ package sqlast;
 
 option go_package = "./xast";
 
+message Pos {
+	int32 Line = 1;
+	int32 Col = 2;
+}
+
+message Ident {
+	string Value = 1;
+	Pos From = 2;
+	Pos To = 3;
+}
+
+message CompoundIdent {
+	repeated Ident Idents = 1;
+}
+
+message ObjectName {
+	repeated Ident Idents = 1;
+}
+
 enum OperatorType {
 	Plus = 0;
 	Minus = 1;
@@ -23,38 +42,10 @@ enum OperatorType {
 	None = 16;
 }
 
-message Pos {
-	int32 Line = 1;
-	int32 Col = 2;
-}
-
-message Ident {
-	string Value = 1;
-	Pos From = 2;
-	Pos To = 3;
-}
-
-message CompoundIdent {
-	repeated Ident Idents = 1;
-}
-
-message ObjectName {
-	repeated Ident Idents = 1;
-}
-
 message Operator {
 	OperatorType Type = 1;
 	Pos From = 2;
 	Pos To = 3;
-}
-
-enum AggType {
-	UnknownAgg = 0;
-	MAX    = 1;
-	MIN    = 2;
-	COUNT  = 3;
-	SUM    = 4;
-	AVG    = 5;
 }
 
 enum SetOperatorType {
@@ -143,6 +134,15 @@ message ArgsNode {
 		UnaryExpr UnaryItem = 5;
 		WhereNode WhereItem = 6;
 	}
+}
+
+enum AggType {
+	UnknownAgg = 0;
+	MAX    = 1;
+	MIN    = 2;
+	COUNT  = 3;
+	SUM    = 4;
+	AVG    = 5;
 }
 
 message AggFunction {
@@ -259,6 +259,22 @@ message InSubQuery {
 	QueryStmt SubQuery = 2;
 	bool Negated = 3;
 	Pos RParen = 4;
+}
+
+message WhereNode {
+	oneof WhereNodeClause {
+        InSubQuery InQuery = 1;
+		BinaryExpr BinExpr = 2;
+	}
+}
+
+message ValueNode {
+	oneof ValueNodeClause {
+		SingleQuotedString StringItem = 1;
+		LongValue LongItem = 2;
+		DoubleValue DoubleItem = 3;
+        CompoundIdent CompoundItem = 15;
+	}
 }
 
 message SQLSelect {
@@ -575,22 +591,6 @@ message CreateViewStmt {
 }
 
 // end create view
-
-message WhereNode {
-	oneof WhereNodeClause {
-        InSubQuery InQuery = 1;
-		BinaryExpr BinExpr = 2;
-	}
-}
-
-message ValueNode {
-	oneof ValueNodeClause {
-		SingleQuotedString StringItem = 1;
-		LongValue LongItem = 2;
-		DoubleValue DoubleItem = 3;
-        CompoundIdent CompoundItem = 15;
-	}
-}
 
 // start ... create index
 

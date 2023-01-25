@@ -455,13 +455,13 @@ func xsqlSelectItemTo(item *xlight.SQLSelectItem) *xast.SQLSelectItem {
 	output := &xast.SQLSelectItem{}
 	if x := item.GetUnnamedItem(); x != nil {
 		output.SQLSelectItemClause = &xast.SQLSelectItem_UnnamedItem{UnnamedItem:
-			&xast.UnnamedSelectItem{Node: xargsNodeTo(x.Node)}}
+			xunnamedSelectItemTo(x)}
 	} else if x := item.GetAliasItem(); x != nil {
 		output.SQLSelectItemClause = &xast.SQLSelectItem_AliasItem{AliasItem:
 			&xast.AliasSelectItem{Expr:xargsNodeTo(x.Expr), Alias: xidentTo(x.Alias)}}
 	} else if x := item.GetWildcardItem(); x != nil {
 		output.SQLSelectItemClause = &xast.SQLSelectItem_WildcardItem{WildcardItem:
-			&xast.QualifiedWildcardSelectItem{Prefix: xobjectnameTo(x.Prefix)}}
+			xqualifiedWildcardSelectItemTo(x)}
 	} else {
 		return nil
 	}
@@ -475,13 +475,13 @@ func sqlSelectItemTo(item *xast.SQLSelectItem) *xlight.SQLSelectItem {
 	output := &xlight.SQLSelectItem{}
 	if x := item.GetUnnamedItem(); x != nil {
 		output.SQLSelectItemClause = &xlight.SQLSelectItem_UnnamedItem{UnnamedItem:
-			&xlight.UnnamedSelectItem{Node: argsNodeTo(x.Node)}}
+			unnamedSelectItemTo(x)}
 	} else if x := item.GetAliasItem(); x != nil {
 		output.SQLSelectItemClause = &xlight.SQLSelectItem_AliasItem{AliasItem:
 			&xlight.AliasSelectItem{Expr:argsNodeTo(x.Expr), Alias: identTo(x.Alias)}}
 	} else if x := item.GetWildcardItem(); x != nil {
 		output.SQLSelectItemClause = &xlight.SQLSelectItem_WildcardItem{WildcardItem:
-			&xlight.QualifiedWildcardSelectItem{Prefix: objectnameTo(x.Prefix)}}
+			qualifiedWildcardSelectItemTo(x)}
 	} else {
 		return nil
 	}

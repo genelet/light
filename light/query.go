@@ -96,17 +96,16 @@ func cteTo(cte *xast.QueryStmt_CTE) *xlight.QueryStmt_CTE {
 	return output
 }
 
-func xnestedTo(body *xlight.Nested) *xast.Nested {
-    x := xargsNodeTo(body.AST)
+func xnestedTo(body *xlight.ArgsNode) *xast.Nested {
+    x := xargsNodeTo(body)
     return &xast.Nested{
         AST: x,
         LParen: xposTo(),
         RParen: xposTo(body)}
 }
 
-func nestedTo(body *xast.Nested) *xlight.Nested {
-    return &xlight.Nested{
-        AST: argsNodeTo(body.AST)}
+func nestedTo(body *xast.Nested) *xlight.ArgsNode {
+    return argsNodeTo(body.AST)
 }
 
 func xinsubqueryTo(sq *xlight.InSubQuery) *xast.InSubQuery {
@@ -170,7 +169,7 @@ func selectTo(body *xast.SQLSelect) *xlight.SQLSelect {
 
 func xsetOperationExprTo(item *xlight.SetOperationExpr) *xast.SetOperationExpr {
     output := &xast.SetOperationExpr{
-		Op: xsetoperatorTo(item.Op),
+		Op: xsetOperatorTo(item.Op),
 		All: item.All}
     output.Left = xsqlSetExprTo(item.Left)
     if item.Right != nil {
@@ -181,7 +180,7 @@ func xsetOperationExprTo(item *xlight.SetOperationExpr) *xast.SetOperationExpr {
 
 func setOperationExprTo(item *xast.SetOperationExpr) *xlight.SetOperationExpr {
     return &xlight.SetOperationExpr{
-        Op: setoperatorTo(item.Op),
+        Op: setOperatorTo(item.Op),
         All: item.All,
         Left: sqlSetExprTo(item.Left),
         Right: sqlSetExprTo(item.Right)}

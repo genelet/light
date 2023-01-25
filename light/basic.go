@@ -91,15 +91,33 @@ func operatorTo(op *xast.Operator) xlight.OperatorType {
 	return xlight.OperatorType(op.Type)
 }
 
-func xjointypeTo(t xlight.JoinTypeCondition) *xast.JoinType {
+func xjoinTypeTo(t xlight.JoinTypeCondition) *xast.JoinType {
 	return &xast.JoinType{
 		Condition: xast.JoinTypeCondition(t),
 		From: xposTo(),
 		To: xposplusTo(t)}
 }
 
-func jointypeTo(t *xast.JoinType) xlight.JoinTypeCondition {
+func joinTypeTo(t *xast.JoinType) xlight.JoinTypeCondition {
 	return xlight.JoinTypeCondition(t.Condition)
+}
+
+func xqualifiedWildcardSelectItemTo(item *xlight.CompoundIdent) *xast.QualifiedWildcardSelectItem {
+	return &xast.QualifiedWildcardSelectItem{
+		Prefix: xobjectnameTo(item)}
+}
+
+func qualifiedWildcardSelectItemTo(item *xast.QualifiedWildcardSelectItem) *xlight.CompoundIdent {
+	return objectnameTo(item.Prefix)
+}
+
+func xunnamedSelectItemTo(item *xlight.ArgsNode) *xast.UnnamedSelectItem {
+	return &xast.UnnamedSelectItem{
+		Node: xargsNodeTo(item)}
+}
+
+func unnamedSelectItemTo(item *xast.UnnamedSelectItem) *xlight.ArgsNode {
+	return argsNodeTo(item.Node)
 }
 
 func xstringTo(t string) *xast.SingleQuotedString {
@@ -193,14 +211,14 @@ func functionTo(f *xast.AggFunction) *xlight.AggFunction {
 	return fl
 }
 
-func xsetoperatorTo(op xlight.SetOperatorType) *xast.SetOperator {
+func xsetOperatorTo(op xlight.SetOperatorType) *xast.SetOperator {
     return &xast.SetOperator{
         Type: xast.SetOperatorType(op),
         From: xposTo(),
         To: xposplusTo(op)}
 }
 
-func setoperatorTo(op *xast.SetOperator) xlight.SetOperatorType {
+func setOperatorTo(op *xast.SetOperator) xlight.SetOperatorType {
     return xlight.SetOperatorType(op.Type)
 }
 

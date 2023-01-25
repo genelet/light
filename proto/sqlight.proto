@@ -3,6 +3,10 @@ package sqlight;
 
 option go_package = "./xlight";
 
+message CompoundIdent {
+	repeated string Idents = 1;
+}
+
 enum OperatorType {
 	Plus = 0;
 	Minus = 1;
@@ -23,19 +27,6 @@ enum OperatorType {
 	None = 16;
 }
 
-message CompoundIdent {
-	repeated string Idents = 1;
-}
-
-enum AggType {
-	UnknownAgg = 0;
-	MAX    = 1;
-	MIN    = 2;
-	COUNT  = 3;
-	SUM    = 4;
-	AVG    = 5;
-}
-
 enum SetOperatorType {
 	Union = 0;
 	Intersect = 1;
@@ -51,11 +42,6 @@ enum JoinTypeCondition {
 	RIGHTOUTER = 5;
 	FULLOUTER = 6;
 	IMPLICIT = 7;
-}
-
-message AggFunction {
-	AggType TypeName = 1;
-	repeated ArgsNode RestArgs = 2;
 }
 
 message BinaryExpr {
@@ -87,31 +73,37 @@ message ArgsNode {
         ValueNode ValueItem = 1;
         AggFunction FunctionItem = 2;
         CaseExpr CaseItem = 3;
-        Nested NestedItem = 4;
+        ArgsNode NestedItem = 4;
         UnaryExpr UnaryItem = 5;
         WhereNode WhereItem = 6;
     }
 }
 
-message JoinCondition {
-    BinaryExpr SearchCondition = 1;
+enum AggType {
+	UnknownAgg = 0;
+	MAX    = 1;
+	MIN    = 2;
+	COUNT  = 3;
+	SUM    = 4;
+	AVG    = 5;
 }
 
-message TableJoinElement {
-    TableReference Ref = 1;
+message AggFunction {
+	AggType TypeName = 1;
+	repeated ArgsNode RestArgs = 2;
 }
 
 message JoinSpec {
     oneof JoinSpecClause {
-        JoinCondition JoinItem = 1;
+        BinaryExpr JoinItem = 1;
         NamedColumnsJoin NameItem = 2;
     }
 }
 
 message QualifiedJoin {
-    TableJoinElement LeftElement = 1;
+    TableReference LeftElement = 1;
     JoinTypeCondition Type = 2;
-    TableJoinElement RightElement = 3;
+    TableReference RightElement = 3;
     JoinSpec Spec = 4;
 }
 
@@ -123,13 +115,13 @@ message Table {
     CompoundIdent Name = 1;
     string Alias = 2;
     repeated ArgsNode Args = 3;
-    repeated ArgsNode WithHints = 5;
+    repeated ArgsNode WithHints = 4;
 }
 
 message NaturalJoin {
-    TableJoinElement LeftElement = 1;
+    TableReference LeftElement = 1;
     JoinTypeCondition Type = 2;
-    TableJoinElement RightElement = 3;
+    TableReference RightElement = 3;
 }
 
 message TableReference {
@@ -151,29 +143,17 @@ message LimitExpr {
     int64 OffsetValue = 3;
 }
 
-message UnnamedSelectItem {
-    ArgsNode Node = 1;
-}
-
 message AliasSelectItem {
     ArgsNode Expr = 1;
     string Alias = 2;
 }
 
-message QualifiedWildcardSelectItem {
-    CompoundIdent Prefix = 1;
-}
-
 message SQLSelectItem {
     oneof SQLSelectItemClause {
-        UnnamedSelectItem UnnamedItem = 1;
+        ArgsNode UnnamedItem = 1;
         AliasSelectItem AliasItem = 2;
-        QualifiedWildcardSelectItem WildcardItem = 3;
+        CompoundIdent WildcardItem = 3;
     }
-}
-
-message Nested {
-    ArgsNode AST = 1;
 }
 
 message InSubQuery {

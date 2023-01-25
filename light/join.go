@@ -49,26 +49,25 @@ func namedColumnsJoinTo(item *xast.NamedColumnsJoin) *xlight.NamedColumnsJoin {
     return output
 }
 
-func xjoinConditionTo(c *xlight.JoinCondition) *xast.JoinCondition {
-    x := xbinaryExprTo(c.SearchCondition)
+func xjoinConditionTo(c *xlight.BinaryExpr) *xast.JoinCondition {
+    x := xbinaryExprTo(c)
     return &xast.JoinCondition{
         SearchCondition: x,
 		On: xposplusTo(c)}
 }
 
-func joinConditionTo(c *xast.JoinCondition) *xlight.JoinCondition {
+func joinConditionTo(c *xast.JoinCondition) *xlight.BinaryExpr {
     if c == nil { return nil }
-    return &xlight.JoinCondition{
-        SearchCondition: binaryExprTo(c.SearchCondition)}
+    return binaryExprTo(c.SearchCondition)
 }
 
-func xtableJoinElementTo(item *xlight.TableJoinElement) *xast.TableJoinElement {
-    x := xtableReferenceTo(item.Ref)
+func xtableJoinElementTo(item *xlight.TableReference) *xast.TableJoinElement {
+    x := xtableReferenceTo(item)
     return &xast.TableJoinElement{Ref: x}
 }
 
-func tableJoinElementTo(item *xast.TableJoinElement) *xlight.TableJoinElement {
-    return &xlight.TableJoinElement{Ref: tableReferenceTo(item.Ref)}
+func tableJoinElementTo(item *xast.TableJoinElement) *xlight.TableReference {
+    return tableReferenceTo(item.Ref)
 }
 
 func xnaturalJoinTo(item *xlight.NaturalJoin) *xast.NaturalJoin {
@@ -77,14 +76,9 @@ func xnaturalJoinTo(item *xlight.NaturalJoin) *xast.NaturalJoin {
     left := xtableJoinElementTo(item.LeftElement)
     right := xtableJoinElementTo(item.RightElement)
 
-	joinType := &xast.JoinType{
-			From: xposTo(),
-			To: xposplusTo(item.Type),
-			Condition: xast.JoinTypeCondition(item.Type)}
-
     return &xast.NaturalJoin{
         LeftElement: left,
-        Type: joinType,
+        Type: xjoinTypeTo(item.Type),
         RightElement: right}
 }
 
@@ -93,7 +87,7 @@ func naturalJoinTo(item *xast.NaturalJoin) *xlight.NaturalJoin {
 
     return &xlight.NaturalJoin{
         LeftElement: tableJoinElementTo(item.LeftElement),
-        Type: xlight.JoinTypeCondition(item.Type.Condition),
+        Type: joinTypeTo(item.Type),
         RightElement: tableJoinElementTo(item.RightElement)}
 }
 
@@ -104,14 +98,9 @@ func xqualifiedJoinTo(item *xlight.QualifiedJoin) *xast.QualifiedJoin {
     right:= xtableJoinElementTo(item.RightElement)
     x := xjoinSpecTo(item.Spec)
 
-	joinType := &xast.JoinType{
-			From: xposTo(),
-			To: xposplusTo(item.Type),
-			Condition: xast.JoinTypeCondition(item.Type)}
-
     return &xast.QualifiedJoin{
         LeftElement: left,
-        Type: joinType,
+        Type: xjoinTypeTo(item.Type),
         RightElement: right,
         Spec: x}
 }
@@ -121,7 +110,7 @@ func qualifiedJoinTo(item *xast.QualifiedJoin) *xlight.QualifiedJoin {
 
     return &xlight.QualifiedJoin{
         LeftElement: tableJoinElementTo(item.LeftElement),
-        Type: xlight.JoinTypeCondition(item.Type.Condition),
+        Type: joinTypeTo(item.Type),
         RightElement: tableJoinElementTo(item.RightElement),
         Spec: joinSpecTo(item.Spec)}
 }
