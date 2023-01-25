@@ -24,6 +24,8 @@ func xposplusTo(x ...interface{}) *xast.Pos {
 }
 
 func xidentTo(ident string, n ...int) *xast.Ident {
+	if ident == "" { return nil }
+
 	y := &xast.Ident{
 		Value: ident,
 		From: xposTo(),
