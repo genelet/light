@@ -39,6 +39,8 @@ func xidentTo(ident string, n ...int) *xast.Ident {
 }
 
 func identTo(ident *xast.Ident) string {
+	if ident == nil { return "" }
+
 	return ident.Value
 }
 
@@ -163,39 +165,6 @@ func longTo(t *xast.LongValue) *xlight.LongValue {
 	return &xlight.LongValue{
 		Value: t.Value}
 }
-
-/*
-func xintTo(t int) *xast.Int {
-    return &xast.Int{
-        Value: t,
-        From: xposTo(),
-        To: xposplusTo(t)}
-}
-
-func intTo(t *xast.Int) int64 {
-	return t.Value
-}
-
-func xsmallIntTo(t int16) *xast.SmallInt {
-    if t == nil { return nil }
-
-    return &xast.SmallInt{
-        From: xposTo(),
-        To: xposplusTo(t),
-        IsUnsigned: t.IsUnsigned,
-        Unsigned: xposTo(t.Unsigned)}
-}
-
-func smallIntTo(t *xast.SmallInt) *light.SmallInt {
-    if t == nil { return nil }
-
-    return &light.SmallInt{
-        From: posTo(t.From),
-        To: posTo(t.To),
-        IsUnsigned: t.IsUnsigned,
-        Unsigned: posTo(t.Unsigned)}
-}
-*/
 
 func xfunctionTo(f *xlight.AggFunction) *xast.AggFunction {
 	output := &xast.AggFunction{
@@ -370,18 +339,16 @@ func timestampTo(t *xast.Timestamp) *xlight.Timestamp {
 	WithTimeZone: t.WithTimeZone}
 }
 
-func xuuidTo(t *xlight.DataTypeSingle) *xast.UUID {
-    if t == nil { return nil }
-
+func xuuidTo(t xlight.DataTypeSingle) *xast.UUID {
+	if t == xlight.DataTypeSingle_DataTypeSingleUnknown { return nil }
     return &xast.UUID{
         From: xposTo(),
         To: xposTo(t)}
 }
 
-func uuidTo(t *xast.UUID) *xlight.DataTypeSingle {
-    if t == nil { return nil }
-
-    return &xlight.DataTypeSingle_UUID
+func uuidTo(t *xast.UUID) xlight.DataTypeSingle {
+	if t == nil { return xlight.DataTypeSingle_DataTypeSingleUnknown }
+    return xlight.DataTypeSingle_UUID
 }
 
 func xcharTypeTo(t *xlight.CharType) *xast.CharType {

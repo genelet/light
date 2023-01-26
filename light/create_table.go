@@ -1,209 +1,265 @@
-package ast
+package light
 
 import (
-	"fmt"
 	"github.com/genelet/sqlproto/xast"
-	"github.com/akito0107/xsqlparser/sqlast"
+	"github.com/genelet/sqlproto/xlight"
 )
 
-func XCreateTableTo(stmt *sqlast.CreateTableStmt) (*xast.CreateTableStmt, error) {
+func XCreateTableTo(stmt *xlight.CreateTableStmt) *xast.CreateTableStmt {
 	output := &xast.CreateTableStmt{
-		Create: xposTo(stmt.Create),
+		Create: xposTo(),
+		Location: stmt.Location,
 		Name: xobjectnameTo(stmt.Name),
 		NotExists: stmt.NotExists}
-	if stmt.Location != nil {
-		output.Location = *stmt.Location
-	}
-
 	for _, item := range stmt.Elements {
-		v, err := xtableElementTo(item)
-		if err != nil { return nil, err }
-		output.Elements = append(output.Elements, v)
+		output.Elements = append(output.Elements, xtableElementTo(item))
 	}
 	for _, item := range stmt.Options {
-		v, err := xtableOptionTo(item)
-		if err != nil { return nil, err }
-		output.Options = append(output.Options, v)
+		output.Options = append(output.Options, xtableOptionTo(item))
 	}
-	return output, nil
+	return output
 }
 
-func CreateTableTo(stmt *xast.CreateTableStmt) *sqlast.CreateTableStmt {
-	output := &sqlast.CreateTableStmt{
-		Create: posTo(stmt.Create),
+func CreateTableTo(stmt *xast.CreateTableStmt) *xlight.CreateTableStmt {
+	output := &xlight.CreateTableStmt{
+		Location: stmt.Location,
 		Name: objectnameTo(stmt.Name),
 		NotExists: stmt.NotExists}
-
 	for _, item := range stmt.Elements {
 		output.Elements = append(output.Elements, tableElementTo(item))
 	}
 	for _, item := range stmt.Options {
 		output.Options = append(output.Options, tableOptionTo(item))
 	}
-
 	return output
 }
 
-func xtableConstraintTo(item *sqlast.TableConstraint) (*xast.TableConstraint, error) {
-	x, err := xtableConstraintSpecTo(item.Spec)
+func xtableConstraintTo(item *xlight.TableConstraint) *xast.TableConstraint {
+	if item == nil { return nil }
+
 	return &xast.TableConstraint{
-		Constraint: xposTo(item.Constraint),
+		Constraint: xposTo(),
 		Name: xidentTo(item.Name),
-		Spec: x}, err
+		Spec: xtableConstraintSpecTo(item.Spec)}
 }
 
-func tableConstraintTo(item *xast.TableConstraint) *sqlast.TableConstraint {
-	output := &sqlast.TableConstraint{
-		Constraint: posTo(item.Constraint),
+func tableConstraintTo(item *xast.TableConstraint) *xlight.TableConstraint {
+	if item == nil { return nil }
+
+	return &xlight.TableConstraint{
+		Name: identTo(item.Name),
 		Spec: tableConstraintSpecTo(item.Spec)}
-	if item.Name != nil {
-		output.Name = identTo(item.Name).(*sqlast.Ident)
+}
+
+func xcheckTableConstraintTo(item *xlight.BinaryExpr) *xast.CheckTableConstraint {
+	if item == nil { return nil }
+	return &xast.CheckTableConstraint{
+		Expr: xbinaryExprTo(item),
+		Check: xposTo(),
+		RParen: xposTo(item)}
+}
+
+func checkTableConstraintTo(item *xast.CheckTableConstraint) *xlight.BinaryExpr  {
+	if item == nil { return nil }
+	return binaryExprTo(item.Expr)
+}
+
+func xcheckColumnSpecTo(item *xlight.BinaryExpr) *xast.CheckColumnSpec {
+	if item == nil { return nil }
+	return &xast.CheckColumnSpec{
+		Expr: xbinaryExprTo(item),
+		Check: xposTo(),
+		RParen: xposTo(item)}
+}
+
+func checkColumnSpecTo(item *xast.CheckColumnSpec) *xlight.BinaryExpr {
+	if item == nil { return nil }
+	return binaryExprTo(item.Expr)
+}
+
+func xuniqueColumnSpecTo(item *xlight.UniqueColumnSpec) *xast.UniqueColumnSpec {
+	if item == nil { return nil }
+	return &xast.UniqueColumnSpec{
+		IsPrimaryKey: item.IsPrimaryKey,
+		Primary: xposTo(item.IsPrimaryKey),
+		Key: xposTo(),
+		Unique: xposTo(item)}
+}
+
+func uniqueColumnSpecTo(item *xast.UniqueColumnSpec) *xlight.UniqueColumnSpec {
+	if item == nil { return nil }
+	return &xlight.UniqueColumnSpec{
+		IsPrimaryKey: item.IsPrimaryKey}
+}
+
+func xnotNullColumnSpecTo(item xlight.NotNullColumnSpecType) *xast.NotNullColumnSpec {
+	if item == xlight.NotNullColumnSpecType_NotNullColumnSpecTypeUnknown {
+		return nil
+	}
+
+	return &xast.NotNullColumnSpec{
+		Not: xposTo(),
+		Null: xposTo(item)}
+}
+
+func notNullColumnSpecTo(item *xast.NotNullColumnSpec) xlight.NotNullColumnSpecType {
+	if item == nil { return xlight.NotNullColumnSpecType_NotNullColumnSpecTypeUnknown }
+
+	return xlight.NotNullColumnSpecType_NotNullColumnSpec
+}
+
+func xreferencesColumnSpecTo(item *xlight.ReferencesColumnSpec) *xast.ReferencesColumnSpec {
+	if item == nil { return nil }
+	output := &xast.ReferencesColumnSpec{
+		References: xposTo(),
+		RParen: xposTo(item),
+		TableName: xobjectnameTo(item.TableName)}
+	for _, column := range item.Columns {
+		output.Columns = append(output.Columns, xidentTo(column))
 	}
 	return output
 }
 
-func xuniqueTableConstraintTo(item *sqlast.UniqueTableConstraint) (*xast.UniqueTableConstraint, error) {
+func referencesColumnSpecTo(item *xast.ReferencesColumnSpec) *xlight.ReferencesColumnSpec {
+	if item == nil { return nil }
+	output := &xlight.ReferencesColumnSpec{
+		TableName: objectnameTo(item.TableName)}
+	for _, column := range item.Columns {
+		output.Columns = append(output.Columns, identTo(column))
+	}
+	return output
+}
+
+func xuniqueTableConstraintTo(item *xlight.UniqueTableConstraint) *xast.UniqueTableConstraint {
+	if item == nil { return nil }
+
 	output := &xast.UniqueTableConstraint{
 		IsPrimary: item.IsPrimary,
-		Primary: xposTo(item.Primary),
-		Unique: xposTo(item.Unique),
-		RParen: xposTo(item.RParen)}
+		Primary: xposTo(item.IsPrimary),
+		Unique: xposTo(),
+		RParen: xposTo(item)}
 	for _, column := range item.Columns {
 		output.Columns = append(output.Columns, xidentTo(column))
-	}
-	return output, nil
-}
-
-func uniqueTableConstraintTo(item *xast.UniqueTableConstraint) *sqlast.UniqueTableConstraint {
-	output := &sqlast.UniqueTableConstraint{
-		IsPrimary: item.IsPrimary,
-		Primary: posTo(item.Primary),
-		Unique: posTo(item.Unique),
-		RParen: posTo(item.RParen)}
-	for _, column := range item.Columns {
-		output.Columns = append(output.Columns, identTo(column).(*sqlast.Ident))
 	}
 	return output
 }
 
-func xreferentialTableConstraintTo(item *sqlast.ReferentialTableConstraint) (*xast.ReferentialTableConstraint, error) {
-	referenceKeyExpr, err := xreferenceKeyExprTo(item.KeyExpr)
-	if err != nil { return nil, err }
+func uniqueTableConstraintTo(item *xast.UniqueTableConstraint) *xlight.UniqueTableConstraint {
+	if item == nil { return nil }
+
+	output := &xlight.UniqueTableConstraint{
+		IsPrimary: item.IsPrimary}
+	for _, column := range item.Columns {
+		output.Columns = append(output.Columns, identTo(column))
+	}
+	return output
+}
+
+func xreferentialTableConstraintTo(item *xlight.ReferentialTableConstraint) *xast.ReferentialTableConstraint {
+	if item == nil { return nil }
+
 	output := &xast.ReferentialTableConstraint{
-		Foreign: xposTo(item.Foreign),
-		KeyExpr: referenceKeyExpr}
+		Foreign: xposTo(),
+		KeyExpr: xreferenceKeyExprTo(item.KeyExpr)}
 	for _, column := range item.Columns {
 		output.Columns = append(output.Columns, xidentTo(column))
 	}
-	return output, nil
+	return output
 }
 
-func referentialTableConstraintTo(item *xast.ReferentialTableConstraint) *sqlast.ReferentialTableConstraint {
-	output := &sqlast.ReferentialTableConstraint{
-		Foreign: posTo(item.Foreign),
+func referentialTableConstraintTo(item *xast.ReferentialTableConstraint) *xlight.ReferentialTableConstraint {
+	if item == nil { return nil }
+
+	output := &xlight.ReferentialTableConstraint{
 		KeyExpr: referenceKeyExprTo(item.KeyExpr)}
 	for _, column := range item.Columns {
-		output.Columns = append(output.Columns, identTo(column).(*sqlast.Ident))
+		output.Columns = append(output.Columns, identTo(column))
 	}
 	return output
 }
 
-func xreferenceKeyExprTo(item *sqlast.ReferenceKeyExpr) (*xast.ReferenceKeyExpr, error) {
+func xreferenceKeyExprTo(item *xlight.ReferenceKeyExpr) *xast.ReferenceKeyExpr {
+	if item == nil { return nil }
+
 	output := &xast.ReferenceKeyExpr{
 		TableName: xidentTo(item.TableName),
-		RParen: xposTo(item.RParen)}
+		RParen: xposTo(item)}
 	for _, column := range item.Columns {
 		output.Columns = append(output.Columns, xidentTo(column))
 	}
-	return output, nil
+	return output
 }
 
-func referenceKeyExprTo(item *xast.ReferenceKeyExpr) *sqlast.ReferenceKeyExpr {
-	output := &sqlast.ReferenceKeyExpr{
-		TableName: identTo(item.TableName).(*sqlast.Ident),
-		RParen: posTo(item.RParen)}
+func referenceKeyExprTo(item *xast.ReferenceKeyExpr) *xlight.ReferenceKeyExpr {
+	if item == nil { return nil }
+
+	output := &xlight.ReferenceKeyExpr{
+		TableName: identTo(item.TableName)}
 	for _, column := range item.Columns {
-		output.Columns = append(output.Columns, identTo(column).(*sqlast.Ident))
+		output.Columns = append(output.Columns, identTo(column))
 	}
 	return output
 }
 
-func xcolumnDefTo(item *sqlast.ColumnDef) (*xast.ColumnDef, error) {
-	x, err := xvalueNodeTo(item.Default)
-	if err != nil { return nil, err }
-	y, err := xtypeTo(item.DataType)
-	if err != nil { return nil, err }
+func xcolumnDefTo(item *xlight.ColumnDef) *xast.ColumnDef {
+	if item == nil { return nil }
+
     columnDef := &xast.ColumnDef{
 		Name: xidentTo(item.Name),
-		Default: x,
-		DataType: y}
-	for _, mydeco := range item.MyDataTypeDecoration {
-		x, err := xmyDataTypeDecorationTo(mydeco)
-		if err != nil { return nil, err }
-		columnDef.MyDecos = append(columnDef.MyDecos, x)
+		Default: xvalueNodeTo(item.Default),
+		DataType: xtypeTo(item.DataType)}
+	for _, mydeco := range item.MyDecos {
+		columnDef.MyDecos = append(columnDef.MyDecos, xmyDataTypeDecorationTo(mydeco))
 	}
-
 	for _, constraint := range item.Constraints {
-		x, err := xcolumnConstraintTo(constraint)
-		if err != nil { return nil, err }
-		columnDef.Constraints = append(columnDef.Constraints, x)
+		columnDef.Constraints = append(columnDef.Constraints, xcolumnConstraintTo(constraint))
 	}
 
-	return columnDef, nil
+	return columnDef
 }
 
-func columnDefTo(item *xast.ColumnDef) *sqlast.ColumnDef {
-	output := &sqlast.ColumnDef{
-		Name: identTo(item.Name).(*sqlast.Ident),
+func columnDefTo(item *xast.ColumnDef) *xlight.ColumnDef {
+	if item == nil { return nil }
+
+	output := &xlight.ColumnDef{
+		Name: identTo(item.Name),
 		Default: valueNodeTo(item.Default),
 		DataType: typeTo(item.DataType)}
 	for _, mydeco := range item.MyDecos {
-		output.MyDataTypeDecoration = append(output.MyDataTypeDecoration, myDataTypeDecorationTo(mydeco))
+		output.MyDecos = append(output.MyDecos, myDataTypeDecorationTo(mydeco))
     }
-	
 	for _, constraint := range item.Constraints {
-		x := columnConstraintTo(constraint)
-		output.Constraints = append(output.Constraints, x)
+		output.Constraints = append(output.Constraints, columnConstraintTo(constraint))
 	}
 
 	return output
 }
 
-func xmyDataTypeDecorationTo(item sqlast.MyDataTypeDecoration) (*xast.MyDataTypeDecoration, error) {
-	x, ok := item.(*sqlast.AutoIncrement)
-	if !ok {
-		return nil, fmt.Errorf("missing my data decoration for %T", item)
-	}
+func xmyDataTypeDecorationTo(item xlight.AutoIncrementType) *xast.MyDataTypeDecoration {
 	return &xast.MyDataTypeDecoration{
 		Automent: &xast.AutoIncrement{
-			Auto: xposTo(x.Auto),
-			Increment: xposTo(x.Increment)}}, nil
+			Auto: xposTo(),
+			Increment: xposTo(item)}}
 }
 
-func myDataTypeDecorationTo(item *xast.MyDataTypeDecoration) sqlast.MyDataTypeDecoration {
-	return &sqlast.AutoIncrement{
-			Auto: posTo(item.Automent.Auto),
-			Increment: posTo(item.Automent.Increment)}
+func myDataTypeDecorationTo(item *xast.MyDataTypeDecoration) xlight.AutoIncrementType {
+	return xlight.AutoIncrementType_AutoIncrement
 }
 
-func xcolumnConstraintTo(item *sqlast.ColumnConstraint) (*xast.ColumnConstraint, error) {
-	x, err := xcolumnConstraintSpecTo(item.Spec)
+func xcolumnConstraintTo(item *xlight.ColumnConstraint) *xast.ColumnConstraint {
     return &xast.ColumnConstraint{
         Name: xidentTo(item.Name),
-		Constraint: xposTo(item.Constraint),
-		Spec: x}, err
+		Constraint: xposTo(),
+		Spec: xcolumnConstraintSpecTo(item.Spec)}
 }
 
-func columnConstraintTo(item *xast.ColumnConstraint) *sqlast.ColumnConstraint {
-    output := &sqlast.ColumnConstraint{
-		Constraint: posTo(item.Constraint),
+func columnConstraintTo(item *xast.ColumnConstraint) *xlight.ColumnConstraint {
+    return &xlight.ColumnConstraint{
+		Name: identTo(item.Name),
 		Spec: columnConstraintSpecTo(item.Spec)}
-	if item.Name != nil {
-		output.Name = identTo(item.Name).(*sqlast.Ident)
-	}
-	return output
 }
 
+/*
 func XDropTableTo(stmt *sqlast.DropTableStmt) *xast.DropTableStmt {
     output := &xast.DropTableStmt{
     	Cascade: stmt.Cascade,
@@ -227,3 +283,4 @@ func DropTableTo(stmt *xast.DropTableStmt) *sqlast.DropTableStmt {
 	}
 	return output
 }
+*/

@@ -226,10 +226,6 @@ message QueryStmt {
 
 // start ... create table
 
-enum DataTypeSingle {
-        Double = 0;
-        Boolean = 1;
-
 message BigInt {
         bool IsUnsigned = 3;
 }
@@ -270,14 +266,15 @@ message Timestamp {
 }
 
 enum DataTypeSingle {
-        Double = 0;
-        Boolean = 1;
-        Time = 2;
-        Date = 3;
-	Bytea = 4;
-	Text = 5;
-	Regclass = 6;
-	UUID = 7;
+	DataTypeSingleUnknown = 0;
+    Double = 1;
+    Boolean = 2;
+    Time = 3;
+    Date = 4;
+	Bytea = 5;
+	Text = 6;
+	Regclass = 7;
+	UUID = 8;
 }
 
 message Custom {
@@ -297,12 +294,8 @@ message Type {
         }
 }
 
-message CheckColumnSpec {
-        BinaryExpr Expr = 1;
-}
-
 message ReferencesColumnSpec {
-        ObjectName TableName = 3;
+        CompoundIdent TableName = 3;
         repeated string Columns = 4;
 }
 
@@ -310,15 +303,17 @@ message UniqueColumnSpec {
         bool IsPrimaryKey = 1;
 }
 
-message NotNullColumnSpec {
+enum NotNullColumnSpecType {
+	NotNullColumnSpecTypeUnknown = 0;
+	NotNullColumnSpec = 1;
 }
 
 message ColumnConstraintSpec {
         oneof ColumnConstraintSpecClause {
                 UniqueColumnSpec UniqueItem = 3;
-                CheckColumnSpec CheckItem = 4;
+                BinaryExpr CheckItem = 4;
                 ReferencesColumnSpec ReferenceItem = 5;
-                NotNullColumnSpec NotNullItem = 6;
+                NotNullColumnSpecType NotNullItem = 6;
         }
 }
 
@@ -327,18 +322,15 @@ message ColumnConstraint {
         ColumnConstraintSpec Spec = 3;
 }
 
-message AutoIncrement {
-}
-
-message MyDataTypeDecoration {
-        AutoIncrement Automent = 1;
+enum AutoIncrementType {
+	AutoIncrement = 0;	
 }
 
 message ColumnDef {
         string Name = 1;
         Type DataType = 2;
         ValueNode Default = 3;
-        repeated MyDataTypeDecoration MyDecos = 4;
+        repeated AutoIncrementType MyDecos = 4;
         repeated ColumnConstraint Constraints = 5;
 }
 
@@ -352,10 +344,6 @@ message ReferentialTableConstraint {
         ReferenceKeyExpr KeyExpr = 2;
 }
 
-message CheckTableConstraint {
-        BinaryExpr Expr = 1;
-}
-
 message UniqueTableConstraint {
         bool IsPrimary = 1;
         repeated string Columns = 2;
@@ -364,7 +352,7 @@ message UniqueTableConstraint {
 message TableConstraintSpec {
         oneof TableContraintSpecClause {
                 ReferentialTableConstraint ReferenceItem = 1;
-                CheckTableConstraint CheckItem = 2;
+                BinaryExpr CheckItem = 2;
                 UniqueTableConstraint UniqueItem = 3;
         }
 }
@@ -400,7 +388,7 @@ message TableOption {
 }
 
 message CreateTableStmt {
-        ObjectName Name = 1;
+        CompoundIdent Name = 1;
         repeated TableElement Elements = 2;
         string Location = 3;
         bool NotExists = 4;
@@ -408,7 +396,7 @@ message CreateTableStmt {
 }
 
 message DropTableStmt {
-        repeated ObjectName TableNames = 1;
+        repeated CompoundIdent TableNames = 1;
         bool Cascade = 2;
         bool IfExists = 3;
 }

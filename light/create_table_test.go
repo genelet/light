@@ -1,4 +1,4 @@
-package ast
+package light
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"testing"
 
 //	"github.com/k0kubun/pp/v3"
+
+	"github.com/genelet/sqlproto/ast"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"
@@ -62,14 +64,18 @@ FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)
 		createTableStmt := file.Stmts[0].(*sqlast.CreateTableStmt)
 //pp.Println(createTableStmt)
 
-		createTable, err := XCreateTableTo(createTableStmt)
+		xcreateTable, err := ast.XCreateTableTo(createTableStmt)
 		if err != nil { t.Fatal(err) }
 
-		reverse := CreateTableTo(createTable)
+		createTable := CreateTableTo(xcreateTable)
+		reverse2 := XCreateTableTo(createTable)
+		reverse3 := ast.CreateTableTo(reverse2)
 //pp.Println(reverse)
-		if strings.ToLower(createTableStmt.ToSQLString()) != strings.ToLower(reverse.ToSQLString()) {
+		if strings.ToLower(createTableStmt.ToSQLString()) != strings.ToLower(reverse3.ToSQLString()) {
 			t.Errorf("%d=>%s", i, createTableStmt.ToSQLString())
-			t.Errorf("%d=>%s", i, reverse.ToSQLString())
+			t.Errorf("%d=>%s", i, reverse3.ToSQLString())
 		}
+			t.Errorf("%d=>%s", i, createTableStmt.ToSQLString())
+			t.Errorf("%d=>%s", i, reverse3.ToSQLString())
 	}
 }
