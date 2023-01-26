@@ -277,3 +277,146 @@ func limitTo(item *xast.LimitExpr) *xlight.LimitExpr {
 	}
 	return output
 }
+
+// create table
+
+func xintTo(t *xlight.Int) *xast.Int {
+    if t == nil { return nil }
+
+    return &xast.Int{
+        From: xposTo(),
+        To: xposTo(t),
+        IsUnsigned: t.IsUnsigned,
+	Unsigned: xposTo(t.IsUnsigned)}
+}
+
+func intTo(t *xast.Int) *xlight.Int {
+    if t == nil { return nil }
+
+    return &xlight.Int{
+        IsUnsigned: t.IsUnsigned}
+}
+
+func xsmallIntTo(t *xlight.SmallInt) *xast.SmallInt {
+    if t == nil { return nil }
+
+    return &xast.SmallInt{
+        From: xposTo(),
+        To: xposTo(t),
+        IsUnsigned: t.IsUnsigned,
+	Unsigned: xposTo(t.IsUnsigned)}
+}
+
+func smallIntTo(t *xast.SmallInt) *xlight.SmallInt {
+    if t == nil { return nil }
+
+    return &xlight.SmallInt{
+        IsUnsigned: t.IsUnsigned}
+}
+
+func xbigIntTo(t *xlight.BigInt) *xast.BigInt {
+    if t == nil { return nil }
+
+    return &xast.BigInt{
+        From: xposTo(),
+        To: xposTo(t),
+        IsUnsigned: t.IsUnsigned,
+	Unsigned: xposTo(t.IsUnsigned)}
+}
+
+func bigIntTo(t *xast.BigInt) *xlight.BigInt {
+    if t == nil { return nil }
+
+    return &xlight.BigInt{
+        IsUnsigned: t.IsUnsigned}
+}
+
+func xdecimalTo(t *xlight.Decimal) *xast.Decimal {
+	if t == nil { return nil }
+
+	return &xast.Decimal {
+		Precision: t.Precision,
+		Scale:     t.Scale,
+		Numeric: xposTo(),
+		RParen: xposTo(t),
+		IsUnsigned: t.IsUnsigned,
+		Unsigned: xposTo(t.IsUnsigned)}
+}
+
+func decimalTo(t *xast.Decimal) *xlight.Decimal {
+	if t == nil { return nil }
+
+	x := t.Precision
+	y := t.Scale
+	return &xlight.Decimal {
+		Precision: x,
+		Scale:     y,
+		IsUnsigned: t.IsUnsigned}
+}
+
+func xtimestampTo(t *xlight.Timestamp) *xast.Timestamp {
+    if t == nil { return nil }
+
+    return &xast.Timestamp{
+	WithTimeZone: t.WithTimeZone,
+        Timestamp: xposTo(t),
+        Zone: xposTo(t.WithTimeZone)}
+}
+
+func timestampTo(t *xast.Timestamp) *xlight.Timestamp {
+    if t == nil { return nil }
+
+    return &xlight.Timestamp{
+	WithTimeZone: t.WithTimeZone}
+}
+
+func xuuidTo(t *xlight.DataTypeSingle) *xast.UUID {
+    if t == nil { return nil }
+
+    return &xast.UUID{
+        From: xposTo(),
+        To: xposTo(t)}
+}
+
+func uuidTo(t *xast.UUID) *xlight.DataTypeSingle {
+    if t == nil { return nil }
+
+    return &xlight.DataTypeSingle_UUID
+}
+
+func xcharTypeTo(t *xlight.CharType) *xast.CharType {
+    if t == nil { return nil }
+
+    return &xast.CharType{
+        Size: t.Size,
+        From: xposTo(),
+        To: xposTo(t)}
+}
+
+func charTypeTo(t *xast.CharType) *xlight.CharType {
+    if t == nil { return nil }
+
+	size := t.Size
+    return &xlight.CharType{
+        Size: size}
+}
+
+func xvarcharTypeTo(t *xlight.VarcharType) *xast.VarcharType {
+    if t == nil { return nil }
+
+    return &xast.VarcharType{
+        Size: t.Size,
+        Character: xposTo(),
+        Varying: xposTo(t.Size),
+        RParen: xposTo(t)}
+}
+
+func varcharTypeTo(t *xast.VarcharType) *xlight.VarcharType {
+    if t == nil { return nil }
+
+	size := t.Size
+    return &xlight.VarcharType{
+        Size: size}
+}
+
+// end create table

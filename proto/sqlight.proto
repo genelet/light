@@ -223,3 +223,194 @@ message QueryStmt {
     repeated OrderByExpr OrderBy = 4;
     LimitExpr LimitExpression = 5;
 }
+
+// start ... create table
+
+enum DataTypeSingle {
+        Double = 0;
+        Boolean = 1;
+
+message BigInt {
+        bool IsUnsigned = 3;
+}
+
+message SmallInt {
+        bool IsUnsigned = 3;
+}
+
+message Int {
+        bool IsUnsigned = 3;
+}
+
+message Real {
+        bool IsUnsigned = 3;
+}
+
+message Float {
+        uint32 Size = 1;
+        bool IsUnsigned = 4;
+}
+
+message Decimal {
+        uint32 Precision = 1;
+        uint32 Scale = 2;
+        bool IsUnsigned = 5;
+}
+
+message CharType {
+        uint32 Size = 1;
+}
+
+message VarcharType {
+        uint32 Size = 1;
+}
+
+message Timestamp {
+        bool WithTimeZone = 1;
+}
+
+enum DataTypeSingle {
+        Double = 0;
+        Boolean = 1;
+        Time = 2;
+        Date = 3;
+	Bytea = 4;
+	Text = 5;
+	Regclass = 6;
+	UUID = 7;
+}
+
+message Custom {
+        CompoundIdent Ty = 1;
+}
+
+message Type {
+        oneof TypeClause {
+                Int IntData = 1;
+                SmallInt SmallIntData = 2;
+                BigInt BigIntData = 3;
+                Decimal DecimalData = 4;
+                CharType CharData = 8;
+                VarcharType VarcharData = 9;
+                DataTypeSingle UUIDData = 14;
+                Timestamp TimestampData = 15;
+        }
+}
+
+message CheckColumnSpec {
+        BinaryExpr Expr = 1;
+}
+
+message ReferencesColumnSpec {
+        ObjectName TableName = 3;
+        repeated string Columns = 4;
+}
+
+message UniqueColumnSpec {
+        bool IsPrimaryKey = 1;
+}
+
+message NotNullColumnSpec {
+}
+
+message ColumnConstraintSpec {
+        oneof ColumnConstraintSpecClause {
+                UniqueColumnSpec UniqueItem = 3;
+                CheckColumnSpec CheckItem = 4;
+                ReferencesColumnSpec ReferenceItem = 5;
+                NotNullColumnSpec NotNullItem = 6;
+        }
+}
+
+message ColumnConstraint {
+        string Name = 1;
+        ColumnConstraintSpec Spec = 3;
+}
+
+message AutoIncrement {
+}
+
+message MyDataTypeDecoration {
+        AutoIncrement Automent = 1;
+}
+
+message ColumnDef {
+        string Name = 1;
+        Type DataType = 2;
+        ValueNode Default = 3;
+        repeated MyDataTypeDecoration MyDecos = 4;
+        repeated ColumnConstraint Constraints = 5;
+}
+
+message ReferenceKeyExpr {
+        string TableName = 1;
+        repeated string Columns = 2;
+}
+
+message ReferentialTableConstraint {
+        repeated string Columns = 1;
+        ReferenceKeyExpr KeyExpr = 2;
+}
+
+message CheckTableConstraint {
+        BinaryExpr Expr = 1;
+}
+
+message UniqueTableConstraint {
+        bool IsPrimary = 1;
+        repeated string Columns = 2;
+}
+
+message TableConstraintSpec {
+        oneof TableContraintSpecClause {
+                ReferentialTableConstraint ReferenceItem = 1;
+                CheckTableConstraint CheckItem = 2;
+                UniqueTableConstraint UniqueItem = 3;
+        }
+}
+
+message TableConstraint {
+        string Name = 1;
+        TableConstraintSpec Spec = 2;
+}
+
+message TableElement {
+        oneof TableElementClause {
+                ColumnDef ColumnDefElement = 1;
+                TableConstraint TableConstraintElement = 2;
+        }
+}
+
+message MyEngine {
+        bool Equal = 1;
+        string Name = 2;
+}
+
+message MyCharset {
+        bool IsDefault = 1;
+        bool Equal = 2;
+        string Name = 3;
+}
+
+message TableOption {
+        oneof TableOptionClause {
+                MyEngine MyEngineOption = 1;
+                MyCharset MyCharsetOption = 2;
+        }
+}
+
+message CreateTableStmt {
+        ObjectName Name = 1;
+        repeated TableElement Elements = 2;
+        string Location = 3;
+        bool NotExists = 4;
+        repeated TableOption Options = 5;
+}
+
+message DropTableStmt {
+        repeated ObjectName TableNames = 1;
+        bool Cascade = 2;
+        bool IfExists = 3;
+}
+
+// end create table

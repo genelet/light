@@ -216,3 +216,249 @@ func sqlSetExprTo(item *xast.SQLSetExpr) *xlight.SQLSetExpr {
 
     return output
 }
+
+// start create table
+
+
+func xtableElementTo(item sqlast.TableElement) (*xast.TableElement, error) {
+	element := new(xast.TableElement)
+	switch t := item.(type) {
+	case *sqlast.ColumnDef:
+		x, err := xcolumnDefTo(t)
+		if err != nil { return nil, err }
+		element.TableElementClause = &xast.TableElement_ColumnDefElement{
+			ColumnDefElement:x}
+	case *sqlast.TableConstraint:
+		x, err := xtableConstraintTo(t)
+		if err != nil { return nil, err }
+		element.TableElementClause = &xast.TableElement_TableConstraintElement{
+			TableConstraintElement: x}
+	default:
+		return nil, fmt.Errorf("missing table element type %T", t)
+	}
+	return element, nil
+}
+
+func tableElementTo(item *xast.TableElement) sqlast.TableElement {
+	if item.GetColumnDefElement() != nil {
+		return columnDefTo(item.GetColumnDefElement())
+	}
+	return tableConstraintTo(item.GetTableConstraintElement())
+}
+
+func xtableOptionTo(item sqlast.TableOption) (*xast.TableOption, error) {
+	output := &xast.TableOption{}
+	switch t := item.(type) {
+	case *sqlast.MyEngine:
+		output.TableOptionClause = &xast.TableOption_MyEngineOption{MyEngineOption:
+            &xast.MyEngine{
+                Engine: xposTo(t.Engine),
+                Equal: t.Equal,
+                Name: xidentTo(t.Name)}}
+	case *sqlast.MyCharset:
+		output.TableOptionClause = &xast.TableOption_MyCharsetOption{MyCharsetOption:
+            &xast.MyCharset{
+                IsDefault: t.IsDefault,
+                Default: xposTo(t.Default),
+                Charset: xposTo(t.Charset),
+                Equal: t.Equal,
+                Name: xidentTo(t.Name)}}
+	default:
+		return nil, fmt.Errorf("missing table element type %T", item)
+	}
+	return output, nil
+}
+
+func tableOptionTo(item *xast.TableOption) sqlast.TableOption {
+    if x := item.GetMyEngineOption(); x != nil {
+        return &sqlast.MyEngine{
+            Engine: posTo(x.Engine),
+            Equal: x.Equal,
+            Name: identTo(x.Name).(*sqlast.Ident)}
+    } else if x := item.GetMyCharsetOption(); x != nil {
+		return &sqlast.MyCharset{
+            IsDefault: x.IsDefault,
+            Default: posTo(x.Default),
+            Charset: posTo(x.Charset),
+			Equal: x.Equal,
+            Name: identTo(x.Name).(*sqlast.Ident)}
+	}
+	return nil
+}
+
+func xtableConstraintSpecTo(item sqlast.TableConstraintSpec) (*xast.TableConstraintSpec, error) {
+	if item == nil { return nil, nil }
+
+	output := &xast.TableConstraintSpec{}
+	switch t := item.(type) {
+	case *sqlast.ReferentialTableConstraint:
+		x, err := xreferentialTableConstraintTo(t)
+		if err != nil { return nil, err }
+		output.TableContraintSpecClause = &xast.TableConstraintSpec_ReferenceItem{ReferenceItem: x}
+	case *sqlast.UniqueTableConstraint:
+		x, err := xuniqueTableConstraintTo(t)
+		if err != nil { return nil, err }
+		output.TableContraintSpecClause = &xast.TableConstraintSpec_UniqueItem{UniqueItem: x}
+	case *sqlast.CheckTableConstraint:
+		switch s := t.Expr.(type) {
+		case *sqlast.BinaryExpr:
+			x, err := xbinaryExprTo(s)
+			if err != nil { return nil, err }
+			output.TableContraintSpecClause = &xast.TableConstraintSpec_CheckItem{
+				CheckItem: &xast.CheckTableConstraint{
+					Check: xposTo(t.Check),
+					RParen: xposTo(t.RParen),
+					Expr: x}}
+		default:
+			return nil, fmt.Errorf("missing type in table constaint Spec: %T", s)
+		}
+	default:
+		return nil, fmt.Errorf("missing type in table constaint: %T", t)
+	}
+	return output, nil
+}
+
+func tableConstraintSpecTo(item *xast.TableConstraintSpec) sqlast.TableConstraintSpec {
+	if item == nil { return nil }
+
+	if x := item.GetReferenceItem(); x != nil {
+		return referentialTableConstraintTo(x)
+	} else if x := item.GetUniqueItem(); x != nil {
+		return uniqueTableConstraintTo(x)
+	} else {
+		x := item.GetCheckItem()
+		return &sqlast.CheckTableConstraint{
+			Check: posTo(x.Check),
+			RParen: posTo(x.RParen),
+			Expr: binaryExprTo(x.Expr)}
+	}
+	return nil
+}
+
+func xcolumnConstraintSpecTo(item sqlast.ColumnConstraintSpec) (*xast.ColumnConstraintSpec, error) {
+	if item == nil { return nil, nil }
+
+    output := &xast.ColumnConstraintSpec{}
+    switch t := item.(type) {
+    case *sqlast.CheckColumnSpec:
+		switch s := t.Expr.(type) {
+		case *sqlast.BinaryExpr:
+        	x, err := xbinaryExprTo(s)
+			if err != nil { return nil, err }
+        	output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_CheckItem{CheckItem:
+				&xast.CheckColumnSpec{
+					Expr: x,
+					Check: xposTo(t.Check),
+					RParen: xposTo(t.RParen)}}
+		default:
+			return nil, fmt.Errorf("missing column constraint Expr type: %T", s)
+		}
+    case *sqlast.UniqueColumnSpec:
+        output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_UniqueItem{UniqueItem:
+			&xast.UniqueColumnSpec{
+				IsPrimaryKey: t.IsPrimaryKey,
+				Primary: xposTo(t.Primary),
+				Key: xposTo(t.Key),
+				Unique: xposTo(t.Unique)}}
+    case *sqlast.NotNullColumnSpec:
+        output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_NotNullItem{NotNullItem:
+			&xast.NotNullColumnSpec{
+				Not: xposTo(t.Not),
+				Null: xposTo(t.Null)}}
+    case *sqlast.ReferencesColumnSpec:
+		ref := &xast.ReferencesColumnSpec{
+			References: xposTo(t.References),
+			RParen: xposTo(t.RParen),
+			TableName: xobjectnameTo(t.TableName)}
+		for _, column := range t.Columns {
+			ref.Columns = append(ref.Columns, xidentTo(column))
+		}
+        output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_ReferenceItem{ReferenceItem: ref}
+    default:
+        return nil, fmt.Errorf("missing column constraint type: %T", t)
+    }
+
+    return output, nil
+}
+
+func columnConstraintSpecTo(item *xast.ColumnConstraintSpec) sqlast.ColumnConstraintSpec {
+	if item == nil { return nil }
+
+	if x := item.GetUniqueItem(); x != nil {
+		return &sqlast.UniqueColumnSpec{
+			IsPrimaryKey: x.IsPrimaryKey,
+			Primary: posTo(x.Primary),
+			Key: posTo(x.Key),
+			Unique: posTo(x.Unique)}
+	} else if x := item.GetNotNullItem(); x != nil {
+		return &sqlast.NotNullColumnSpec{
+			Not: posTo(x.Not),
+			Null: posTo(x.Null)}
+	} else if x := item.GetReferenceItem(); x != nil {
+		ref := &sqlast.ReferencesColumnSpec{
+			References: posTo(x.References),
+			RParen: posTo(x.RParen),
+			TableName: objectnameTo(x.TableName)}
+		for _, column := range x.Columns {
+			ref.Columns = append(ref.Columns, identTo(column).(*sqlast.Ident))
+		}
+		return ref
+	} else {
+		x := item.GetCheckItem()
+		return &sqlast.CheckColumnSpec{
+			Expr: binaryExprTo(x.Expr),
+			Check: posTo(x.Check),
+			RParen: posTo(x.RParen)}
+	}
+	return nil
+}
+
+func xtypeTo(item *xlight.Type) (*xast.Type, error) {
+	if item == nil { return nil }
+
+	if item.GetIntData() != nil {
+		return xintTo(item.GetIntData())
+	} else if item.GetSmallIntData() != nil {
+		return xsmallIntTo(item.GetSmallIntData())
+	} else if item.GetBigIntData() != nil {
+		return xbigIntTo(item.GetBigIntData())
+	} else if item.GetDecimalData() != nil {
+		return xdecimalTo(item.GetDecimalData())
+    } else if item.GetTimestampData() != nil {
+        return xtimestampTo(item.GetTimestampData())
+    } else if item.GetUUIDData() != nil {
+        return xuuidTo(item.GetUUIDData())
+	} else if item.GetCharData() != nil {
+		return xcharTypeTo(item.GetCharData())
+	} else { // GetVarcharData()
+		return xvarcharTypeTo(item.GetVarcharData())
+	}
+
+	return output, nil
+}
+
+func typeTo(item *xast.Type) *xlight.Type {
+	if item == nil { return nil }
+
+	if item.GetIntData() != nil {
+		return intTo(item.GetIntData())
+	} else if item.GetSmallIntData() != nil {
+		return smallIntTo(item.GetSmallIntData())
+	} else if item.GetBigIntData() != nil {
+		return bigIntTo(item.GetBigIntData())
+	} else if item.GetDecimalData() != nil {
+		return decimalTo(item.GetDecimalData())
+    } else if item.GetTimestampData() != nil {
+        return timestampTo(item.GetTimestampData())
+    } else if item.GetUUIDData() != nil {
+        return uuidTo(item.GetUUIDData())
+	} else if item.GetCharData() != nil {
+		return charTypeTo(item.GetCharData())
+	} else { // GetVarcharData()
+		return varcharTypeTo(item.GetVarcharData())
+	}
+
+	return nil
+}
+
+// end create table
