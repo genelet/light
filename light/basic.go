@@ -81,6 +81,8 @@ func objectnameTo(idents *xast.ObjectName) *xlight.CompoundIdent {
 }
 
 func xoperatorTo(op xlight.OperatorType) *xast.Operator {
+	if op == xlight.OperatorType_None { return nil }
+
 	return &xast.Operator{
 		Type: xast.OperatorType(op),
 		From: xposTo(),
@@ -88,6 +90,8 @@ func xoperatorTo(op xlight.OperatorType) *xast.Operator {
 }
 
 func operatorTo(op *xast.Operator) xlight.OperatorType {
+	if op == nil { return xlight.OperatorType_None }
+
 	return xlight.OperatorType(op.Type)
 }
 
@@ -120,37 +124,44 @@ func unnamedSelectItemTo(item *xast.UnnamedSelectItem) *xlight.ArgsNode {
 	return argsNodeTo(item.Node)
 }
 
-func xstringTo(t string) *xast.SingleQuotedString {
+func xstringTo(t *xlight.SingleQuotedString) *xast.SingleQuotedString {
+	if t == nil { return nil }
+
     return &xast.SingleQuotedString{
-        Value: t,
+        Value: t.Value,
         From: xposTo(),
         To: xposplusTo(t)}
 }
 
-func stringTo(t *xast.SingleQuotedString) string {
-	return t.Value
+func stringTo(t *xast.SingleQuotedString) *xlight.SingleQuotedString {
+	return &xlight.SingleQuotedString{
+		Value: t.Value}
 }
 
-func xdoubleTo(t float64) *xast.DoubleValue {
+func xdoubleTo(t *xlight.DoubleValue) *xast.DoubleValue {
+	if t == nil { return nil }
+
     return &xast.DoubleValue{
-        Value: t,
+        Value: t.Value,
         From: xposTo(),
         To: xposplusTo(t)}
 }
 
-func doubleTo(t *xast.DoubleValue) float64 {
-	return t.Value
+func doubleTo(t *xast.DoubleValue) *xlight.DoubleValue {
+	return &xlight.DoubleValue{
+		Value: t.Value}
 }
 
-func xlongTo(t int64) *xast.LongValue {
+func xlongTo(t *xlight.LongValue) *xast.LongValue {
     return &xast.LongValue{
-        Value: t,
+        Value: t.Value,
         From: xposTo(),
         To: xposplusTo(t)}
 }
 
-func longTo(t *xast.LongValue) int64 {
-	return t.Value
+func longTo(t *xast.LongValue) *xlight.LongValue {
+	return &xlight.LongValue{
+		Value: t.Value}
 }
 
 /*
@@ -248,7 +259,7 @@ func xlimitTo(item *xlight.LimitExpr) *xast.LimitExpr {
         AllPos: xposTo(),
         Limit: xposTo(),
         LimitValue: xlongTo(v)}
-	if item.OffsetValue != 0 {
+	if item.OffsetValue != nil {
         output.OffsetValue = xlongTo(item.OffsetValue)
 	}
 

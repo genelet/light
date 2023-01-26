@@ -2,7 +2,6 @@ package light
 
 import (
 	"bytes"
-//	"fmt"
 	"strings"
 	"testing"
 
@@ -30,11 +29,19 @@ func TestQuery(t *testing.T) {
 	"WITH regional_sales AS (SELECT region, SUM(amount) AS total_sales FROM orders GROUP BY region) SELECT product, SUM(quantity) AS product_units FROM orders WHERE region IN (SELECT region FROM top_regions) GROUP BY region, product",
 	"SELECT x FROM y UNION SELECT x FROM z",
 	"SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id = T2.stadium_id WHERE T1.year = 2014",
-	"SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c"}
+	"SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c",
+	"SELECT name FROM stadium EXCEPT SELECT T2.name FROM concert AS T1 JOIN stadium AS T2 ON T1.stadium_id = T2.stadium_id WHERE T1.year = 2014",
+    `SELECT stock_name, -3*price AS capital_gain_loss, 5.1*bonus AS cool FROM Stocks`,
+    `SELECT id, CASE WHEN nb_childrens > 0 AND nb_parents > 10 THEN "Inner" WHEN nb_childrens > 0 THEN "Root" ELSE "Leaf" END AS type FROM l2`,
+    `SELECT stock_name, (CASE WHEN operation = "Buy" THEN -1*price ELSE price END) AS capital_gain_loss FROM Stocks`,
+    `WITH l1 AS (SELECT t.id, c.id AS c_id, t.p_id FROM Tree t LEFT JOIN Tree c ON c.p_id = t.id), l2 AS ( SELECT id, COUNT(c_id) AS nb_childrens, COUNT(p_id) AS nb_parents FROM l1 GROUP BY id) SELECT id, CASE WHEN nb_childrens >0 AND nb_parents >0 THEN "Inner" WHEN nb_childrens > 0 THEN "Root" ELSE "Leaf" END AS type FROM l2`,
+    `SELECT stock_name, SUM( CASE WHEN operation = "Buy" THEN -1*price ELSE price END) AS  capital_gain_loss FROM Stocks GROUP BY stock_name`,
+    "SELECT x FROM a UNION SELECT x FROM b EXCEPT select x FROM c"}
 
 	for i, str := range strs {
-		//if i != 3 { continue }
+	//	if i != 17 { continue }
 
+/*
 		pb, err := SQL2Proto(str)
 		if err != nil { t.Fatal(err) }
 		str1 := Proto2SQL(pb)
@@ -42,6 +49,7 @@ func TestQuery(t *testing.T) {
 			t.Errorf("%s", str)
 			t.Errorf("%s", str1)
 		}
+*/
 
 		parser, err := xsqlparser.NewParser(bytes.NewBufferString(str), &dialect.GenericSQLDialect{})
 		if err != nil { t.Fatal(err) }
@@ -59,15 +67,15 @@ func TestQuery(t *testing.T) {
 			t.Errorf("%s", reverse.ToSQLString())
 		}
 
-//		pp.Println(xquery)
+//pp.Println(xquery)
 		query := QueryTo(xquery)
 //		pp.Println()
 //		pp.Println()
-//		pp.Println(query)
+//pp.Println(query)
 		reverse2 := XQueryTo(query)
 		reverse3 := ast.QueryTo(reverse2)
-//		pp.Println(xquery)
-//		pp.Println(reverse2)
+//pp.Println(reverse2)
+//pp.Println(reverse3)
 		if strings.ToLower(stmt.ToSQLString()) != strings.ToLower(reverse3.ToSQLString()) {
 			t.Errorf("%d=>%s", i, stmt.ToSQLString())
 			t.Errorf("%d=>%s", i, reverse3.ToSQLString())

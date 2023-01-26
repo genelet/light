@@ -44,6 +44,18 @@ enum JoinTypeCondition {
 	IMPLICIT = 7;
 }
 
+message SingleQuotedString {
+    string Value = 1;
+}
+
+message DoubleValue {
+    double Value = 1;
+}
+
+message LongValue {
+    int64 Value = 1;
+}
+
 message BinaryExpr {
     ArgsNode Left = 1;
     OperatorType Op = 2;
@@ -139,8 +151,8 @@ message OrderByExpr {
 
 message LimitExpr {
     bool AllBool = 1;
-    int64 LimitValue = 2;
-    int64 OffsetValue = 3;
+    LongValue LimitValue = 2;
+    LongValue OffsetValue = 3;
 }
 
 message AliasSelectItem {
@@ -171,9 +183,9 @@ message WhereNode {
 
 message ValueNode {
     oneof ValueNodeClause {
-        string StringItem = 1;
-        int64 LongItem = 2;
-        double DoubleItem = 3;
+        SingleQuotedString StringItem = 1;
+        LongValue LongItem = 2;
+        DoubleValue DoubleItem = 3;
         CompoundIdent CompoundItem = 15;
     }
 }
