@@ -75,7 +75,5 @@ FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)
 			t.Errorf("%d=>%s", i, createTableStmt.ToSQLString())
 			t.Errorf("%d=>%s", i, reverse3.ToSQLString())
 		}
-			t.Errorf("%d=>%s", i, createTableStmt.ToSQLString())
-			t.Errorf("%d=>%s", i, reverse3.ToSQLString())
 	}
 }

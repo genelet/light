@@ -402,3 +402,179 @@ message DropTableStmt {
 }
 
 // end create table
+
+// start ... create view
+
+message CreateViewStmt {
+	//Pos Create = 1;
+	CompoundIdent Name = 2;
+	QueryStmt Query = 3;
+	bool Materialized = 4;
+}
+
+// end create view
+
+// start ... create index
+
+message CreateIndexStmt {
+	//Pos Create = 1;
+	CompoundIdent TableName = 2;
+	bool IsUnique = 3;
+	string IndexName = 4;
+	string MethodName = 5;
+	repeated string ColumnNames = 6;
+	//Pos RParen = 7;
+	WhereNode Selection = 8;
+}
+
+message DropIndexStmt {
+	//Pos Drop = 1;
+	repeated string IndexNames = 2;
+}
+
+// end create index
+
+// start ... alter table
+
+message AddColumnTableAction {
+	//Pos Add = 1;
+	ColumnDef Column = 2;
+}
+
+message SetDefaultColumnAction{
+	//Pos Set = 1;
+	ValueNode Default = 2;
+}
+
+message DropDefaultColumnAction {
+	//Pos Drop = 1;
+	//Pos Default = 2;
+}
+
+message PGSetNotNullColumnAction {
+	//Pos Set = 1;
+	//Pos Null = 2;
+}
+
+message PGDropNotNullColumnAction {
+	//Pos Drop = 1;
+	//Pos Null = 2;
+}
+
+message PGAlterDataTypeColumnAction {
+	//Pos Type = 1;
+	Type DataType = 2;
+}
+
+message AlterColumnAction {
+	oneof AlterColumnActionClause {
+		SetDefaultColumnAction SetItem = 1;
+		DropDefaultColumnAction DropItem = 2;
+		PGSetNotNullColumnAction PGSetItem = 3;
+		PGDropNotNullColumnAction PGDropItem = 4;
+		PGAlterDataTypeColumnAction PGAlterItem = 5;
+	}
+}
+
+message AlterColumnTableAction {
+	Ident ColumnName = 1;
+	//Pos Alter = 2;
+	AlterColumnAction Action = 3;
+}
+
+message AddConstraintTableAction {
+	//Pos Add = 1;
+	TableConstraint Constraint = 2;
+}
+
+message DropConstraintTableAction {
+	Ident Name = 1;
+	//Pos Drop = 2;
+	bool Cascade = 3;
+	//Pos CascadePos = 4;
+}
+
+message RemoveColumnTableAction {
+	Ident Name = 1;
+	bool Cascade = 2;
+	//Pos CascadePos = 3;
+	//Pos Drop = 4;
+}
+
+message AlterTableAction {
+	oneof AlterTableActionClause {
+		AddColumnTableAction AddColumnItem = 1;
+		AlterColumnTableAction AlterColumnItem = 2;
+		AddConstraintTableAction AddConstraintItem = 3;
+		DropConstraintTableAction DropConstraintItem = 4;
+		RemoveColumnTableAction RemoveColumnItem = 5;
+	}
+}
+
+message AlterTableStmt {
+	//Pos Alter = 1;
+	ObjectName TableName = 2;
+	AlterTableAction Action = 3;
+}
+
+// end alter table
+
+// start ... insert
+
+message Assignment {
+	Ident ID = 1;
+	ValueNode Value = 2;
+}
+
+message SubQuerySource {
+	QueryStmt SubQuery = 1;
+}
+
+message RowValueExpr {
+	repeated ValueNode Values = 1;
+	//Pos LParen = 2;
+	//Pos RParen = 3;
+}
+
+message ConstructorSource {
+	//Pos Values = 1;
+	repeated RowValueExpr Rows = 2;
+}
+
+message InsertSource {
+	oneof InsertSourceClause {
+		SubQuerySource SubItem = 4;
+		ConstructorSource StructorItem = 5;
+	}
+}
+	
+message InsertStmt {
+	//Pos Insert = 1;
+	ObjectName TableName = 2;
+	repeated Ident Columns = 3;
+	InsertSource Source = 5;
+	repeated Assignment UpdateAssignments = 15; // MySQL only (ON DUPLICATED KEYS)
+}
+
+// end insert
+
+// start ... update
+
+message UpdateStmt {
+	//Pos Update = 1;
+	CompoundIdent TableName = 2;
+	repeated Assignment Assignments = 3;
+	WhereNode Selection = 4;
+}
+
+// end update
+
+// start ... delete
+
+message DeleteStmt {
+	//Pos Delete = 1;
+	CompoundIdent TableName = 2;
+	WhereNode Selection = 3;
+}
+
+// end delete
