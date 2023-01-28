@@ -34,8 +34,8 @@ func TestCreateIndex(t *testing.T) {
 		if err != nil { t.Fatal(err) }
 
 		createIndex := CreateIndexTo(xcreateIndex)
-		reverse2 := XCreateIndexTo(xcreateIndex)
-		reverse3 := ast.CreateIndexTo(xcreateIndex)
+		reverse2 := XCreateIndexTo(createIndex)
+		reverse3 := ast.CreateIndexTo(reverse2)
 //pp.Println(reverse)
 		if strings.ToLower(createIndexStmt.ToSQLString()) != strings.ToLower(reverse3.ToSQLString()) {
 			t.Errorf("%d=>%s", i, createIndexStmt.ToSQLString())

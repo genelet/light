@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-//	"github.com/k0kubun/pp/v3"
-
 	"github.com/genelet/sqlproto/ast"
+
+//	"github.com/k0kubun/pp/v3"
 
 	"github.com/akito0107/xsqlparser"
 	"github.com/akito0107/xsqlparser/sqlast"

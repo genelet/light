@@ -327,7 +327,7 @@ func xcolumnConstraintSpecTo(item *xlight.ColumnConstraintSpec) *xast.ColumnCons
 		output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_CheckItem{CheckItem: xcheckColumnSpecTo(x)}
 	} else if x := item.GetUniqueItem(); x != nil {
 		output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_UniqueItem{UniqueItem: xuniqueColumnSpecTo(x)}
-	} else if x := item.GetNotNullItem(); x != xlight.NotNullColumnSpecType_NotNullColumnSpecTypeUnknown {
+	} else if x := item.GetNotNullItem(); x != xlight.NotNullColumnSpec_NotNullColumnSpecUnknown {
         output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_NotNullItem{NotNullItem: xnotNullColumnSpecTo(x)}
     } else if x := item.GetReferenceItem(); x != nil {
 		output.ColumnConstraintSpecClause = &xast.ColumnConstraintSpec_ReferenceItem{ReferenceItem: xreferencesColumnSpecTo(x)}
@@ -412,3 +412,124 @@ func typeTo(item *xast.Type) *xlight.Type {
 }
 
 // end create table
+
+// insert
+
+func xinsertSourceTo(item *xlight.InsertSource) *xast.InsertSource {
+    if item == nil { return nil }
+
+    output := &xast.InsertSource{}
+	if x := item.GetSubItem(); x != nil {
+		output.InsertSourceClause = &xast.InsertSource_SubItem{SubItem: xsubQuerySource(x)}
+	} else if x := item.GetStructorItem(); x != nil {
+		output.InsertSourceClause = &xast.InsertSource_StructorItem{StructorItem: xconstructorSourceTo(x)}
+	} else {
+		return nil
+	}
+
+    return output
+}
+
+func insertSourceTo(item *xast.InsertSource) *xlight.InsertSource {
+    if item == nil { return nil }
+
+    output := &xlight.InsertSource{}
+	if x := item.GetSubItem(); x != nil {
+		output.InsertSourceClause = &xlight.InsertSource_SubItem{SubItem: subQuerySource(x)}
+	} else if x := item.GetStructorItem(); x != nil {
+		output.InsertSourceClause = &xlight.InsertSource_StructorItem{StructorItem: constructorSourceTo(x)}
+	} else {
+		return nil
+	}
+
+    return output
+}
+
+//
+
+// alter table
+
+func xalterTableActionTo(item *xlight.AlterTableAction) *xast.AlterTableAction {
+    if item == nil { return nil }
+
+	output := &xast.AlterTableAction{}
+    if x := item.GetAddColumnItem(); x != nil {
+        output.AlterTableActionClause = &xast.AlterTableAction_AddColumnItem{AddColumnItem: xaddColumnTableActionTo(x)}
+    } else if x := item.GetAlterColumnItem(); x != nil {
+        output.AlterTableActionClause = &xast.AlterTableAction_AlterColumnItem{AlterColumnItem: xalterColumnTableActionTo(x)}
+    } else if x := item.GetAddConstraintItem(); x != nil {
+        output.AlterTableActionClause = &xast.AlterTableAction_AddConstraintItem{AddConstraintItem: xaddConstraintTableActionTo(x)}
+    } else if x := item.GetDropConstraintItem(); x != nil {
+        output.AlterTableActionClause = &xast.AlterTableAction_DropConstraintItem{DropConstraintItem: xdropConstraintTableActionTo(x)}
+    } else if x := item.GetRemoveColumnItem(); x != nil {
+        output.AlterTableActionClause = &xast.AlterTableAction_RemoveColumnItem{RemoveColumnItem: xremoveColumnTableActionTo(x)}
+    } else {
+    	return nil
+	}
+
+	return output
+}
+
+func alterTableActionTo(item *xast.AlterTableAction) *xlight.AlterTableAction {
+    if item == nil { return nil }
+
+	output := &xlight.AlterTableAction{}
+    if x := item.GetAddColumnItem(); x != nil {
+        output.AlterTableActionClause = &xlight.AlterTableAction_AddColumnItem{AddColumnItem: addColumnTableActionTo(x)}
+    } else if x := item.GetAlterColumnItem(); x != nil {
+        output.AlterTableActionClause = &xlight.AlterTableAction_AlterColumnItem{AlterColumnItem: alterColumnTableActionTo(x)}
+    } else if x := item.GetAddConstraintItem(); x != nil {
+        output.AlterTableActionClause = &xlight.AlterTableAction_AddConstraintItem{AddConstraintItem: addConstraintTableActionTo(x)}
+    } else if x := item.GetDropConstraintItem(); x != nil {
+        output.AlterTableActionClause = &xlight.AlterTableAction_DropConstraintItem{DropConstraintItem: dropConstraintTableActionTo(x)}
+    } else if x := item.GetRemoveColumnItem(); x != nil {
+        output.AlterTableActionClause = &xlight.AlterTableAction_RemoveColumnItem{RemoveColumnItem: removeColumnTableActionTo(x)}
+    } else {
+    	return nil
+	}
+
+	return output
+}
+
+func xalterColumnActionTo(item *xlight.AlterColumnAction) *xast.AlterColumnAction{
+    if item == nil { return nil }
+
+	output := &xast.AlterColumnAction{}
+    if x := item.GetSetItem(); x != nil {
+        output.AlterColumnActionClause = &xast.AlterColumnAction_SetItem{SetItem: xsetDefaultColumnActionTo(x)}
+    } else if x := item.GetDropItem(); x != xlight.DropDefaultColumnAction_DropDefaultColumnActionUnknown  {
+        output.AlterColumnActionClause = &xast.AlterColumnAction_DropItem{DropItem: xdropDefaultColumnActionTo(x)}
+    } else if x := item.GetPGSetItem(); x != xlight.PGSetNotNullColumnAction_PGSetNotNullColumnActionUnknown {
+        output.AlterColumnActionClause = &xast.AlterColumnAction_PGSetItem{PGSetItem: xpgSetNotNullColumnActionTo(x)}
+    } else if x := item.GetPGDropItem(); x != xlight.PGDropNotNullColumnAction_PGDropNotNullColumnActionUnknown {
+        output.AlterColumnActionClause = &xast.AlterColumnAction_PGDropItem{PGDropItem: xpgDropNotNullColumnActionTo(x)}
+    } else if x := item.GetPGAlterItem(); x != nil {
+        output.AlterColumnActionClause = &xast.AlterColumnAction_PGAlterItem{PGAlterItem: xpgAlterDataTypeColumnActionTo(x)}
+    } else {
+    	return nil
+	}
+
+	return output
+}
+
+func alterColumnActionTo(item *xast.AlterColumnAction) *xlight.AlterColumnAction {
+    if item == nil { return nil }
+
+	output := &xlight.AlterColumnAction{}
+    if x := item.GetSetItem(); x != nil {
+        output.AlterColumnActionClause = &xlight.AlterColumnAction_SetItem{SetItem: setDefaultColumnActionTo(x)}
+    } else if x := item.GetDropItem(); x != nil {
+        output.AlterColumnActionClause = &xlight.AlterColumnAction_DropItem{DropItem: dropDefaultColumnActionTo(x)}
+    } else if x := item.GetPGSetItem(); x != nil {
+        output.AlterColumnActionClause = &xlight.AlterColumnAction_PGSetItem{PGSetItem: pgSetNotNullColumnActionTo(x)}
+    } else if x := item.GetPGDropItem(); x != nil {
+        output.AlterColumnActionClause = &xlight.AlterColumnAction_PGDropItem{PGDropItem: pgDropNotNullColumnActionTo(x)}
+    } else if x := item.GetPGAlterItem(); x != nil {
+        output.AlterColumnActionClause = &xlight.AlterColumnAction_PGAlterItem{PGAlterItem: pgAlterDataTypeColumnActionTo(x)}
+    } else {
+    	return nil
+	}
+
+	return output
+}
+

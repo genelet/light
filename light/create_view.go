@@ -2,7 +2,7 @@ package light
 
 import (
 	"github.com/genelet/sqlproto/xast"
-	"github.com/akito0107/xsqlparser/sqlast"
+	"github.com/genelet/sqlproto/xlight"
 )
 
 func XCreateViewTo(stmt *xlight.CreateViewStmt) *xast.CreateViewStmt {
@@ -13,7 +13,7 @@ func XCreateViewTo(stmt *xlight.CreateViewStmt) *xast.CreateViewStmt {
 		Materialized: stmt.Materialized}
 }
 
-func CreateViewTo(stmt *sqlast.CreateViewStmt) *xast.CreateViewStmt {
+func CreateViewTo(stmt *xast.CreateViewStmt) *xlight.CreateViewStmt {
 	return &xlight.CreateViewStmt{
 		Name: objectnameTo(stmt.Name),
 		Query: QueryTo(stmt.Query),

@@ -303,9 +303,9 @@ message UniqueColumnSpec {
         bool IsPrimaryKey = 1;
 }
 
-enum NotNullColumnSpecType {
-	NotNullColumnSpecTypeUnknown = 0;
-	NotNullColumnSpec = 1;
+enum NotNullColumnSpec {
+	NotNullColumnSpecUnknown = 0;
+	NotNullColumnSpecConfirm = 1;
 }
 
 message ColumnConstraintSpec {
@@ -313,7 +313,7 @@ message ColumnConstraintSpec {
                 UniqueColumnSpec UniqueItem = 3;
                 BinaryExpr CheckItem = 4;
                 ReferencesColumnSpec ReferenceItem = 5;
-                NotNullColumnSpecType NotNullItem = 6;
+                NotNullColumnSpec NotNullItem = 6;
         }
 }
 
@@ -322,15 +322,16 @@ message ColumnConstraint {
         ColumnConstraintSpec Spec = 3;
 }
 
-enum AutoIncrementType {
-	AutoIncrement = 0;	
+enum AutoIncrement {
+	AutoIncrementUnknown = 0;	
+	AutoIncrementConfirm = 1;
 }
 
 message ColumnDef {
         string Name = 1;
         Type DataType = 2;
         ValueNode Default = 3;
-        repeated AutoIncrementType MyDecos = 4;
+        repeated AutoIncrement MyDecos = 4;
         repeated ColumnConstraint Constraints = 5;
 }
 
@@ -436,66 +437,52 @@ message DropIndexStmt {
 
 // start ... alter table
 
-message AddColumnTableAction {
-	//Pos Add = 1;
-	ColumnDef Column = 2;
-}
-
-message SetDefaultColumnAction{
-	//Pos Set = 1;
-	ValueNode Default = 2;
-}
-
-message DropDefaultColumnAction {
+enum DropDefaultColumnAction {
+	DropDefaultColumnActionUnknown = 0;
+	DropDefaultColumnActionConfirm = 1;
 	//Pos Drop = 1;
 	//Pos Default = 2;
 }
 
-message PGSetNotNullColumnAction {
+enum PGSetNotNullColumnAction {
+	PGSetNotNullColumnActionUnknown = 0;
+	PGSetNotNullColumnActionConfirm = 1;
 	//Pos Set = 1;
 	//Pos Null = 2;
 }
 
-message PGDropNotNullColumnAction {
+enum PGDropNotNullColumnAction {
+	PGDropNotNullColumnActionUnknown = 0;
+	PGDropNotNullColumnActionConfirm = 1;
 	//Pos Drop = 1;
 	//Pos Null = 2;
 }
 
-message PGAlterDataTypeColumnAction {
-	//Pos Type = 1;
-	Type DataType = 2;
-}
-
 message AlterColumnAction {
 	oneof AlterColumnActionClause {
-		SetDefaultColumnAction SetItem = 1;
+		ValueNode SetItem = 1;
 		DropDefaultColumnAction DropItem = 2;
 		PGSetNotNullColumnAction PGSetItem = 3;
 		PGDropNotNullColumnAction PGDropItem = 4;
-		PGAlterDataTypeColumnAction PGAlterItem = 5;
+		Type PGAlterItem = 5;
 	}
 }
 
 message AlterColumnTableAction {
-	Ident ColumnName = 1;
+	string ColumnName = 1;
 	//Pos Alter = 2;
 	AlterColumnAction Action = 3;
 }
 
-message AddConstraintTableAction {
-	//Pos Add = 1;
-	TableConstraint Constraint = 2;
-}
-
 message DropConstraintTableAction {
-	Ident Name = 1;
+	string Name = 1;
 	//Pos Drop = 2;
 	bool Cascade = 3;
 	//Pos CascadePos = 4;
 }
 
 message RemoveColumnTableAction {
-	Ident Name = 1;
+	string Name = 1;
 	bool Cascade = 2;
 	//Pos CascadePos = 3;
 	//Pos Drop = 4;
@@ -503,9 +490,9 @@ message RemoveColumnTableAction {
 
 message AlterTableAction {
 	oneof AlterTableActionClause {
-		AddColumnTableAction AddColumnItem = 1;
+		ColumnDef AddColumnItem = 1;
 		AlterColumnTableAction AlterColumnItem = 2;
-		AddConstraintTableAction AddConstraintItem = 3;
+		TableConstraint AddConstraintItem = 3;
 		DropConstraintTableAction DropConstraintItem = 4;
 		RemoveColumnTableAction RemoveColumnItem = 5;
 	}
@@ -513,7 +500,7 @@ message AlterTableAction {
 
 message AlterTableStmt {
 	//Pos Alter = 1;
-	ObjectName TableName = 2;
+	CompoundIdent TableName = 2;
 	AlterTableAction Action = 3;
 }
 
@@ -522,12 +509,8 @@ message AlterTableStmt {
 // start ... insert
 
 message Assignment {
-	Ident ID = 1;
+	string ID = 1;
 	ValueNode Value = 2;
-}
-
-message SubQuerySource {
-	QueryStmt SubQuery = 1;
 }
 
 message RowValueExpr {
@@ -543,15 +526,15 @@ message ConstructorSource {
 
 message InsertSource {
 	oneof InsertSourceClause {
-		SubQuerySource SubItem = 4;
+		QueryStmt SubItem = 4;
 		ConstructorSource StructorItem = 5;
 	}
 }
 	
 message InsertStmt {
 	//Pos Insert = 1;
-	ObjectName TableName = 2;
-	repeated Ident Columns = 3;
+	CompoundIdent TableName = 2;
+	repeated string Columns = 3;
 	InsertSource Source = 5;
 	repeated Assignment UpdateAssignments = 15; // MySQL only (ON DUPLICATED KEYS)
 }

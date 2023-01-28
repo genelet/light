@@ -14,12 +14,11 @@ import (
 	"github.com/akito0107/xsqlparser/dialect"
 )
 
-func TestCreateView(t *testing.T) {
+func TestInsert(t *testing.T) {
 	strs := []string{
-	"CREATE VIEW customers_view AS " +
-				"SELECT customer_name, contract_name " +
-				"FROM customers " +
-				"WHERE country = 'Brazil'"}
+	"INSERT INTO customers (customer_name, contract_name) VALUES ('Cardinal', 'Tom B. Erichsen')",
+	"INSERT INTO customers (customer_name, contract_name) VALUES ('Cardinal', 'Tom B. Erichsen'), ('Cardinal2', 'Tom B. Erichsen2'), ('Cardinal3', 'Tom B. Erichsen3')",
+	"INSERT INTO customers (customer_name, contract_name) SELECT * FROM customers2"}
 
 	for i, str := range strs {
 		//if i != 17 { continue }
@@ -28,15 +27,15 @@ func TestCreateView(t *testing.T) {
 
 		istmt, err := parser.ParseStatement()
 		if err != nil { t.Fatal(err) }
-		stmt := istmt.(*sqlast.CreateViewStmt)
+		stmt := istmt.(*sqlast.InsertStmt)
 //pp.Println(stmt)
 
-		xcreateView, err := ast.XCreateViewTo(stmt)
+		xinsert, err := ast.XInsertTo(stmt)
 		if err != nil { t.Fatal(err) }
 
-		createView := CreateViewTo(xcreateView)
-		reverse2 := XCreateViewTo(createView)
-		reverse3 := ast.CreateViewTo(reverse2)
+		insert := InsertTo(xinsert)
+		reverse2 := XInsertTo(insert)
+		reverse3 := ast.InsertTo(reverse2)
 //pp.Println(reverse)
 		if strings.ToLower(stmt.ToSQLString()) != strings.ToLower(reverse3.ToSQLString()) {
 			t.Errorf("%d=>%s", i, stmt.ToSQLString())

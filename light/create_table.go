@@ -92,8 +92,8 @@ func uniqueColumnSpecTo(item *xast.UniqueColumnSpec) *xlight.UniqueColumnSpec {
 		IsPrimaryKey: item.IsPrimaryKey}
 }
 
-func xnotNullColumnSpecTo(item xlight.NotNullColumnSpecType) *xast.NotNullColumnSpec {
-	if item == xlight.NotNullColumnSpecType_NotNullColumnSpecTypeUnknown {
+func xnotNullColumnSpecTo(item xlight.NotNullColumnSpec) *xast.NotNullColumnSpec {
+	if item == xlight.NotNullColumnSpec_NotNullColumnSpecUnknown {
 		return nil
 	}
 
@@ -102,10 +102,10 @@ func xnotNullColumnSpecTo(item xlight.NotNullColumnSpecType) *xast.NotNullColumn
 		Null: xposTo(item)}
 }
 
-func notNullColumnSpecTo(item *xast.NotNullColumnSpec) xlight.NotNullColumnSpecType {
-	if item == nil { return xlight.NotNullColumnSpecType_NotNullColumnSpecTypeUnknown }
+func notNullColumnSpecTo(item *xast.NotNullColumnSpec) xlight.NotNullColumnSpec {
+	if item == nil { return xlight.NotNullColumnSpec_NotNullColumnSpecUnknown }
 
-	return xlight.NotNullColumnSpecType_NotNullColumnSpec
+	return xlight.NotNullColumnSpec_NotNullColumnSpecConfirm
 }
 
 func xreferencesColumnSpecTo(item *xlight.ReferencesColumnSpec) *xast.ReferencesColumnSpec {
@@ -235,15 +235,18 @@ func columnDefTo(item *xast.ColumnDef) *xlight.ColumnDef {
 	return output
 }
 
-func xmyDataTypeDecorationTo(item xlight.AutoIncrementType) *xast.MyDataTypeDecoration {
+func xmyDataTypeDecorationTo(item xlight.AutoIncrement) *xast.MyDataTypeDecoration {
+	if item == xlight.AutoIncrement_AutoIncrementUnknown { return nil }
+
 	return &xast.MyDataTypeDecoration{
 		Automent: &xast.AutoIncrement{
 			Auto: xposTo(),
 			Increment: xposTo(item)}}
 }
 
-func myDataTypeDecorationTo(item *xast.MyDataTypeDecoration) xlight.AutoIncrementType {
-	return xlight.AutoIncrementType_AutoIncrement
+func myDataTypeDecorationTo(item *xast.MyDataTypeDecoration) xlight.AutoIncrement {
+	if item == nil { return xlight.AutoIncrement_AutoIncrementUnknown }
+	return xlight.AutoIncrement_AutoIncrementConfirm
 }
 
 func xcolumnConstraintTo(item *xlight.ColumnConstraint) *xast.ColumnConstraint {

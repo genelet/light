@@ -20,8 +20,8 @@ func XCreateIndexTo(stmt *xlight.CreateIndexStmt) *xast.CreateIndexStmt {
 	return output
 }
 
-func CreateIndexTo(stmt *sqlast.CreateIndexStmt) *xast.CreateIndexStmt {
-	output := &sqlast.CreateIndexStmt{
+func CreateIndexTo(stmt *xast.CreateIndexStmt) *xlight.CreateIndexStmt {
+	output := &xlight.CreateIndexStmt{
 		TableName: objectnameTo(stmt.TableName),
 		IsUnique: stmt.IsUnique,
 		IndexName: identTo(stmt.IndexName),
@@ -43,7 +43,7 @@ func XDropIndexTo(stmt *xlight.DropIndexStmt) *xast.DropIndexStmt {
 }
 
 func DropIndexTo(stmt *xast.DropIndexStmt) *xlight.DropIndexStmt {
-    output := &sqlast.DropIndexStmt{}
+    output := &xlight.DropIndexStmt{}
     for _, name := range stmt.IndexNames {
         output.IndexNames = append(output.IndexNames, identTo(name))
     }
