@@ -231,6 +231,22 @@ func longTo(t *xast.LongValue) *sqlast.LongValue {
         To: posTo(t.To)}
 }
 
+func xnullValueTo(t *sqlast.NullValue) *xast.NullValue {
+    if t == nil { return nil }
+
+    return &xast.NullValue{
+        From: xposTo(t.From),
+        To: xposTo(t.To)}
+}
+
+func nullValueTo(t *xast.NullValue) *sqlast.NullValue {
+    if t == nil { return nil }
+
+    return &sqlast.NullValue{
+        From: posTo(t.From),
+        To: posTo(t.To)}
+}
+
 func xintTo(t *sqlast.Int) *xast.Int {
     if t == nil { return nil }
 
@@ -333,6 +349,19 @@ func timestampTo(t *xast.Timestamp) *sqlast.Timestamp {
 		WithTimeZone: t.WithTimeZone,
         Timestamp: posTo(t.Timestamp),
         Zone: posTo(t.Zone)}
+}
+
+func xcustomTo(t *sqlast.Custom) *xast.Custom {
+    if t == nil { return nil }
+
+    return &xast.Custom{Ty: xobjectnameTo(t.Ty)}
+}
+
+func customTo(t *xast.Custom) *sqlast.Custom {
+    if t == nil { return nil }
+
+    return &sqlast.Custom{
+		Ty: objectnameTo(t.Ty)}
 }
 
 func xuuidTo(t *sqlast.UUID) *xast.UUID {

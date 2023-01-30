@@ -51,6 +51,8 @@ func xvalueNodeTo(item *xlight.ValueNode) *xast.ValueNode {
         output.ValueNodeClause = &xast.ValueNode_DoubleItem{DoubleItem: xdoubleTo(x)}
 	} else if x := item.GetCompoundItem(); x != nil {
 		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xcompoundTo(x)}
+	} else if x := item.GetNullItem(); x != xlight.NullValue_NullValueUnknown {
+		output.ValueNodeClause = &xast.ValueNode_NullItem{NullItem: xnullValueTo(x)}
     } else {
         return nil
     }
@@ -70,6 +72,8 @@ func valueNodeTo(item *xast.ValueNode) *xlight.ValueNode {
         output.ValueNodeClause = &xlight.ValueNode_DoubleItem{DoubleItem: doubleTo(x)}
 	} else if x := item.GetCompoundItem(); x != nil {
 		output.ValueNodeClause = &xlight.ValueNode_CompoundItem{CompoundItem: compoundTo(x)}
+	} else if x := item.GetNullItem(); x != nil {
+		output.ValueNodeClause = &xlight.ValueNode_NullItem{NullItem: nullValueTo(x)}
     } else {
         return nil
     }
@@ -377,6 +381,8 @@ func xtypeTo(item *xlight.Type) *xast.Type {
 		output.TypeClause = &xast.Type_CharData{CharData: xcharTypeTo(x)}
 	} else if x := item.GetVarcharData(); x != nil {
 		output.TypeClause = &xast.Type_VarcharData{VarcharData: xvarcharTypeTo(x)}
+	} else if x := item.GetCustomData(); x != nil {
+		output.TypeClause = &xast.Type_CustomData{CustomData: xcustomTo(x)}
 	} else {
 		return nil
 	}
@@ -404,6 +410,8 @@ func typeTo(item *xast.Type) *xlight.Type {
 		output.TypeClause = &xlight.Type_CharData{CharData: charTypeTo(x)}
 	} else if x := item.GetVarcharData(); x != nil {
 		output.TypeClause = &xlight.Type_VarcharData{VarcharData: varcharTypeTo(x)}
+	} else if x := item.GetCustomData(); x != nil {
+		output.TypeClause = &xlight.Type_CustomData{CustomData: customTo(x)}
 	} else {
 		return nil
 	}

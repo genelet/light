@@ -121,6 +121,8 @@ func xvalueNodeTo(item sqlast.Node) (*xast.ValueNode, error ) {
 		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xcompoundTo(t)}
 	case *sqlast.Wildcard:
 		output.ValueNodeClause = &xast.ValueNode_CompoundItem{CompoundItem: xwildcardsTo(t)}
+	case *sqlast.NullValue:
+		output.ValueNodeClause = &xast.ValueNode_NullItem{NullItem: xnullValueTo(t)}
     default:
         return nil, fmt.Errorf("missing value item type %T", t)
     }
@@ -139,6 +141,8 @@ func valueNodeTo(item *xast.ValueNode) sqlast.Node {
 		return compoundTo(x)
 	} else if x := item.GetStringItem(); x != nil {
 		return stringTo(x)
+	} else if x := item.GetNullItem(); x != nil {
+		return nullValueTo(x)
 	}
 
 	return nil
@@ -373,6 +377,8 @@ func xtypeTo(item sqlast.Type) (*xast.Type, error) {
 		output.TypeClause = &xast.Type_CharData{CharData: xcharTypeTo(t)}
 	case *sqlast.VarcharType:
 		output.TypeClause = &xast.Type_VarcharData{VarcharData: xvarcharTypeTo(t)}
+	case *sqlast.Custom:
+		output.TypeClause = &xast.Type_CustomData{CustomData: xcustomTo(t)}
 	default:
 		return nil, fmt.Errorf("missing column def type: %T", t)
 	}
@@ -397,7 +403,9 @@ func typeTo(item *xast.Type) sqlast.Type {
         return uuidTo(item.GetUUIDData())
 	} else if item.GetCharData() != nil {
 		return charTypeTo(item.GetCharData())
-	} else { // GetVarcharData()
+	} else if item.GetCustomData() != nil {
+		return customTo(item.GetCustomData())
+	} else if item.GetVarcharData() != nil {
 		return varcharTypeTo(item.GetVarcharData())
 	}
 

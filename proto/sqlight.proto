@@ -186,6 +186,7 @@ message ValueNode {
         SingleQuotedString StringItem = 1;
         LongValue LongItem = 2;
         DoubleValue DoubleItem = 3;
+		NullValue NullItem = 14;
         CompoundIdent CompoundItem = 15;
     }
 }
@@ -236,6 +237,11 @@ message SmallInt {
 
 message Int {
         bool IsUnsigned = 3;
+}
+
+enum NullValue {
+      NullValueUnknown = 0;
+      NullValueConfirm = 1;
 }
 
 message Real {
@@ -289,6 +295,7 @@ message Type {
                 Decimal DecimalData = 4;
                 CharType CharData = 8;
                 VarcharType VarcharData = 9;
+				CompoundIdent CustomData = 10;
                 DataTypeSingle UUIDData = 14;
                 Timestamp TimestampData = 15;
         }

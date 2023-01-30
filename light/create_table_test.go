@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/genelet/sqlproto/ast"
+//	"google.golang.org/protobuf/encoding/protojson"
 
 //	"github.com/k0kubun/pp/v3"
 
@@ -16,6 +17,11 @@ import (
 
 func TestCreateTable(t *testing.T) {
 	strs := []string{
+`CREATE TABLE User_Properties (
+    User_Properties_id SERIAL PRIMARY KEY,
+    User_id INT NOT NULL,
+    properties INT DEFAULT NULL
+);`,
 	`CREATE TABLE test (
     col0 int primary key,
     col1 integer constraint test_constraint check (10 < col1 and col1 < 100),
@@ -54,7 +60,7 @@ FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)
 );`}
 
 	for i, str := range strs {
-		//if i != 1 { continue }
+	//	if i != 0 { continue }
 		parser, err := xsqlparser.NewParser(bytes.NewBufferString(str), &dialect.GenericSQLDialect{}, xsqlparser.ParseComment())
 		if err != nil { t.Fatal(err) }
 
@@ -68,6 +74,8 @@ FOREIGN KEY(test_id) REFERENCES other_table(col1, col2)
 		if err != nil { t.Fatal(err) }
 
 		createTable := CreateTableTo(xcreateTable)
+//t.Errorf("%s", protojson.Format(createTable))
+
 		reverse2 := XCreateTableTo(createTable)
 		reverse3 := ast.CreateTableTo(reverse2)
 //pp.Println(reverse)

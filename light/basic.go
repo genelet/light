@@ -249,6 +249,20 @@ func limitTo(item *xast.LimitExpr) *xlight.LimitExpr {
 
 // create table
 
+func xnullValueTo(t xlight.NullValue) *xast.NullValue {
+    if t == xlight.NullValue_NullValueUnknown { return nil }
+
+    return &xast.NullValue{
+        From: xposTo(),
+        To: xposTo(t)}
+}
+
+func nullValueTo(t *xast.NullValue) xlight.NullValue {
+    if t == nil { return xlight.NullValue_NullValueUnknown }
+
+    return xlight.NullValue_NullValueConfirm
+}
+
 func xintTo(t *xlight.Int) *xast.Int {
     if t == nil { return nil }
 
@@ -337,6 +351,18 @@ func timestampTo(t *xast.Timestamp) *xlight.Timestamp {
 
     return &xlight.Timestamp{
 	WithTimeZone: t.WithTimeZone}
+}
+
+func xcustomTo(t *xlight.CompoundIdent) *xast.Custom {
+    if t == nil { return nil }
+
+    return &xast.Custom{Ty: xobjectnameTo(t)}
+}
+
+func customTo(t *xast.Custom) *xlight.CompoundIdent {
+    if t == nil { return nil }
+
+    return objectnameTo(t.Ty)
 }
 
 func xuuidTo(t xlight.DataTypeSingle) *xast.UUID {
