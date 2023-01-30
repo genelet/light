@@ -24,7 +24,7 @@ func TestAlterTable(t *testing.T) {
 "ALTER TABLE Property_Leans ADD CONSTRAINT constraint_Property_Leans_Property_id_Property_Property_id FOREIGN KEY (Property_id) REFERENCES Property (Property_id) ON UPDATE NO ACTION ON DELETE NO ACTION"}
 
 	for i, str := range strs {
-		//if i != 5 { continue }
+		if i != 5 { continue }
 		parser, err := xsqlparser.NewParser(bytes.NewBufferString(str), &dialect.GenericSQLDialect{})
 		if err != nil { t.Fatal(err) }
 

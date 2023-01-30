@@ -283,10 +283,6 @@ enum DataTypeSingle {
 	UUID = 8;
 }
 
-message Custom {
-        CompoundIdent Ty = 1;
-}
-
 message Type {
         oneof TypeClause {
                 Int IntData = 1;
